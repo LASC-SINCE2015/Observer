@@ -1,0 +1,19 @@
+# 秘密情報（リポジトリに含めない）
+.env
+.env.*
+!.env.example
+
+# Node（開発用スクリプトで使う場合）
+node_modules/
+npm-debug.log*
+
+# OS / エディタ
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# 一時ファイル
+*.tmp
+*.bak
