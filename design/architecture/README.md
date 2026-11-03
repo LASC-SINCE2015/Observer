@@ -12,7 +12,7 @@
 │  ├─ data/         … セーブデータ・定義データの形式
 │  ├─ screens/      … 画面の構成
 │  ├─ sequences/    … 処理の流れ
-│  ├─ levels/       … 章ごとの場面のつながり・手がかりの配置
+│  ├─ levels/       … 章の作り方の共通の決まり
 │  └─ decisions/    … 設計判断の記録（ADR）
 ├─ game/        … ゲーム本体（このフォルダだけが公開される）
 │  └─ index.html … HTML・CSS・JavaScript をまとめた 1 ファイル

@@ -10,7 +10,7 @@ Observer の設計書（どう作るか）を置くフォルダです。仕様�
 | [data/](data/README.md) | セーブデータ、シナリオ・カメラの定義の形式 |
 | [screens/](screens/README.md) | 画面の構成（今は 1 画面） |
 | [sequences/](sequences/README.md) | 場面の進行・映像の切り替え・セーブの処理の流れ |
-| [levels/](levels/README.md) | 章ごとの場面のつながり・手がかりの配置・難易度 |
+| [levels/](levels/README.md) | 章の作り方の共通の決まり（場面の組み立て・手がかりの置き方・フラグの名前・難易度） |
 | [decisions/](decisions/README.md) | 設計判断の記録（ADR） |
 
 ## 実装状況の書き方
