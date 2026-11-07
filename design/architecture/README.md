@@ -41,7 +41,7 @@
 | 場面の進行 | `enterScene`・`renderChoices`・`switchFeed` |
 | モニターの描画 | Canvas への描画（場面の絵・時刻・ノイズ・ずれ） |
 
-**データ（`CAMERAS`・`SCENES`）と仕組みを分けている**ので、シナリオを増やすときはデータだけを書き足せばよいようにしています。シナリオが大きくなったら、データを別の JS ファイルに分けることを検討します（[ADR 0001](../decisions/0001_single_html_no_library.md)）。
+**データ（`CAMERAS`・`SCENES`）と仕組みを分けている**ので、シナリオを増やすときはデータだけを書き足せばよいようにしています。シナリオのデータは、章ごとの JS ファイル（`game/data/`）に分けていきます（[ADR 0004](../decisions/0004_split_scenario_data_by_chapter.md)）。
 
 ## 描画の仕組み
 
