@@ -3,6 +3,7 @@
    台本の自動テスト（ブラウザを使わずに、章を最後まで通して遊ぶ）
    使い方: node tools/playtest.js [章の番号] [ルート]
      ルート: normal（通常解決）/ bad（バッドエンドを通ってから通常解決）/ true（真解決）
+             mistakes（外れの干渉を先に全部試してから通常解決）
    - 画面の部品は、何もしない「仮の部品」に置き換えて動かす
    - 台本のエラー、実行中のエラー、行き詰まり（何も押せなくなる）を見つけたら、終了コード 1 で終わる
    =================================================================== */
@@ -102,6 +103,8 @@ const T = O._test;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* ---------- 自動で遊ぶ ---------- */
+// 外れの干渉（押すと、立て直しの道に入るか、失敗して「この夜を、もう一度」になる）
+const MISTAKES = ['*h1_early', '*h1_late', '*h_phone_no', '*h2_stairs', '*h3_noise', '*h_bell_no'];
 const tried = new Set();
 let badSeen = false;
 const log = [];
@@ -140,7 +143,6 @@ function explore() {
   const prefer = (o) => {
     if (route === 'bad' && !badSeen && o.text.includes('やめておく')) return 3;
     if (o.text.includes('やめておく')) return -1;
-    if (route === 'true' && o.text.includes('机へ')) return 2;
     return 0;
   };
   const sorted = choices.slice().sort((a, b) => prefer(b) - prefer(a));
@@ -159,24 +161,32 @@ function explore() {
     return true;
   }
   // 干渉できる機器
-  // 真解決のルートでは、真解決の手がかり（*t_ で始まるラベル）へつながる機器を先に試す
-  const isTrue = (h) => h.actions.some((a) => a.target.startsWith('*t_'));
-  const ordered = st.hotspots.slice().sort((a, b) => (route === 'true' ? isTrue(b) - isTrue(a) : isTrue(a) - isTrue(b)));
-  for (const h of ordered) {
-    if (!h.range) continue;
+  // - 真解決の手がかり（*t_ で始まるラベル）へつながる機器は、真解決のルートでだけ先に試す
+  // - 外れの機器（MISTAKES）は、mistakes のルートでだけ先に試す（ほかのルートでは試さない）
+  const score = (a) => {
+    if (a.target.startsWith('*t_')) return route === 'true' ? 2 : -9;
+    if (MISTAKES.includes(a.target)) return route === 'mistakes' ? 1 : -9;
+    return 0;
+  };
+  const cands = [];
+  st.hotspots.forEach((h, i) => {
+    if (!h.range) return;
+    h.actions.forEach((a) => {
+      const key = `h:${h.cam}:${h.name}:${h.range}:${a.target}`;
+      if (!tried.has(key) && score(a) > -9) cands.push({ h, a, key, s: score(a), i });
+    });
+  });
+  cands.sort((x, y) => y.s - x.s || x.i - y.i);
+  for (const c of cands) {
     T.switchMode('past');
-    T.setPast(h.range[0]);
-    if (st.cam !== h.cam) T.switchCam(h.cam);
-    const vis = T.hotspots().find((x) => x.name === h.name && x.cam === h.cam);
+    T.setPast(c.h.range[0]);
+    if (st.cam !== c.h.cam) T.switchCam(c.h.cam);
+    const vis = T.hotspots().find((x) => x.name === c.h.name && x.cam === c.h.cam && String(x.range) === String(c.h.range));
     if (!vis) continue;
-    const acts = vis.actions.filter((a) => !tried.has(`h:${h.cam}:${h.name}:${a.target}`));
-    if (route !== 'true') acts.sort((a, b) => (a.target === '*t_desk') - (b.target === '*t_desk'));
-    for (const a of acts) {
-      tried.add(`h:${h.cam}:${h.name}:${a.target}`);
-      say(`  干渉: ${h.cam} ${h.name} / ${a.text}`);
-      T.useHotspot(vis, a);
-      return true;
-    }
+    tried.add(c.key);
+    say(`  干渉: ${c.h.cam} ${c.h.name} / ${c.a.text}`);
+    T.useHotspot(vis, c.a);
+    return true;
   }
   if (sorted.length) {
     say(`  選ぶ: ${sorted[0].text}`);
@@ -190,13 +200,15 @@ async function main() {
   if (route === 'true') T.progress.flags.relay_ch1 = true;
   T.startChapter(chapterNo);
   let idle = 0;
+  let retries = 0;
   for (let n = 0; n < 5000; n++) {
     const screen = T.screen();
     const card = T.card();
     if (card) {
       say(`カード: ${card.sub} ${card.title}`);
-      if (card.sub === 'BAD END') {
-        badSeen = true;
+      if (card.sub === 'BAD END' || card.sub === 'やり直し') {
+        if (card.sub === 'BAD END') badSeen = true;
+        if (++retries > 20) { fail('やり直しが多すぎます'); return; }
         const b = T.cardButtons().find((x) => x.text !== '章を選ぶ');
         b.fn();
         continue;

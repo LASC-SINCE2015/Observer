@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07080a">
 <title>Observer</title>
-<link rel="stylesheet" href="css/style.css?v=0.2.1">
+<link rel="stylesheet" href="css/style.css?v=0.2.2">
 </head>
 <body class="screen-title">
 
@@ -18,6 +18,7 @@
       <button id="btn-new">はじめから</button>
       <button id="btn-continue">つづきから</button>
       <button id="btn-select">章を選ぶ</button>
+      <button id="btn-about">このゲームについて</button>
       <button id="btn-sound-title">音: なし</button>
     </div>
     <div class="title-note">効果音があります。「音: なし」を押すと鳴るようになります。</div>
@@ -34,6 +35,35 @@
       <span class="c-normal">■</span> クリア　<span class="c-ready">■</span> 真解決ができる　<span class="c-true">■</span> 真解決
     </div>
     <button id="btn-select-back">タイトルへ</button>
+  </div>
+</section>
+
+<!-- ===== このゲームについて ===== -->
+<section class="screen" id="about-screen">
+  <div class="about-box">
+    <h2>このゲームについて</h2>
+
+    <h3>どんなゲーム？</h3>
+    <p>深夜のビルの中央監視室を舞台にした、サスペンス・アドベンチャーです。あなたは夜勤の監視員・八島 陸。壁一面の監視モニターで「現在の映像」を見張りながら、ある夜から、カメラの「過去の映像」をのぞけるようになります。過去の映像の中の機器に音や文字を送ると、過去の人が、それを聞いて動き出し――今が変わります。</p>
+
+    <h3>遊び方</h3>
+    <ul>
+      <li>文章は、テキストの枠をクリック（タップ）するか、Enter キーで進みます。</li>
+      <li>下のモニター壁を押すと、大画面のカメラが切り替わります。気になるカメラには印が付きます。</li>
+      <li>「過去」に切り替えると、時刻のつまみで過去の映像を見られます。つまみの上の ▼ は、何かが映っている時刻です。</li>
+      <li>過去の映像の中で点滅している機器を押すと、干渉できます。一度干渉した時間は「焼き付いて」、二度とさわれません。</li>
+      <li>「手帳」には、八島がモニターで見たことが書き留められます。いつでも開けます。</li>
+      <li>進み具合は、場面が変わるたびに自動で保存されます（このブラウザの中だけ）。</li>
+    </ul>
+
+    <h3>ご注意</h3>
+    <p>この作品には、人の死・自殺を思わせる場面・性的なことをほのめかす場面が含まれます。対象年齢の目安は 15 歳以上です。</p>
+    <p class="about-help">つらい気持ちを抱えているときは、ひとりで抱え込まずに、身近な人や相談窓口を頼ってください。厚生労働省の「まもろうよ こころ」で、電話や SNS の相談窓口を探せます。<br><a href="https://www.mhlw.go.jp/mamorouyokokoro/" target="_blank" rel="noopener">https://www.mhlw.go.jp/mamorouyokokoro/</a></p>
+
+    <h3>バージョン</h3>
+    <p><span id="about-version"></span>（遊べるのは第1章まで）</p>
+
+    <button id="btn-about-back">タイトルへ</button>
   </div>
 </section>
 
@@ -86,6 +116,7 @@
     <div class="group">
       <button id="btn-log">ログ</button>
       <button id="btn-items">アイテム</button>
+      <button id="btn-note">手帳</button>
       <button id="btn-history">履歴</button>
     </div>
     <span class="spacer"></span>
@@ -132,13 +163,13 @@
 <div class="debug" id="debug"></div>
 
 <!-- 読み込む順番: 台本の読み込み → データ → 台本 → 描画・音 → ゲームの進行 -->
-<script src="js/parser.js?v=0.2.1"></script>
-<script src="data/cameras.js?v=0.2.1"></script>
-<script src="data/chapters.js?v=0.2.1"></script>
-<script src="data/characters.js?v=0.2.1"></script>
-<script src="scenario/chapter1.js?v=0.2.1"></script>
-<script src="js/renderer.js?v=0.2.1"></script>
-<script src="js/audio.js?v=0.2.1"></script>
-<script src="js/game.js?v=0.2.1"></script>
+<script src="js/parser.js?v=0.2.2"></script>
+<script src="data/cameras.js?v=0.2.2"></script>
+<script src="data/chapters.js?v=0.2.2"></script>
+<script src="data/characters.js?v=0.2.2"></script>
+<script src="scenario/chapter1.js?v=0.2.2"></script>
+<script src="js/renderer.js?v=0.2.2"></script>
+<script src="js/audio.js?v=0.2.2"></script>
+<script src="js/game.js?v=0.2.2"></script>
 </body>
 </html>

@@ -35,7 +35,8 @@ body.outside { --tint: var(--outside); }
 
 .screen { display: none; }
 body.screen-title #title-screen,
-body.screen-select #select-screen { display: flex; }
+body.screen-select #select-screen,
+body.screen-about #about-screen { display: flex; }
 body.screen-game #game-screen { display: flex; }
 
 button {
@@ -234,12 +235,26 @@ body.mode-past:not(.outside) .timeline.enabled { display: block; }
   pointer-events: auto; cursor: pointer;
 }
 .tl-marks span.burned { border-top-color: #fff3d8; }
+/* まだ見ていない出来事は、白抜きの ▽ */
+.tl-marks span.unseen { border-top-color: transparent; }
+.tl-marks span.unseen::before,
+.tl-marks span.unseen::after { content: ""; position: absolute; width: 0; height: 0; }
+.tl-marks span.unseen::before {
+  left: -6px; top: -9px;
+  border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 9px solid var(--past);
+}
+.tl-marks span.unseen::after {
+  left: -3px; top: -8px;
+  border-left: 3px solid transparent; border-right: 3px solid transparent; border-top: 5px solid var(--panel);
+}
+.tl-marks i.band { position: absolute; top: 14px; height: 4px; background: #fff3d8; opacity: 0.75; border-radius: 1px; }
 .tl-buttons { display: flex; flex-wrap: wrap; gap: 4px; justify-content: space-between; }
 .tl-buttons button { flex: 1; padding: 7px 2px; font-size: 12px; min-width: 52px; }
 
 /* ---------- モニター壁 ---------- */
 .wall-wrap { display: flex; flex-direction: column; gap: 4px; }
 body.outside .wall-wrap, body.outside .controls { display: none; }
+.wall-wrap.empty { display: none; }   /* 予告のあいだなど、モニター壁にカメラがないとき */
 .wall {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
@@ -258,6 +273,35 @@ body.outside .wall-wrap, body.outside .controls { display: none; }
 .tile.active { border-color: var(--tint); box-shadow: 0 0 6px var(--tint); }
 .tile.active .tlabel { color: var(--tint); }
 .wall-toggle { align-self: center; font-size: 12px; padding: 4px 14px; display: none; }
+/* まだ見ていないものがあるカメラ（右上の点が点滅する） */
+.tile.new::after, .wall-toggle.new::after, #btn-note.new::after {
+  content: ""; position: absolute; top: 4px; right: 4px; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--tint); box-shadow: 0 0 6px var(--tint); animation: blink 1.2s infinite;
+}
+.wall-toggle, #btn-note { position: relative; }
+.wall-toggle.new::after, #btn-note.new::after { top: 3px; right: 3px; }
+@keyframes blink { 50% { opacity: 0.2; } }
+
+/* ---------- 八島の手帳 ---------- */
+.panel-body.notebook { background: #e9e2cf; color: #2b2620; border-radius: 3px; padding: 12px 14px; font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; }
+.notebook .note-daily { font-family: "Consolas", monospace; font-size: 12px; color: #6b6255; border-bottom: 1px dashed #9a8f7d; padding-bottom: 6px; }
+.notebook .note-ch { margin-top: 6px; font-size: 12px; color: #6b6255; letter-spacing: 0.1em; }
+.notebook .note { border-bottom: 1px solid #cfc6b1; padding: 4px 0 6px; }
+.notebook .note-head { font-family: "Consolas", monospace; font-size: 11px; color: #7d7364; }
+.notebook .note-text { font-size: 15px; line-height: 1.6; }
+.notebook .note.unread .note-text::before { content: "● "; color: #b0402c; font-size: 10px; vertical-align: middle; }
+.notebook .empty { color: #7d7364; }
+
+/* ---------- このゲームについて ---------- */
+#about-screen { min-height: 100vh; justify-content: center; padding: 24px 16px; }
+.about-box { width: 100%; max-width: 640px; line-height: 1.8; font-size: 14px; }
+.about-box h2 { font-size: 16px; letter-spacing: 0.2em; color: var(--text-dim); }
+.about-box h3 { font-size: 14px; color: var(--live); margin: 20px 0 4px; letter-spacing: 0.1em; }
+.about-box p, .about-box ul { margin: 4px 0; }
+.about-box ul { padding-left: 1.2em; }
+.about-box .about-help { color: var(--text-dim); font-size: 13px; }
+.about-box a { color: var(--live); word-break: break-all; }
+.about-box button { margin-top: 24px; padding: 10px 24px; }
 .wall-wrap.can-collapse .wall-toggle { display: block; }
 
 /* ---------- 操作ボタン ---------- */
