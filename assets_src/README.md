@@ -137,7 +137,7 @@
 
 | ファイル | 作者・入手元 | ライセンス・規約 | クレジット表記 |
 |---|---|---|---|
-| `chars/reiko_normal`・`reiko_smile`・`reiko_sad`・`sena_normal`・`sena_smile`・`saeki_smile`・`saeki_flushed`・`jogasaki_normal`・`jogasaki_aroused`・`jogasaki_after`、`scenes/ch1_reiko_look`・`ch1_backyard_affair`、`bg/cam00_room` | Leonardo.ai（無料プラン）で生成（2026-11-08） | Leonardo.ai の利用規約による。無料プランの生成物は公開され、権利は Leonardo.ai が持つが、商用を含めて利用できると案内されている | 不要（任意） |
+| `chars/reiko_normal`・`reiko_smile`・`reiko_sad`・`sena_normal`・`sena_smile`・`saeki_smile`・`saeki_flushed`・`jogasaki_normal`・`jogasaki_aroused`・`jogasaki_after`、`scenes/ch1_reiko_look`・`ch1_backyard_affair`・`ch1_sena_mop`、`bg/cam00_room` | Leonardo.ai（無料プラン）で生成（2026-11-08。玲子の立ち絵は同日に作り直し） | Leonardo.ai の利用規約による。無料プランの生成物は公開され、権利は Leonardo.ai が持つが、商用を含めて利用できると案内されている | 不要（任意） |
 
 ## 注意
 

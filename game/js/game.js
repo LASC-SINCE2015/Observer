@@ -7,7 +7,7 @@
    =================================================================== */
 
 (function () {
-  const GAME_VERSION = '0.2.2';
+  const GAME_VERSION = '0.2.3';
   const SAVE_KEY = 'observer.save.v2';          // 場面のセーブ。形式を変えたら v を上げる
   const PROGRESS_KEY = 'observer.progress.v2';  // 章をまたぐ記録
   const DATA_VERSION = 2;
@@ -195,11 +195,27 @@
   function showLines(lines, onDone) {
     let i = 0;
     const next = () => {
-      while (i < lines.length && lines[i].note) { addNote(lines[i].note, lines[i].ln); i += 1; }
+      // 文章ではない行（手帳に書き留める行・演出の命令）は、表示せずにその場で実行する
+      while (i < lines.length && (lines[i].note || lines[i].cmd)) {
+        const ln = lines[i];
+        if (ln.note) addNote(ln.note, ln.ln);
+        else runBodyCommand(ln);
+        i += 1;
+      }
       if (i >= lines.length) { if (onDone) onDone(); return; }
       showText(lines[i++], next);
     };
     next();
+  }
+
+  // @look・@event の本文の中の演出の命令（@show・@hide・@sound・@fx）を実行する
+  function runBodyCommand(ln) {
+    try {
+      OPS[ln.cmd]({ op: ln.cmd, arg: ln.arg, ln: ln.ln });
+    } catch (e) {
+      reportError(`${run.script ? run.script.name : ''} ${ln.ln} 行目: ${e.message}`);
+    }
+    renderStatic();
   }
 
   // 高さの低い画面で、文章や選択肢が画面の外に出たら、見えるところまで動かす
@@ -610,7 +626,8 @@
     if (!target.body.length) { done(); renderChoices(); return; }
     clearChoices();
     run.reading = target;
-    showLines(target.body, () => { run.reading = null; done(); renderChoices(); checkExplore(); });
+    run.portraitsBefore = clone(state.portraits);   // 途中で打ち切ったら、本文の中で出した立ち絵を元に戻す
+    showLines(target.body, () => { run.reading = null; run.portraitsBefore = null; done(); renderChoices(); checkExplore(); });
   }
 
   // 探索の文章を読んでいる途中で、映すものが変わったら、その文章を打ち切る
@@ -620,6 +637,7 @@
     typer.item = null;
     typer.onDone = null;
     run.reading = null;
+    if (run.portraitsBefore) { state.portraits = run.portraitsBefore; run.portraitsBefore = null; renderStatic(); }
     renderChoices();
   }
 

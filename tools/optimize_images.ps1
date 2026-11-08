@@ -25,14 +25,15 @@ Add-Type -AssemblyName System.Drawing
 # - 背景の色は、画像の上の 2 つの隅の色から決める（下の隅は、人物の体や服がかかりやすいため）
 # - 背景の色に近い画素を、画像のふちからたどって消す。人物に囲まれた背景（髪のすき間など）も消す
 # - 消したところのそばの画素は、背景の色との近さに応じて半透明にし、映り込んだ緑（青）みを取る
-if (-not ("KeyBackground5" -as [type])) {
+# - 緑（青）の背景のときは、最後に画像全体で、緑（青）みの強すぎる画素を薄くする（影になった背景の消し残り）
+if (-not ("KeyBackground6" -as [type])) {
     Add-Type -ReferencedAssemblies System.Drawing -TypeDefinition @"
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-public static class KeyBackground5 {
+public static class KeyBackground6 {
     static int br, bg, bb, mode;
     // 0: なし / 1: 緑 / 2: 青 / 3: 白
     static int Kind(Color k) {
@@ -127,6 +128,20 @@ public static class KeyBackground5 {
             if (mode == 1 && p[i + 1] > Math.Max(p[i], p[i + 2])) p[i + 1] = Math.Max(p[i], p[i + 2]);
             if (mode == 2 && p[i] > Math.Max(p[i + 1], p[i + 2])) p[i] = Math.Max(p[i + 1], p[i + 2]);
         }
+        // 4) 緑（青）の背景のときは、画像全体で、緑（青）みの強すぎる画素を薄くして色みを取る
+        //    （髪のすき間の影になった緑など、背景の色から離れていて 1)〜3) で残ったもの）
+        if (mode == 1 || mode == 2) {
+            int c = mode == 1 ? 1 : 0;   // BGRA の並びで、緑は 1、青は 0
+            for (int i = 0; i < p.Length; i += 4) {
+                if (p[i + 3] == 0) continue;
+                int o1 = c == 1 ? p[i] : p[i + 1], o2 = p[i + 2];
+                int dom = p[i + c] - Math.Max(o1, o2);
+                if (dom <= 25) continue;
+                double a = Clamp01(1 - (dom - 25) / 50.0);
+                p[i + 3] = (byte)(p[i + 3] * a);
+                p[i + c] = (byte)Math.Max(o1, o2);
+            }
+        }
         Marshal.Copy(p, 0, d.Scan0, p.Length);
         bmp.UnlockBits(d);
     }
@@ -154,9 +169,9 @@ function Convert-Portrait([string]$in, [string]$out) {
         $g.Clear([System.Drawing.Color]::Transparent)
         $g.DrawImage($img, 0, 0, $outW, $outH)
         # 背景が単色（四隅が緑・青・白）なら、背景を透明にする
-        $mode = [KeyBackground5]::DetectMode($bmp)
+        $mode = [KeyBackground6]::DetectMode($bmp)
         if ($mode -gt 0) {
-            [KeyBackground5]::Remove($bmp, $mode)
+            [KeyBackground6]::Remove($bmp, $mode)
             $names = @{ 1 = "緑"; 2 = "青"; 3 = "白" }
             Write-Output "  $($names[$mode])の背景を透明にしました: $([System.IO.Path]::GetFileName($in))"
         }
