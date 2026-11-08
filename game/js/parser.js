@@ -21,6 +21,9 @@ Observer.camera = function (id, def) {
 // 本文（ひと続きの文章）を持てる命令
 const BLOCK_OPS = new Set(['look', 'event']);
 
+// @look・@event の本文の中で使える演出の命令
+const BODY_OPS = new Set(['show', 'hide', 'sound', 'fx']);
+
 // ジャンプ先（*ラベル）を引数に持つ命令。読み込み時に、ラベルがあるか確かめる
 const JUMP_PATTERN = /\*[^\s|]+/g;
 
@@ -48,8 +51,15 @@ Observer.parseScript = function (name, text) {
 
     // 字下げした行は、直前の @look・@event の本文
     // 本文の中の「@note 文」は、読む流れの中で手帳に書き留める行
+    // 本文の中の「@show・@hide・@sound・@fx」は、読む流れの中で、その場で実行する演出
     if (block && /^[ \t]/.test(raw)) {
       if (line.startsWith('@note ')) { block.body.push({ note: line.slice(6).trim(), ln }); return; }
+      if (line.startsWith('@')) {
+        const m = line.match(/^@(\S+)\s*(.*)$/);
+        if (!BODY_OPS.has(m[1])) errors.push(`${ln} 行目: 本文の中では @${m[1]} は使えません（使えるのは @note・${[...BODY_OPS].map((o) => `@${o}`).join('・')}）`);
+        else block.body.push({ cmd: m[1], arg: m[2].trim(), ln });
+        return;
+      }
       block.body.push(Object.assign(parseText(line, cast), { ln }));
       return;
     }
