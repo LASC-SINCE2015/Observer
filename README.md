@@ -6,9 +6,12 @@
 - セーブはブラウザの `localStorage`（サーバー不要）
 - GitHub Pages で公開
 
-## 遊び方（手元で）
+## 遊び方
 
-`game/index.html` をブラウザで開くだけで動きます。
+- 公開版: https://lasc-since2015.github.io/Observer/ （スマホでも遊べます）
+- 手元で: `game/index.html` をブラウザで開くだけで動きます。
+- URL の末尾に `?debug` を付けると、デバッグの枠（ラベルへ飛ぶ・フラグを立てる・章をクリア扱いにする）が出ます。
+- シナリオの書き方: [design/data/scenario_format.md](design/data/scenario_format.md)
 
 ## フォルダ構成
 
