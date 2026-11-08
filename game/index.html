@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07080a">
+<title>Observer</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="screen-title">
+
+<!-- ===== タイトル ===== -->
+<section class="screen" id="title-screen">
+  <div class="title-box">
+    <div class="title-sub">深夜、地下2階。監視モニターの前で。</div>
+    <h1 class="title-logo">OBSERVER</h1>
+    <div class="title-menu">
+      <button id="btn-new">はじめから</button>
+      <button id="btn-continue">つづきから</button>
+      <button id="btn-select">章を選ぶ</button>
+      <button id="btn-sound-title">音: なし</button>
+    </div>
+    <div class="title-note">効果音があります。「音: なし」を押すと鳴るようになります。</div>
+    <div class="title-version" id="title-version"></div>
+  </div>
+</section>
+
+<!-- ===== 章選択 ===== -->
+<section class="screen" id="select-screen">
+  <div class="select-box">
+    <h2>章を選ぶ</h2>
+    <div id="chapter-list"></div>
+    <div class="select-legend">
+      <span class="c-normal">■</span> クリア　<span class="c-ready">■</span> 真解決ができる　<span class="c-true">■</span> 真解決
+    </div>
+    <button id="btn-select-back">タイトルへ</button>
+  </div>
+</section>
+
+<!-- ===== 監視室 ===== -->
+<section class="screen room" id="game-screen">
+  <div class="status">
+    <span class="chapter" id="st-chapter"></span>
+    <span class="clock" id="st-time"></span>
+    <span class="spacer"></span>
+    <span class="version" id="st-version"></span>
+  </div>
+
+  <div class="monitor-frame">
+    <div class="monitor" id="monitor">
+      <canvas id="main" width="320" height="180"></canvas>
+      <div class="sweep"></div>
+      <div class="rec" id="rec">● REC</div>
+      <div class="mic" id="mic">MIC</div>
+      <div class="splash" id="splash"></div>
+      <div class="mon-black" id="mon-black"></div>
+      <div class="wipe-hint" id="wipe-hint"></div>
+    </div>
+  </div>
+
+  <div class="timeline" id="timeline">
+    <div class="tl-head">
+      <span id="tl-label"></span>
+      <span class="tl-remain" id="tl-remain"></span>
+    </div>
+    <div class="tl-track">
+      <input type="range" id="tl-range" min="0" max="4320" step="1">
+      <div class="tl-marks" id="tl-marks"></div>
+    </div>
+    <div class="tl-buttons">
+      <button data-step="-60">◀1時間</button><button data-step="-10">◀10分</button><button data-step="-1">◀1分</button>
+      <button data-step="1">1分▶</button><button data-step="10">10分▶</button><button data-step="60">1時間▶</button>
+    </div>
+  </div>
+
+  <div class="wall-wrap" id="wall-wrap">
+    <div class="wall" id="wall"></div>
+    <button class="wall-toggle" id="wall-toggle">▼ モニターをひろげる</button>
+  </div>
+
+  <div class="controls">
+    <div class="group">
+      <button id="btn-live">現在</button>
+      <button id="btn-past">過去</button>
+    </div>
+    <div class="group">
+      <button id="btn-log">ログ</button>
+      <button id="btn-items">アイテム</button>
+      <button id="btn-history">履歴</button>
+    </div>
+    <span class="spacer"></span>
+    <div class="group">
+      <button id="btn-skip">既読スキップ</button>
+      <button id="btn-save">保存</button>
+      <button id="btn-menu">メニュー</button>
+    </div>
+  </div>
+
+  <div class="textbox" id="textbox">
+    <div class="speaker" id="speaker"></div>
+    <div class="message" id="message"></div>
+    <div class="next">▼</div>
+  </div>
+
+  <div class="choices" id="choices"></div>
+</section>
+
+<!-- ===== 重ねて出すもの ===== -->
+<div class="panel" id="panel">
+  <div class="panel-box">
+    <div class="panel-title" id="panel-title"></div>
+    <div class="panel-body" id="panel-body"></div>
+    <button id="panel-close">閉じる</button>
+  </div>
+</div>
+
+<div class="card" id="card">
+  <div class="card-sub" id="card-sub"></div>
+  <div class="card-title" id="card-title"></div>
+  <div class="card-buttons" id="card-buttons"></div>
+</div>
+
+<div class="hotmenu" id="hotmenu"></div>
+<div class="fx-flash" id="fx-flash"></div>
+<div class="toast" id="toast"></div>
+<div class="errors" id="errors"></div>
+<div class="debug" id="debug"></div>
+
+<!-- 読み込む順番: 台本の読み込み → データ → 台本 → 描画・音 → ゲームの進行 -->
+<script src="js/parser.js"></script>
+<script src="data/cameras.js"></script>
+<script src="data/chapters.js"></script>
+<script src="scenario/chapter1.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
