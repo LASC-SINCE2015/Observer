@@ -47,7 +47,9 @@ Observer.parseScript = function (name, text) {
     choice = null;
 
     // 字下げした行は、直前の @look・@event の本文
+    // 本文の中の「@note 文」は、読む流れの中で手帳に書き留める行
     if (block && /^[ \t]/.test(raw)) {
+      if (line.startsWith('@note ')) { block.body.push({ note: line.slice(6).trim(), ln }); return; }
       block.body.push(Object.assign(parseText(line, cast), { ln }));
       return;
     }

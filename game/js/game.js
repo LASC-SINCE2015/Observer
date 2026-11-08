@@ -7,7 +7,7 @@
    =================================================================== */
 
 (function () {
-  const GAME_VERSION = '0.2.1';
+  const GAME_VERSION = '0.2.2';
   const SAVE_KEY = 'observer.save.v2';          // 場面のセーブ。形式を変えたら v を上げる
   const PROGRESS_KEY = 'observer.progress.v2';  // 章をまたぐ記録
   const DATA_VERSION = 2;
@@ -21,9 +21,15 @@
      時刻（分で持つ。1日目 0:00 = 0）
      =================================================================== */
   function pad(n) { return String(n).padStart(2, '0'); }
+  // 「日/時:分」か、@settime で覚えた時刻からの相対（「N」「N+3」。N+3 は N の 3 分後）
   function parseTime(s) {
+    const r = String(s).match(/^([A-Za-z_]\w*)(?:\+(\d+))?$/);
+    if (r) {
+      if (state.vars[r[1]] === undefined) throw new Error(`時刻「${r[1]}」は、まだ @settime で覚えていません`);
+      return state.vars[r[1]] + (+(r[2] || 0));
+    }
     const m = String(s).match(/^(\d+)\/(\d{1,2}):(\d{2})$/);
-    if (!m) throw new Error(`時刻「${s}」は「日/時:分」（例: 2/01:30）で書いてください`);
+    if (!m) throw new Error(`時刻「${s}」は「日/時:分」（例: 2/01:30）か「N+3」で書いてください`);
     return (m[1] - 1) * 1440 + (+m[2]) * 60 + (+m[3]);
   }
   function parseRange(s) {
@@ -54,17 +60,20 @@
       cams, events: [], hotspots: [], marks: {}, wall: Observer.cameraOrder.slice(),
       relay: null, splash: false, black: null, lastHotspot: null,
       portraits: {},   // 立ち絵 { right: { name, face }, left: … }
+      vars: {},        // @settime で覚えた時刻（相対の時刻「N+3」に使う）
     };
   }
 
+  // notebook: 八島の手帳（章をまたいで残る）。{ id, ch, at, cam, text, unread }
   function newProgress() {
-    return { chapters: {}, flags: {}, endings: {}, read: {}, unlocked: {}, shown: {}, sound: false };
+    return { chapters: {}, flags: {}, endings: {}, read: {}, unlocked: {}, shown: {}, sound: false, notebook: [] };
   }
 
   let state = newWorld();
   let progress = loadProgress();
   let checkpoint = null;
-  const run = { script: null, pc: 0, choice: null, waitWipe: false };
+  // reading: 探索中に読んでいる @look・@event（カメラを切り替えたら打ち切る）
+  const run = { script: null, pc: 0, choice: null, waitWipe: false, reading: null };
   const history = [];
   let skipping = false;
   let glitch = 0;
@@ -102,6 +111,7 @@
     wallWrap: $('wall-wrap'), wall: $('wall'), wallToggle: $('wall-toggle'),
     btnLive: $('btn-live'), btnPast: $('btn-past'), btnLog: $('btn-log'), btnItems: $('btn-items'),
     btnHistory: $('btn-history'), btnSkip: $('btn-skip'), btnSave: $('btn-save'), btnMenu: $('btn-menu'),
+    btnNote: $('btn-note'),
     textbox: $('textbox'), speaker: $('speaker'), message: $('message'), choices: $('choices'),
     panel: $('panel'), panelTitle: $('panel-title'), panelBody: $('panel-body'), panelClose: $('panel-close'),
     card: $('card'), cardSub: $('card-sub'), cardTitle: $('card-title'), cardButtons: $('card-buttons'),
@@ -111,7 +121,7 @@
   const mainCtx = el.main.getContext('2d');
 
   function showScreen(name) {
-    document.body.classList.remove('screen-title', 'screen-select', 'screen-game');
+    document.body.classList.remove('screen-title', 'screen-select', 'screen-game', 'screen-about');
     document.body.classList.add(`screen-${name}`);
     if (name === 'title') renderTitle();
     if (name === 'select') renderSelect();
@@ -135,6 +145,7 @@
     el.message.textContent = '';
     history.push({ name: t.name, text: t.text });
     if (history.length > 200) history.shift();
+    keepInView(el.textbox);
 
     const key = run.script && t.ln ? `${run.script.name}:${t.ln}` : null;
     const wasRead = key && progress.read[key];
@@ -180,13 +191,22 @@
     if (done) done();
   }
 
+  // 本文を順に読む。本文の中の「@note 文」は、読む流れの中で手帳に書き留める
   function showLines(lines, onDone) {
     let i = 0;
     const next = () => {
+      while (i < lines.length && lines[i].note) { addNote(lines[i].note, lines[i].ln); i += 1; }
       if (i >= lines.length) { if (onDone) onDone(); return; }
       showText(lines[i++], next);
     };
     next();
+  }
+
+  // 高さの低い画面で、文章や選択肢が画面の外に出たら、見えるところまで動かす
+  function keepInView(elm) {
+    if (!elm.getBoundingClientRect || !elm.scrollIntoView) return;
+    const r = elm.getBoundingClientRect();
+    if (r.bottom > window.innerHeight || r.top < 0) elm.scrollIntoView({ block: 'nearest' });
   }
 
   function showHint(text) {
@@ -285,6 +305,14 @@
     /* ----- 時刻・モニター ----- */
     time(ins) { state.now = parseTime(ins.arg); if (state.pastAt !== null) clampPast(); },
     pasttime(ins) { state.pastAt = parseTime(ins.arg); },
+    // @settime 名前 [時刻]: 時刻を覚える（書かなければ、いま過去で見ている時刻）。「名前+3」で使う
+    settime(ins) {
+      const w = words(ins.arg);
+      if (!/^[A-Za-z_]\w*$/.test(w[0] || '')) throw new Error('@settime は「@settime 名前 [日/時:分]」で書いてください');
+      const at = w[1] ? parseTime(w[1]) : state.pastAt;
+      if (at === null) throw new Error('@settime: 過去の時刻がまだありません');
+      state.vars[w[0]] = at;
+    },
     cam(ins) {
       const [id, mode] = words(ins.arg);
       needCam(id);
@@ -300,7 +328,8 @@
     },
     cameras(ins) {
       const w = words(ins.arg);
-      state.wall = w.includes('all') ? Observer.cameraOrder.slice() : w.filter((id) => needCam(id));
+      if (w.includes('none')) state.wall = [];
+      else state.wall = w.includes('all') ? Observer.cameraOrder.slice() : w.filter((id) => needCam(id));
       buildWall();
     },
     status(ins) {
@@ -327,9 +356,13 @@
       const w = words(head);
       needCam(w[0]);
       const flag = takeOpt(w, 'flag');
+      // noise: その時間帯の過去は、ノイズで映らない（本文は読める）
+      const ni = w.indexOf('noise');
+      const noise = ni >= 0;
+      if (noise) w.splice(ni, 1);
       const [from, to] = parseRange(w[1]);
       const sc = R.parseScene(actors || '');
-      state.events.push({ cam: w[0], from, to, flag, actors: sc.actors, img: sc.img, body: ins.body, seen: false });
+      state.events.push({ cam: w[0], from, to, flag, noise, actors: sc.actors, img: sc.img, body: ins.body, seen: false });
     },
     noevents(ins) {
       const id = ins.arg.trim();
@@ -347,7 +380,9 @@
         if (!a) throw new Error(`動作「${p}」は「動作=*ラベル」で書いてください`);
         return { text: a[1], target: a[2] };
       });
-      state.hotspots = state.hotspots.filter((h) => !(h.cam === m[1] && h.name === m[5]));
+      // 同じカメラ・同じ名前・同じ時間帯の機器は、書き直しとして置き換える（時間帯が違えば、別の機器として並ぶ）
+      const sameRange = (h) => String(h.range) === String(range);
+      state.hotspots = state.hotspots.filter((h) => !(h.cam === m[1] && h.name === m[5] && sameRange(h)));
       state.hotspots.push({ cam: m[1], range, x: +m[3], y: +m[4], name: m[5], cond: m[6] || '', actions });
     },
     nohotspots(ins) {
@@ -356,8 +391,14 @@
     },
     burn(ins) {
       const a = ins.arg.trim();
+      const w = words(a);
       if (a === 'here') {
         if (state.lastHotspot && state.lastHotspot.range) state.burned.push(state.lastHotspot.range.slice());
+      } else if (w[0] === 'now') {
+        // @burn now [幅]: いま過去で見ている時刻（幅を書くと、その前後の分も。書かなければ、その 1 分だけ）
+        if (state.pastAt === null) throw new Error('@burn now: 過去の時刻がまだありません');
+        const k = w[1] !== undefined ? +w[1] : 0;
+        state.burned.push([state.pastAt - k, state.pastAt + k]);
       } else {
         state.burned.push(parseRange(a));
       }
@@ -385,6 +426,7 @@
       const [kind, text] = splitBar(ins.arg);
       state.logs.push({ kind, text: text || '' });
     },
+    note(ins) { addNote(ins.arg, ins.ln); },
 
     /* ----- 場面・演出 ----- */
     outside(ins) {
@@ -451,6 +493,16 @@
       showCard({ sub, title, kind, buttons });
       return WAIT;
     },
+    // @miss 文 | *やり直すラベル [| ボタンの文]: 失敗のカード。エンディングには数えない
+    miss(ins) {
+      const [title, retry, retryText] = splitBar(ins.arg);
+      if (!retry) throw new Error('@miss は「@miss 文 | *ラベル [| ボタンの文]」で書いてください');
+      showCard({
+        sub: 'やり直し', title, kind: 'bad',
+        buttons: [{ text: retryText || 'もう一度', fn: () => { hideCard(); retryFrom(retry); } }],
+      });
+      return WAIT;
+    },
 
     /* ----- 章 ----- */
     chapter(ins) { state.chapter = +ins.arg; },
@@ -486,6 +538,7 @@
   function retryFrom(label) {
     if (labelSnaps[label]) state = Object.assign(newWorld(), clone(labelSnaps[label]));
     run.waitWipe = false;
+    run.reading = null;
     buildWall();
     go(label);
   }
@@ -519,6 +572,8 @@
       });
       el.choices.appendChild(b);
     });
+    if (opts.length) keepInView(el.choices);
+    renderWallMarks();
   }
 
   function exploring() { return !!run.choice && !isTyping() && !run.waitWipe; }
@@ -533,25 +588,39 @@
 
   function isBurned(at) { return state.burned.some(([a, b]) => a <= at && at <= b); }
 
+  // いま映っているもので、まだ読んでいない @look・@event
+  function unreadHere() {
+    const cam = state.cams[state.cam];
+    if (state.mode === 'live') return cam.look && !cam.look.seen && cam.status === 'ok' ? cam.look : null;
+    if (!cam.open || state.pastAt === null) return null;
+    const e = activeEvent(state.cam, state.pastAt);
+    if (e) addMark(state.cam, e.from);
+    return e && !e.seen ? e : null;
+  }
+
   function checkExplore() {
     if (!exploring() || state.outside) return;
-    const cam = state.cams[state.cam];
-    let target = null;
-    if (state.mode === 'live') {
-      if (cam.look && !cam.look.seen && cam.status === 'ok') target = cam.look;
-    } else if (cam.open && state.pastAt !== null) {
-      const e = activeEvent(state.cam, state.pastAt);
-      if (e) {
-        addMark(state.cam, e.from);
-        if (!e.seen) target = e;
-      }
-    }
+    const target = unreadHere();
     if (!target) return;
-    target.seen = true;
-    if (target.flag) state.flags[target.flag] = true;
-    if (!target.body.length) { renderChoices(); return; }
+    // 読み終えたときに「見た」にする（途中でカメラを切り替えたら、あとで読み直せる）
+    const done = () => {
+      target.seen = true;
+      if (target.flag) state.flags[target.flag] = true;
+    };
+    if (!target.body.length) { done(); renderChoices(); return; }
     clearChoices();
-    showLines(target.body, () => { renderChoices(); checkExplore(); });
+    run.reading = target;
+    showLines(target.body, () => { run.reading = null; done(); renderChoices(); checkExplore(); });
+  }
+
+  // 探索の文章を読んでいる途中で、映すものが変わったら、その文章を打ち切る
+  function abortReading() {
+    if (!run.reading) return;
+    stopTyping();
+    typer.item = null;
+    typer.onDone = null;
+    run.reading = null;
+    renderChoices();
   }
 
   function addMark(cam, at) {
@@ -565,6 +634,7 @@
   function switchCam(id) {
     if (state.outside || run.waitWipe) return;
     if (state.cam === id) return;
+    abortReading();
     state.cam = id;
     glitch = 8;
     Observer.audio.play('glitch');
@@ -575,6 +645,7 @@
   function switchMode(mode) {
     if (state.outside || run.waitWipe || state.mode === mode) return;
     if (mode === 'past' && !state.power) return;
+    abortReading();
     state.mode = mode;
     if (mode === 'past') {
       if (state.pastAt === null) state.pastAt = state.now - 30;
@@ -586,24 +657,37 @@
     checkExplore();
   }
 
+  // 時刻つまみの左端。さかのぼれるのは 72 時間前までだが、つまみの幅は「過去が開いているカメラの、
+  // いちばん早い出来事の 1 時間前」までにしぼる（30 分戻すだけで、つまみがほとんど動かないのを防ぐ）
+  function pastMin() {
+    const limit = state.now - PAST_WINDOW;
+    const froms = state.events.filter((e) => state.cams[e.cam] && state.cams[e.cam].open && e.to >= limit).map((e) => e.from);
+    if (!froms.length) return limit;
+    return Math.max(limit, Math.min(...froms, state.pastAt === null ? state.now : state.pastAt) - 60);
+  }
+
   function clampPast() {
-    state.pastAt = Math.max(state.now - PAST_WINDOW, Math.min(state.now, state.pastAt));
+    state.pastAt = Math.max(pastMin(), Math.min(state.now, state.pastAt));
   }
 
   let exploreTimer = null;
   function setPast(at) {
     state.pastAt = at;
     clampPast();
+    if (run.reading && unreadHereAt(state.pastAt) !== run.reading) abortReading();
     renderTimeline();
     clearTimeout(exploreTimer);
     exploreTimer = setTimeout(checkExplore, 220);
   }
+  function unreadHereAt(at) { return state.mode === 'past' ? activeEvent(state.cam, at) : null; }
 
   function renderTimeline() {
     const on = state.power;
     el.timeline.classList.toggle('enabled', on);
     if (!on || state.pastAt === null) return;
-    const min = state.now - PAST_WINDOW;
+    const min = pastMin();
+    const span = Math.max(1, state.now - min);
+    const pos = (m) => `${((m - min) / span) * 100}%`;
     el.tlRange.min = min;
     el.tlRange.max = state.now;
     el.tlRange.value = state.pastAt;
@@ -611,11 +695,26 @@
     el.tlLabel.textContent = `${fmtTime(state.pastAt)}（${Math.floor(ago / 60)}時間${ago % 60}分前）`;
     el.tlRemain.textContent = isBurned(state.pastAt) ? '焼き付き' : '';
     el.tlMarks.innerHTML = '';
-    (state.marks[state.cam] || []).forEach((m) => {
+    // 焼き付いた時間帯（白い帯）
+    state.burned.forEach(([a, b]) => {
+      if (b < min || a > state.now) return;
+      const s = document.createElement('i');
+      s.className = 'band';
+      s.style.left = pos(Math.max(a, min));
+      s.style.width = `${Math.max(0.6, ((Math.min(b, state.now) - Math.max(a, min) + 1) / span) * 100)}%`;
+      s.title = `焼き付き ${fmtTime(a)}〜${fmtTime(b)}`;
+      el.tlMarks.appendChild(s);
+    });
+    // このカメラの出来事の印（見たものは塗り、まだ見ていないものは白抜き）
+    const seenMarks = state.marks[state.cam] || [];
+    const cam = state.cams[state.cam];
+    const unseen = cam && cam.open ? state.events.filter((e) => e.cam === state.cam && !e.seen && (e.body.length || e.flag)).map((e) => e.from) : [];
+    [...new Set([...seenMarks, ...unseen])].forEach((m) => {
       if (m < min || m > state.now) return;
       const s = document.createElement('span');
-      s.style.left = `${((m - min) / PAST_WINDOW) * 100}%`;
+      s.style.left = pos(m);
       s.title = fmtTime(m);
+      if (!seenMarks.includes(m)) s.classList.add('unseen');
       if (isBurned(m)) s.classList.add('burned');
       s.addEventListener('click', () => setPast(m));
       el.tlMarks.appendChild(s);
@@ -640,6 +739,27 @@
       el.wall.appendChild(b);
       tiles.push({ id, btn: b, ctx: cv.getContext('2d') });
     });
+    el.wallWrap.classList.toggle('empty', !state.wall.length);
+    renderWallMarks();
+  }
+
+  // まだ見ていないものがあるカメラの枠に、印を付ける（たたんで見えないときは、ひろげるボタンにも）
+  function hasUnseen(id) {
+    const c = state.cams[id];
+    if (!c || !run.choice) return false;
+    if (state.mode === 'live') return !!(c.look && !c.look.seen && c.status === 'ok');
+    const limit = state.now - PAST_WINDOW;
+    return c.open && state.events.some((e) => e.cam === id && !e.seen && (e.body.length || e.flag) && e.to >= limit && e.from <= state.now);
+  }
+  function renderWallMarks() {
+    let hidden = false;
+    tiles.forEach((t, i) => {
+      const n = hasUnseen(t.id);
+      t.btn.classList.toggle('new', n);
+      if (n && i >= 4) hidden = true;
+    });
+    const collapsed = el.wall.classList.contains('collapsed');
+    el.wallToggle.classList.toggle('new', collapsed && hidden);
   }
 
   /* ---------- 状態が変わったときに、画面の文字やボタンを合わせる ---------- */
@@ -654,6 +774,8 @@
     el.btnPast.classList.toggle('active', state.mode === 'past');
     el.btnPast.disabled = !state.power;
     el.btnItems.textContent = state.items.length ? `アイテム(${state.items.length})` : 'アイテム';
+    el.btnNote.classList.toggle('new', progress.notebook.some((n) => n.unread));
+    renderWallMarks();
     el.monitor.classList.toggle('has-mic', !!Observer.cameras[state.cam].mic && !state.outside);
     el.splash.classList.toggle('on', state.splash);
     el.black.classList.toggle('on', !!state.black);
@@ -747,6 +869,7 @@ ${files[0]}`));
     const caption = [`${id}  ${def.place}`, `PAST  ${fmtTime(state.pastAt)}`];
     if (!c.open) return { kind: 'closed', tint, caption };
     const e = activeEvent(id, state.pastAt);
+    if (e && e.noise) return { kind: 'closed', tint, caption };
     const burned = isBurned(state.pastAt);
     const hotspots = !exploring() || burned ? [] : state.hotspots.filter((h) => h.cam === id && h.range
       && h.range[0] <= state.pastAt && state.pastAt <= h.range[1] && test(h.cond));
@@ -866,6 +989,7 @@ ${files[0]}`));
   function openPanel(title, fill) {
     el.panelTitle.textContent = title;
     el.panelBody.innerHTML = '';
+    el.panelBody.className = 'panel-body';
     fill(el.panelBody);
     el.panel.classList.add('on');
   }
@@ -903,6 +1027,45 @@ ${files[0]}`));
         d.appendChild(div('', it.desc));
         b.appendChild(d);
       });
+    });
+  }
+
+  /* ---------- 八島の手帳 ----------
+     - 台本の「@note 文」（@look・@event の本文の中にも書ける）で、一行ずつ増える。
+     - 章をまたいで残る（progress.notebook）。同じ行を二度は書かない。 */
+  function addNote(text, ln) {
+    const id = `${run.script ? run.script.name : ''}:${ln}`;
+    if (progress.notebook.some((n) => n.id === id)) return;
+    const past = !state.outside && state.mode === 'past' && state.pastAt !== null;
+    const at = past ? state.pastAt : state.now;
+    const where = state.outside ? state.outside.place.replace(/^\S*日目\s*\S*\s*/, '') : `${state.cam}  ${Observer.cameras[state.cam].place}`;
+    progress.notebook.push({ id, ch: state.chapter, at, where, text, unread: true });
+    saveProgress();
+    el.btnNote.classList.add('new');
+    toast('手帳に書き留めた');
+  }
+
+  function openNote() {
+    openPanel('八島の手帳', (b) => {
+      b.classList.add('notebook');
+      b.appendChild(div('note-daily', '日報: 異常なし'));
+      if (!progress.notebook.length) b.appendChild(div('empty', 'まだ何も書いていない。'));
+      let ch = null;
+      progress.notebook.forEach((n) => {
+        if (n.ch !== ch) {
+          ch = n.ch;
+          const c = Observer.chapters.find((x) => x.no === ch);
+          b.appendChild(div('note-ch', c ? `第${c.no}章　${c.title}` : ''));
+        }
+        const d = div(n.unread ? 'note unread' : 'note');
+        d.appendChild(div('note-head', `${fmtTime(n.at)}　${n.where || ''}`));
+        d.appendChild(div('note-text', n.text));
+        b.appendChild(d);
+        n.unread = false;
+      });
+      saveProgress();
+      el.btnNote.classList.remove('new');
+      setTimeout(() => { b.scrollTop = b.scrollHeight; }, 0);
     });
   }
 
@@ -1030,6 +1193,7 @@ ${files[0]}`));
     state.script = c.script;
     run.script = Observer.scripts[c.script];
     run.waitWipe = false;
+    run.reading = null;
     history.length = 0;
     labelSnaps = {};
     buildWall();
@@ -1045,6 +1209,7 @@ ${files[0]}`));
     state = Object.assign(newWorld(), saved);
     run.script = script;
     run.waitWipe = false;
+    run.reading = null;
     buildWall();
     showScreen('game');
     if (script.labels[state.label] === undefined) {
@@ -1178,6 +1343,9 @@ ${files[0]}`));
     $('btn-select').addEventListener('click', () => showScreen('select'));
     $('btn-sound-title').addEventListener('click', toggleSound);
     $('btn-select-back').addEventListener('click', () => showScreen('title'));
+    $('btn-about').addEventListener('click', () => showScreen('about'));
+    $('btn-about-back').addEventListener('click', () => showScreen('title'));
+    $('about-version').textContent = `v${GAME_VERSION}`;
 
     el.textbox.addEventListener('click', advanceText);
     document.addEventListener('keydown', (e) => {
@@ -1188,6 +1356,7 @@ ${files[0]}`));
     el.btnPast.addEventListener('click', () => switchMode('past'));
     el.btnLog.addEventListener('click', openLog);
     el.btnItems.addEventListener('click', openItems);
+    el.btnNote.addEventListener('click', openNote);
     el.btnHistory.addEventListener('click', openHistory);
     el.btnSkip.addEventListener('click', () => setSkip(!skipping));
     el.btnSave.addEventListener('click', manualSave);
@@ -1216,6 +1385,7 @@ ${files[0]}`));
     el.wallToggle.addEventListener('click', () => {
       const c = el.wall.classList.toggle('collapsed');
       el.wallToggle.textContent = c ? '▼ モニターをひろげる' : '▲ モニターをたたむ';
+      renderWallMarks();
     });
 
     showScreen('title');
@@ -1247,6 +1417,7 @@ ${files[0]}`));
     screen() { return document.body.className; },
     resume,
     retryFrom,
+    openNote,
   };
 
   init();
