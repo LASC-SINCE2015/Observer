@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07080a">
 <title>Observer</title>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=0.2.1">
 </head>
 <body class="screen-title">
 
@@ -96,10 +96,15 @@
     </div>
   </div>
 
+  <div class="talk">
+    <!-- 立ち絵: テキストウィンドウの上端から立ち上がるように、テキストの後ろに重ねて出す -->
+    <div class="portrait" id="portrait-left"></div>
+    <div class="portrait right" id="portrait-right"></div>
   <div class="textbox" id="textbox">
     <div class="speaker" id="speaker"></div>
     <div class="message" id="message"></div>
     <div class="next">▼</div>
+  </div>
   </div>
 
   <div class="choices" id="choices"></div>
@@ -127,12 +132,13 @@
 <div class="debug" id="debug"></div>
 
 <!-- 読み込む順番: 台本の読み込み → データ → 台本 → 描画・音 → ゲームの進行 -->
-<script src="js/parser.js"></script>
-<script src="data/cameras.js"></script>
-<script src="data/chapters.js"></script>
-<script src="scenario/chapter1.js"></script>
-<script src="js/renderer.js"></script>
-<script src="js/audio.js"></script>
-<script src="js/game.js"></script>
+<script src="js/parser.js?v=0.2.1"></script>
+<script src="data/cameras.js?v=0.2.1"></script>
+<script src="data/chapters.js?v=0.2.1"></script>
+<script src="data/characters.js?v=0.2.1"></script>
+<script src="scenario/chapter1.js?v=0.2.1"></script>
+<script src="js/renderer.js?v=0.2.1"></script>
+<script src="js/audio.js?v=0.2.1"></script>
+<script src="js/game.js?v=0.2.1"></script>
 </body>
 </html>

@@ -66,6 +66,7 @@ const elements = {};
 const document = {
   body: makeElement('body'),
   getElementById(id) { return elements[id] || (elements[id] = makeElement('div')); },
+  querySelector(sel) { return elements[sel] || (elements[sel] = makeElement('div')); },
   createElement: makeElement,
   createTextNode: (t) => ({ textContent: t }),
   addEventListener() {},
@@ -85,13 +86,15 @@ const sandbox = {
   console, confirm: () => true, innerWidth: 1024, innerHeight: 768,
   scrollTo() {},
   addEventListener() {},
+  // 画像は読み込まない（読み込めなかった扱いで、線の絵のまま進む）
+  Image: class { set src(v) { this._src = v; } get src() { return this._src; } },
 };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
 
 // index.html と同じ順番で読み込む
 const html = fs.readFileSync(path.join(GAME, 'index.html'), 'utf8');
-const scripts = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m) => m[1]);
+const scripts = [...html.matchAll(/<script src="([^"?]+)(?:\?[^"]*)?"><\/script>/g)].map((m) => m[1]);
 scripts.forEach((s) => vm.runInContext(fs.readFileSync(path.join(GAME, s), 'utf8'), sandbox, { filename: s }));
 
 const O = sandbox.Observer;
