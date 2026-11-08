@@ -17,3 +17,7 @@ desktop.ini
 # 一時ファイル
 *.tmp
 *.bak
+
+# 絵の元ファイル（大きいのでリポジトリに入れない。tools/optimize_images.ps1 で小さくしたものを game/assets/ に入れる）
+assets_src/images/
+assets_src/chars/
