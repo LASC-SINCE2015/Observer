@@ -2,940 +2,137 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07080a">
 <title>Observer</title>
-<style>
-/* ===================================================================
-   見た目の設定（色・大きさ）
-   =================================================================== */
-:root {
-  --bg: #07080a;
-  --panel: #111317;
-  --panel-edge: #23262d;
-  --text: #c9ccd1;
-  --text-dim: #6b7079;
-  --live: #5cff8a;        /* 現在の映像の色（緑） */
-  --past: #ffb347;        /* 過去の映像の色（アンバー） */
-  --alert: #ff4d4d;
-  --tint: var(--live);    /* 今の映像モードの色。JS で切り替える */
-}
-
-* { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  height: 100%;
-  background: radial-gradient(ellipse at center, #14161b 0%, var(--bg) 75%);
-  color: var(--text);
-  font-family: "BIZ UDGothic", "Yu Gothic", "Hiragino Sans", "Meiryo", sans-serif;
-}
-
-body.mode-past { --tint: var(--past); }
-
-.room {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 12px 16px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* ---------- ステータス表示 ---------- */
-.status {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  align-items: center;
-  padding: 8px 12px;
-  background: var(--panel);
-  border: 1px solid var(--panel-edge);
-  border-radius: 4px;
-  font-size: 13px;
-}
-.status .label { color: var(--text-dim); margin-right: 6px; }
-.status .chapter { font-weight: bold; letter-spacing: 0.1em; }
-.status .flag-on { color: var(--live); }
-.status .flag-off { color: var(--text-dim); }
-.status .spacer { flex: 1; }
-.status .version { color: var(--text-dim); font-size: 11px; }
-
-/* ---------- 監視モニター ---------- */
-.monitor-frame {
-  position: relative;
-  padding: 14px;
-  background: linear-gradient(#1b1d22, #0d0e11);
-  border: 1px solid var(--panel-edge);
-  border-radius: 10px;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 12px rgba(0, 0, 0, 0.9);
-}
-.monitor {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  border-radius: 6px;
-  background: #000;
-  animation: flicker 4s infinite;
-}
-.monitor canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-}
-/* 走査線 */
-.monitor::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 0px,
-    rgba(0, 0, 0, 0) 2px,
-    rgba(0, 0, 0, 0.35) 3px
-  );
-  z-index: 2;
-}
-/* 画面の端を暗くする（ブラウン管のふち） */
-.monitor::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.75) 100%);
-  box-shadow: inset 0 0 30px var(--tint);
-  opacity: 0.9;
-  z-index: 3;
-}
-/* 上から下へ流れる明るい帯 */
-.monitor .sweep {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 18%;
-  pointer-events: none;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
-  animation: sweep 6s linear infinite;
-  z-index: 2;
-}
-.monitor .rec {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 12px;
-  font-family: "Consolas", monospace;
-  color: var(--alert);
-  z-index: 4;
-  animation: blink 1.2s steps(1) infinite;
-}
-body.mode-past .monitor .rec { color: var(--past); }
-
-@keyframes flicker {
-  0%, 100% { filter: brightness(1); }
-  47% { filter: brightness(1); }
-  48% { filter: brightness(0.85); }
-  49% { filter: brightness(1.05); }
-  50% { filter: brightness(1); }
-}
-@keyframes sweep {
-  from { top: -20%; }
-  to { top: 110%; }
-}
-@keyframes blink {
-  50% { opacity: 0; }
-}
-
-/* ---------- 操作ボタン ---------- */
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-.controls .group {
-  display: flex;
-  gap: 4px;
-}
-.controls .spacer { flex: 1; }
-
-button {
-  font: inherit;
-  font-size: 13px;
-  color: var(--text);
-  background: #1a1d22;
-  border: 1px solid #333842;
-  border-radius: 3px;
-  padding: 6px 12px;
-  cursor: pointer;
-}
-button:hover:not(:disabled) { border-color: var(--tint); color: #fff; }
-button:disabled { opacity: 0.4; cursor: default; }
-button.active {
-  border-color: var(--tint);
-  color: var(--tint);
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6), inset 0 0 6px var(--tint);
-}
-
-/* ---------- テキストウィンドウ ---------- */
-.textbox {
-  position: relative;
-  min-height: 132px;
-  padding: 14px 18px 28px;
-  background: rgba(10, 11, 14, 0.92);
-  border: 1px solid var(--panel-edge);
-  border-left: 3px solid var(--tint);
-  border-radius: 4px;
-  cursor: pointer;
-  user-select: none;
-}
-.textbox .speaker {
-  min-height: 1.2em;
-  margin-bottom: 6px;
-  font-size: 13px;
-  color: var(--tint);
-  letter-spacing: 0.1em;
-}
-.textbox .message {
-  font-size: 16px;
-  line-height: 1.8;
-  white-space: pre-wrap;
-}
-.textbox .next {
-  position: absolute;
-  right: 14px;
-  bottom: 8px;
-  font-size: 12px;
-  color: var(--tint);
-  visibility: hidden;
-  animation: blink 1s steps(1) infinite;
-}
-.textbox.waiting .next { visibility: visible; }
-
-/* ---------- 選択肢 ---------- */
-.choices {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.choices button {
-  text-align: left;
-  padding: 10px 14px;
-  font-size: 15px;
-}
-.choices button::before {
-  content: "▶ ";
-  color: var(--tint);
-}
-
-/* ---------- お知らせ（保存しました など） ---------- */
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: 24px;
-  transform: translateX(-50%);
-  padding: 8px 16px;
-  background: #1a1d22;
-  border: 1px solid var(--tint);
-  border-radius: 4px;
-  font-size: 13px;
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-}
-.toast.show { opacity: 1; }
-
-@media (max-width: 600px) {
-  .room { padding: 8px 10px 16px; }
-  .monitor-frame { padding: 8px; }
-  .textbox .message { font-size: 15px; }
-}
-</style>
+<link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-<div class="room">
+<body class="screen-title">
 
-  <!-- ステータス表示 -->
+<!-- ===== タイトル ===== -->
+<section class="screen" id="title-screen">
+  <div class="title-box">
+    <div class="title-sub">深夜、地下2階。監視モニターの前で。</div>
+    <h1 class="title-logo">OBSERVER</h1>
+    <div class="title-menu">
+      <button id="btn-new">はじめから</button>
+      <button id="btn-continue">つづきから</button>
+      <button id="btn-select">章を選ぶ</button>
+      <button id="btn-sound-title">音: なし</button>
+    </div>
+    <div class="title-note">効果音があります。「音: なし」を押すと鳴るようになります。</div>
+    <div class="title-version" id="title-version"></div>
+  </div>
+</section>
+
+<!-- ===== 章選択 ===== -->
+<section class="screen" id="select-screen">
+  <div class="select-box">
+    <h2>章を選ぶ</h2>
+    <div id="chapter-list"></div>
+    <div class="select-legend">
+      <span class="c-normal">■</span> クリア　<span class="c-ready">■</span> 真解決ができる　<span class="c-true">■</span> 真解決
+    </div>
+    <button id="btn-select-back">タイトルへ</button>
+  </div>
+</section>
+
+<!-- ===== 監視室 ===== -->
+<section class="screen room" id="game-screen">
   <div class="status">
-    <div><span class="chapter" id="chapter"></span></div>
-    <div><span class="label">通常解決</span><span id="flag-normal"></span></div>
-    <div><span class="label">真解決</span><span id="flag-true"></span></div>
-    <div><span class="label">手がかり</span><span id="clues"></span></div>
-    <div class="spacer"></div>
-    <div class="version" id="version"></div>
+    <span class="chapter" id="st-chapter"></span>
+    <span class="clock" id="st-time"></span>
+    <span class="spacer"></span>
+    <span class="version" id="st-version"></span>
   </div>
 
-  <!-- 監視モニター -->
   <div class="monitor-frame">
-    <div class="monitor">
-      <canvas id="screen" width="320" height="180"></canvas>
+    <div class="monitor" id="monitor">
+      <canvas id="main" width="320" height="180"></canvas>
       <div class="sweep"></div>
       <div class="rec" id="rec">● REC</div>
+      <div class="mic" id="mic">MIC</div>
+      <div class="splash" id="splash"></div>
+      <div class="mon-black" id="mon-black"></div>
+      <div class="wipe-hint" id="wipe-hint"></div>
     </div>
   </div>
 
-  <!-- 操作ボタン -->
+  <div class="timeline" id="timeline">
+    <div class="tl-head">
+      <span id="tl-label"></span>
+      <span class="tl-remain" id="tl-remain"></span>
+    </div>
+    <div class="tl-track">
+      <input type="range" id="tl-range" min="0" max="4320" step="1">
+      <div class="tl-marks" id="tl-marks"></div>
+    </div>
+    <div class="tl-buttons">
+      <button data-step="-60">◀1時間</button><button data-step="-10">◀10分</button><button data-step="-1">◀1分</button>
+      <button data-step="1">1分▶</button><button data-step="10">10分▶</button><button data-step="60">1時間▶</button>
+    </div>
+  </div>
+
+  <div class="wall-wrap" id="wall-wrap">
+    <div class="wall" id="wall"></div>
+    <button class="wall-toggle" id="wall-toggle">▼ モニターをひろげる</button>
+  </div>
+
   <div class="controls">
-    <div class="group" id="camera-buttons"></div>
     <div class="group">
-      <button id="btn-live">現在の映像</button>
-      <button id="btn-past">過去の映像</button>
+      <button id="btn-live">現在</button>
+      <button id="btn-past">過去</button>
     </div>
-    <div class="spacer"></div>
     <div class="group">
-      <button id="btn-save">状態を保存する</button>
-      <button id="btn-reset">最初から</button>
+      <button id="btn-log">ログ</button>
+      <button id="btn-items">アイテム</button>
+      <button id="btn-history">履歴</button>
+    </div>
+    <span class="spacer"></span>
+    <div class="group">
+      <button id="btn-skip">既読スキップ</button>
+      <button id="btn-save">保存</button>
+      <button id="btn-menu">メニュー</button>
     </div>
   </div>
 
-  <!-- テキストウィンドウ -->
   <div class="textbox" id="textbox">
     <div class="speaker" id="speaker"></div>
     <div class="message" id="message"></div>
     <div class="next">▼</div>
   </div>
 
-  <!-- 選択肢 -->
   <div class="choices" id="choices"></div>
+</section>
+
+<!-- ===== 重ねて出すもの ===== -->
+<div class="panel" id="panel">
+  <div class="panel-box">
+    <div class="panel-title" id="panel-title"></div>
+    <div class="panel-body" id="panel-body"></div>
+    <button id="panel-close">閉じる</button>
+  </div>
 </div>
 
+<div class="card" id="card">
+  <div class="card-sub" id="card-sub"></div>
+  <div class="card-title" id="card-title"></div>
+  <div class="card-buttons" id="card-buttons"></div>
+</div>
+
+<div class="hotmenu" id="hotmenu"></div>
+<div class="fx-flash" id="fx-flash"></div>
 <div class="toast" id="toast"></div>
+<div class="errors" id="errors"></div>
+<div class="debug" id="debug"></div>
 
-<script>
-'use strict';
-
-/* ===================================================================
-   定数
-   =================================================================== */
-const GAME_VERSION = '0.1.0';
-const SAVE_KEY = 'observer.save.v1';   // localStorage のキー。形式を変えたら v を上げる
-const TYPE_INTERVAL_MS = 40;           // 1 文字を表示する間隔
-
-const CHAPTER_TITLES = {
-  1: '第1章　消えた夜警',
-  2: '第2章　（準備中）',
-};
-
-// 真解決に必要な手がかり（フラグ名と表示名）
-const TRUE_CLUES = [
-  { flag: 'clue_shadow', label: '影' },
-  { flag: 'clue_door_log', label: '扉の記録' },
-  { flag: 'clue_time_gap', label: '空白の6分' },
-];
-
-/* ===================================================================
-   カメラの定義
-   - live / past ごとに、モニターに描く絵（draw）と、切り替えたときの文章（lines）を持つ
-   - onView: その映像を見たときに立てるフラグ（requires のフラグが立っているときだけ）
-   =================================================================== */
-const CAMERAS = {
-  'CAM-01': {
-    place: '1F ロビー',
-    live: {
-      draw: { type: 'lobby' },
-      lines: [{ name: '', text: '1F ロビー。受付の明かりだけが点いている。人の気配はない。' }],
-    },
-    past: {
-      draw: { type: 'lobby' },
-      lines: [{ name: '', text: '02:14 のロビー。……何も映っていない。正面玄関は施錠されたままだ。' }],
-    },
-  },
-  'CAM-02': {
-    place: '非常階段',
-    live: {
-      draw: { type: 'stairs' },
-      lines: [{ name: '', text: '非常階段。誘導灯の緑が、段差をぼんやりと照らしている。' }],
-    },
-    past: {
-      draw: { type: 'stairs' },
-      lines: [{ name: '', text: '02:14 の非常階段。……映像が一瞬、乱れた気がする。' }],
-    },
-  },
-  'CAM-03': {
-    place: '3F 東側廊下',
-    live: {
-      draw: { type: 'corridor', doorOpen: true },
-      lines: [{ name: '', text: '3F 東側廊下。突き当たりの扉が、わずかに開いている。' }],
-    },
-    past: {
-      draw: { type: 'corridor', doorOpen: false, figure: true },
-      lines: [
-        { name: '', text: '02:14 の3F 東側廊下。懐中電灯の光が揺れている。三上さんだ。' },
-        { name: '', text: '……その背後に、もうひとつ「影」が立っている。' },
-      ],
-      onView: { requires: 'cam_unlocked', set: 'clue_shadow' },
-    },
-  },
-};
-
-/* ===================================================================
-   シナリオ
-   - lines: 表示する文章（name は話している人。空なら地の文）
-   - camera / mode: その場面に入ったときにモニターを切り替える
-   - set: その場面に入ったときに立てるフラグ
-   - choices: 選択肢。requires のフラグがすべて立っているときだけ表示する
-   =================================================================== */
-const SCENES = {
-  start: {
-    chapter: 1,
-    camera: 'CAM-01',
-    mode: 'live',
-    lines: [
-      { name: '', text: '午前2時47分。オフィスビル「第七観測ビル」、中央監視室。' },
-      { name: '', text: '並んだモニターの光だけが、暗い部屋を照らしている。' },
-      { name: '無線', text: '……ザ……ザザ……' },
-      { name: '私', text: '三上さん、応答してください。3Fの巡回、終わりましたか？' },
-      { name: '無線', text: '…………' },
-      { name: '私', text: '30分前から連絡が途絶えている。3Fのカメラを見てみよう。' },
-    ],
-    choices: [
-      { text: '3F のカメラ（CAM-03）を確認する', next: 'check_cam3' },
-    ],
-  },
-
-  check_cam3: {
-    camera: 'CAM-03',
-    mode: 'live',
-    set: ['cam_unlocked'],
-    lines: [
-      { name: '', text: 'CAM-03。3F 東側廊下。誰もいない。' },
-      { name: '', text: '突き当たりの扉が、わずかに開いている。' },
-      { name: '私', text: 'このシステムには、録画をさかのぼる機能がある。' },
-      { name: '私', text: '「過去の映像」に切り替えれば、三上さんが消えた時間の様子がわかるかもしれない。' },
-    ],
-    choices: [
-      { text: '入退室の記録を確認する', next: 'door_log' },
-      { text: '状況を整理する', next: 'decide' },
-    ],
-  },
-
-  door_log: {
-    set: ['clue_door_log'],
-    lines: [
-      { name: '', text: '入退室の記録を開く。' },
-      { name: '', text: '02:14　3F 東扉　開' },
-      { name: '', text: 'それ以降、扉が閉まった記録はない。' },
-      { name: '私', text: '……待て。02:14 から 02:20 までの、すべてのカメラの記録が抜けている。' },
-      { name: '私', text: '6分間の空白。誰かが記録を消した……？' },
-    ],
-    set_after: ['clue_time_gap'],
-    choices: [
-      { text: '状況を整理する', next: 'decide' },
-    ],
-  },
-
-  decide: {
-    lines: [
-      { name: '私', text: 'わかっていることを整理しよう。' },
-      { name: '私', text: '三上さんは 02:14 ごろ、3F 東側廊下で消息を絶った。' },
-    ],
-    choices: [
-      { text: '入退室の記録を確認する', next: 'door_log' },
-      { text: '警察に通報する', next: 'ending_normal' },
-      { text: '記録が消されたことを、警備会社の上司に問いただす', next: 'ending_true',
-        requires: ['clue_shadow', 'clue_door_log', 'clue_time_gap'] },
-    ],
-  },
-
-  ending_normal: {
-    set: ['resolved_normal'],
-    lines: [
-      { name: '', text: '通報から20分後、警察が到着した。' },
-      { name: '', text: '三上さんは3Fの倉庫で、気を失った状態で見つかった。' },
-      { name: '', text: '事件は「侵入者による犯行」として処理された。' },
-      { name: '私', text: '……でも、あの「影」は、いったい誰だったんだろう。' },
-      { name: '', text: '【通常解決】第1章　終' },
-    ],
-    choices: [
-      { text: '第2章へ進む', next: 'chapter2_start' },
-      { text: '第1章をやり直す（真相を探す）', next: 'start' },
-    ],
-  },
-
-  ending_true: {
-    set: ['resolved_normal', 'resolved_true'],
-    lines: [
-      { name: '私', text: '記録の空白、開いたままの扉、そして映像に残った影。' },
-      { name: '私', text: '記録を消せるのは、このシステムの管理者だけです。' },
-      { name: '上司', text: '…………なぜ、それを。' },
-      { name: '', text: '過去の映像は、すべてを見ていた。' },
-      { name: '', text: '【真解決】第1章　終' },
-    ],
-    choices: [
-      { text: '第2章へ進む', next: 'chapter2_start' },
-    ],
-  },
-
-  chapter2_start: {
-    chapter: 2,
-    camera: 'CAM-01',
-    mode: 'live',
-    lines: [
-      { name: '', text: '第2章は準備中です。ここまで遊んでいただき、ありがとうございました。' },
-      { name: '', text: '「状態を保存する」で進行を保存できます。' },
-    ],
-    choices: [],
-  },
-};
-
-/* ===================================================================
-   ゲームの状態（セーブする内容）
-   =================================================================== */
-function newState() {
-  return {
-    chapter: 1,
-    sceneId: 'start',
-    camera: 'CAM-01',
-    mode: 'live',     // 'live' = 現在の映像 / 'past' = 過去の映像
-    flags: {},
-  };
-}
-
-let state = newState();
-
-/* ===================================================================
-   セーブ・ロード（localStorage）
-   =================================================================== */
-function saveGame() {
-  const data = { version: 1, savedAt: new Date().toISOString(), state };
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-    showToast('状態を保存しました');
-  } catch (e) {
-    showToast('保存できませんでした（ブラウザの設定を確認してください）');
-  }
-}
-
-function loadGame() {
-  try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) return null;
-    const data = JSON.parse(raw);
-    if (data.version !== 1 || !SCENES[data.state.sceneId]) return null;
-    return Object.assign(newState(), data.state);
-  } catch (e) {
-    return null;
-  }
-}
-
-function clearSave() {
-  try {
-    localStorage.removeItem(SAVE_KEY);
-  } catch (e) {
-    // 消せなくても続行する
-  }
-}
-
-/* ===================================================================
-   フラグ
-   =================================================================== */
-function setFlags(names) {
-  (names || []).forEach((name) => { state.flags[name] = true; });
-  renderStatus();
-}
-
-function hasFlags(names) {
-  return (names || []).every((name) => state.flags[name]);
-}
-
-/* ===================================================================
-   画面の要素
-   =================================================================== */
-const el = {
-  chapter: document.getElementById('chapter'),
-  flagNormal: document.getElementById('flag-normal'),
-  flagTrue: document.getElementById('flag-true'),
-  clues: document.getElementById('clues'),
-  version: document.getElementById('version'),
-  cameraButtons: document.getElementById('camera-buttons'),
-  btnLive: document.getElementById('btn-live'),
-  btnPast: document.getElementById('btn-past'),
-  btnSave: document.getElementById('btn-save'),
-  btnReset: document.getElementById('btn-reset'),
-  textbox: document.getElementById('textbox'),
-  speaker: document.getElementById('speaker'),
-  message: document.getElementById('message'),
-  choices: document.getElementById('choices'),
-  toast: document.getElementById('toast'),
-};
-
-/* ---------- ステータス表示 ---------- */
-function renderStatus() {
-  el.chapter.textContent = CHAPTER_TITLES[state.chapter] || `第${state.chapter}章`;
-  el.flagNormal.textContent = state.flags.resolved_normal ? '達成' : '未達成';
-  el.flagNormal.className = state.flags.resolved_normal ? 'flag-on' : 'flag-off';
-  el.flagTrue.textContent = state.flags.resolved_true ? '達成' : '未達成';
-  el.flagTrue.className = state.flags.resolved_true ? 'flag-on' : 'flag-off';
-  const found = TRUE_CLUES.filter((c) => state.flags[c.flag]);
-  el.clues.textContent = `${found.length} / ${TRUE_CLUES.length}`
-    + (found.length ? `（${found.map((c) => c.label).join('・')}）` : '');
-}
-
-/* ---------- カメラのボタン ---------- */
-function buildCameraButtons() {
-  Object.keys(CAMERAS).forEach((id) => {
-    const btn = document.createElement('button');
-    btn.textContent = id;
-    btn.title = CAMERAS[id].place;
-    btn.dataset.camera = id;
-    btn.addEventListener('click', () => switchFeed(id, state.mode));
-    el.cameraButtons.appendChild(btn);
-  });
-}
-
-function renderControls() {
-  el.cameraButtons.querySelectorAll('button').forEach((btn) => {
-    btn.classList.toggle('active', btn.dataset.camera === state.camera);
-  });
-  el.btnLive.classList.toggle('active', state.mode === 'live');
-  el.btnPast.classList.toggle('active', state.mode === 'past');
-  document.body.classList.toggle('mode-past', state.mode === 'past');
-  document.getElementById('rec').textContent = state.mode === 'past' ? '◀◀ PLAYBACK' : '● REC';
-}
-
-/* ===================================================================
-   テキストウィンドウ（1 文字ずつ表示する）
-   =================================================================== */
-const typer = {
-  lines: [],
-  index: 0,
-  charIndex: 0,
-  timer: null,
-  onDone: null,
-};
-
-function showLines(lines, onDone) {
-  stopTyping();
-  typer.lines = lines;
-  typer.index = 0;
-  typer.onDone = onDone || null;
-  startLine();
-}
-
-function startLine() {
-  const line = typer.lines[typer.index];
-  if (!line) {
-    el.textbox.classList.remove('waiting');
-    const done = typer.onDone;
-    typer.onDone = null;
-    if (done) done();
-    return;
-  }
-  el.speaker.textContent = line.name ? `【${line.name}】` : '';
-  el.message.textContent = '';
-  el.textbox.classList.remove('waiting');
-  typer.charIndex = 0;
-  typer.timer = setInterval(typeNextChar, TYPE_INTERVAL_MS);
-}
-
-function typeNextChar() {
-  const text = typer.lines[typer.index].text;
-  typer.charIndex += 1;
-  el.message.textContent = text.slice(0, typer.charIndex);
-  if (typer.charIndex >= text.length) finishLine();
-}
-
-function finishLine() {
-  stopTyping();
-  const line = typer.lines[typer.index];
-  if (line) el.message.textContent = line.text;
-  el.textbox.classList.add('waiting');
-}
-
-function stopTyping() {
-  if (typer.timer) clearInterval(typer.timer);
-  typer.timer = null;
-}
-
-// テキストウィンドウをクリック: 表示中なら全文を出す / 表示し終わっていたら次の文へ
-function advanceText() {
-  if (typer.timer) {
-    finishLine();
-  } else if (typer.index < typer.lines.length) {
-    typer.index += 1;
-    startLine();
-  }
-}
-
-/* ===================================================================
-   場面の進行
-   =================================================================== */
-function enterScene(sceneId) {
-  const scene = SCENES[sceneId];
-  state.sceneId = sceneId;
-  if (scene.chapter) state.chapter = scene.chapter;
-  if (scene.camera) state.camera = scene.camera;
-  if (scene.mode) state.mode = scene.mode;
-  setFlags(scene.set);
-  renderStatus();
-  renderControls();
-  clearChoices();
-  showLines(scene.lines, () => {
-    setFlags(scene.set_after);
-    renderChoices(scene);
-  });
-}
-
-function clearChoices() {
-  el.choices.innerHTML = '';
-}
-
-function renderChoices(scene) {
-  clearChoices();
-  (scene.choices || [])
-    .filter((choice) => hasFlags(choice.requires))
-    .forEach((choice) => {
-      const btn = document.createElement('button');
-      btn.textContent = choice.text;
-      btn.addEventListener('click', () => {
-        setFlags(choice.set);
-        enterScene(choice.next);
-      });
-      el.choices.appendChild(btn);
-    });
-}
-
-/* ---------- カメラ・映像モードの切り替え ---------- */
-function switchFeed(cameraId, mode) {
-  if (state.camera === cameraId && state.mode === mode) return;
-  state.camera = cameraId;
-  state.mode = mode;
-  renderControls();
-  glitch.frames = 8;   // 切り替えた瞬間に画面を乱す
-
-  const feed = CAMERAS[cameraId][mode];
-  if (feed.onView && state.flags[feed.onView.requires]) setFlags([feed.onView.set]);
-
-  // 映像の説明を出したあと、今の場面の選択肢に戻る
-  // （場面の文章の途中で切り替えたときは、場面を読み終えたときの処理を代わりに行う）
-  const scene = SCENES[state.sceneId];
-  const pending = typer.onDone;
-  clearChoices();
-  showLines(feed.lines, () => (pending ? pending() : renderChoices(scene)));
-}
-
-/* ===================================================================
-   監視モニターの描画（Canvas）
-   - 320x180 の小さな画面に描き、CSS で引き伸ばして粗い映像に見せる
-   =================================================================== */
-const canvas = document.getElementById('screen');
-const ctx = canvas.getContext('2d');
-const W = canvas.width;
-const H = canvas.height;
-const glitch = { frames: 0 };
-const startTime = Date.now();
-
-const TINT = {
-  live: [92, 255, 138],
-  past: [255, 179, 71],
-};
-
-function rgba(rgb, a) {
-  return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${a})`;
-}
-
-function drawCorridor(c, opts) {
-  // 奥に向かって細くなる廊下
-  const vx = W / 2;
-  const vy = H * 0.45;
-  c.strokeStyle = rgba(c.tint, 0.5);
-  c.lineWidth = 1;
-  c.beginPath();
-  c.moveTo(0, H); c.lineTo(vx - 30, vy + 25);
-  c.moveTo(W, H); c.lineTo(vx + 30, vy + 25);
-  c.moveTo(0, 0); c.lineTo(vx - 30, vy - 30);
-  c.moveTo(W, 0); c.lineTo(vx + 30, vy - 30);
-  c.stroke();
-  // 床の目地
-  for (let i = 1; i < 6; i++) {
-    const t = i / 6;
-    const y = H - (H - (vy + 25)) * t;
-    const half = (W / 2) - ((W / 2) - 30) * t;
-    c.strokeStyle = rgba(c.tint, 0.15 + t * 0.1);
-    c.beginPath(); c.moveTo(vx - half, y); c.lineTo(vx + half, y); c.stroke();
-  }
-  // 突き当たりの壁と扉
-  c.strokeStyle = rgba(c.tint, 0.6);
-  c.strokeRect(vx - 30, vy - 30, 60, 55);
-  c.fillStyle = rgba(c.tint, 0.08);
-  c.fillRect(vx - 12, vy - 18, 24, 43);
-  c.strokeRect(vx - 12, vy - 18, 24, 43);
-  if (opts.doorOpen) {
-    c.fillStyle = 'rgba(0, 0, 0, 0.9)';
-    c.fillRect(vx - 12, vy - 18, 6, 43);
-  }
-  // 天井の照明
-  c.fillStyle = rgba(c.tint, 0.25);
-  c.fillRect(vx - 40, 18, 80, 4);
-  if (opts.figure) drawFigures(c, vx, vy);
-}
-
-function drawFigures(c, vx, vy) {
-  const t = (Date.now() - startTime) / 1000;
-  // 懐中電灯を持った人
-  const px = vx - 50 + Math.sin(t * 0.7) * 3;
-  const py = vy + 70;
-  c.fillStyle = rgba(c.tint, 0.55);
-  c.beginPath(); c.arc(px, py - 32, 5, 0, Math.PI * 2); c.fill();
-  c.fillRect(px - 5, py - 26, 10, 26);
-  c.fillRect(px - 4, py, 3, 12); c.fillRect(px + 1, py, 3, 12);
-  // 懐中電灯の光
-  const sway = Math.sin(t * 1.3) * 10;
-  c.fillStyle = rgba(c.tint, 0.12);
-  c.beginPath();
-  c.moveTo(px + 5, py - 18);
-  c.lineTo(vx + 10 + sway, vy - 10);
-  c.lineTo(vx + 25 + sway, vy + 20);
-  c.closePath(); c.fill();
-  // その背後の黒い影（ときどき濃くなる）
-  const alpha = 0.55 + Math.sin(t * 2.1) * 0.25;
-  c.fillStyle = `rgba(0, 0, 0, ${alpha})`;
-  const sx = px - 34;
-  const sy = py + 6;
-  c.beginPath(); c.arc(sx, sy - 40, 7, 0, Math.PI * 2); c.fill();
-  c.fillRect(sx - 8, sy - 33, 16, 45);
-}
-
-function drawLobby(c) {
-  // 受付カウンターと正面玄関
-  c.strokeStyle = rgba(c.tint, 0.5);
-  c.lineWidth = 1;
-  c.beginPath();
-  c.moveTo(0, H * 0.7); c.lineTo(W, H * 0.7);
-  c.stroke();
-  c.fillStyle = rgba(c.tint, 0.12);
-  c.fillRect(30, H * 0.5, 120, H * 0.2);
-  c.strokeRect(30, H * 0.5, 120, H * 0.2);
-  c.fillStyle = rgba(c.tint, 0.35);
-  c.fillRect(70, H * 0.45, 30, 4);   // 受付の明かり
-  c.strokeRect(200, H * 0.2, 90, H * 0.5);
-  c.beginPath(); c.moveTo(245, H * 0.2); c.lineTo(245, H * 0.7); c.stroke();
-}
-
-function drawStairs(c) {
-  // 斜めに続く段差と誘導灯
-  c.strokeStyle = rgba(c.tint, 0.45);
-  c.lineWidth = 1;
-  for (let i = 0; i < 9; i++) {
-    const x = 40 + i * 26;
-    const y = H - 20 - i * 15;
-    c.beginPath(); c.moveTo(x, y); c.lineTo(x + 26, y); c.lineTo(x + 26, y - 15); c.stroke();
-  }
-  c.fillStyle = rgba(c.tint, 0.5);
-  c.fillRect(W - 60, 20, 30, 12);
-}
-
-function drawOverlayText(c, cameraId, mode) {
-  // 画面左上のカメラ名と時刻
-  const elapsed = Math.floor((Date.now() - startTime) / 1000);
-  const base = mode === 'live' ? (2 * 3600 + 47 * 60) : (2 * 3600 + 14 * 60);
-  const sec = mode === 'live' ? base + elapsed : base + (elapsed % 360);
-  const hh = String(Math.floor(sec / 3600) % 24).padStart(2, '0');
-  const mm = String(Math.floor(sec / 60) % 60).padStart(2, '0');
-  const ss = String(sec % 60).padStart(2, '0');
-  c.fillStyle = rgba(c.tint, 0.85);
-  c.font = '8px monospace';
-  c.textBaseline = 'top';
-  c.fillText(`${cameraId}  ${CAMERAS[cameraId].place}`, 6, 6);
-  c.fillText(`${mode === 'live' ? 'LIVE' : 'PAST'}  ${hh}:${mm}:${ss}`, 6, 17);
-}
-
-function drawNoise(c) {
-  // 1 画素ずつランダムな明るさを足して、ざらついた映像にする
-  const img = c.getImageData(0, 0, W, H);
-  const d = img.data;
-  const amount = glitch.frames > 0 ? 90 : 28;
-  for (let i = 0; i < d.length; i += 4) {
-    const n = (Math.random() - 0.5) * amount;
-    d[i] += n * c.tint[0] / 255;
-    d[i + 1] += n * c.tint[1] / 255;
-    d[i + 2] += n * c.tint[2] / 255;
-  }
-  c.putImageData(img, 0, 0);
-}
-
-function drawGlitchBands(c) {
-  // ときどき横方向に画面がずれる
-  const bands = glitch.frames > 0 ? 6 : (Math.random() < 0.03 ? 1 : 0);
-  for (let i = 0; i < bands; i++) {
-    const y = Math.floor(Math.random() * H);
-    const h = 2 + Math.floor(Math.random() * 8);
-    const shift = Math.floor((Math.random() - 0.5) * 30);
-    c.drawImage(canvas, 0, y, W, h, shift, y, W, h);
-  }
-  if (glitch.frames > 0) glitch.frames -= 1;
-}
-
-function renderMonitor() {
-  const feed = CAMERAS[state.camera][state.mode];
-  ctx.tint = TINT[state.mode];
-  ctx.fillStyle = '#020403';
-  ctx.fillRect(0, 0, W, H);
-  if (feed.draw.type === 'corridor') drawCorridor(ctx, feed.draw);
-  if (feed.draw.type === 'lobby') drawLobby(ctx);
-  if (feed.draw.type === 'stairs') drawStairs(ctx);
-  drawOverlayText(ctx, state.camera, state.mode);
-  drawNoise(ctx);
-  drawGlitchBands(ctx);
-}
-
-// 30fps 程度で描き直す
-let lastFrame = 0;
-function loop(now) {
-  if (now - lastFrame > 33) {
-    renderMonitor();
-    lastFrame = now;
-  }
-  requestAnimationFrame(loop);
-}
-
-/* ===================================================================
-   お知らせ表示
-   =================================================================== */
-let toastTimer = null;
-function showToast(text) {
-  el.toast.textContent = text;
-  el.toast.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.toast.classList.remove('show'), 2000);
-}
-
-/* ===================================================================
-   起動
-   =================================================================== */
-function init() {
-  el.version.textContent = `v${GAME_VERSION}`;
-  buildCameraButtons();
-
-  el.textbox.addEventListener('click', advanceText);
-  document.addEventListener('keydown', (e) => {
-    // ボタンにフォーカスがあるときは、ボタンの操作を優先する
-    if (e.target.tagName === 'BUTTON') return;
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      advanceText();
-    }
-  });
-  el.btnLive.addEventListener('click', () => switchFeed(state.camera, 'live'));
-  el.btnPast.addEventListener('click', () => switchFeed(state.camera, 'past'));
-  el.btnSave.addEventListener('click', saveGame);
-  el.btnReset.addEventListener('click', () => {
-    if (!confirm('最初から始めますか？（保存したデータも消えます）')) return;
-    clearSave();
-    state = newState();
-    enterScene('start');
-  });
-
-  const saved = loadGame();
-  if (saved) {
-    state = saved;
-    showToast('保存した状態から再開します');
-  }
-  enterScene(state.sceneId);
-  requestAnimationFrame(loop);
-}
-
-init();
-</script>
+<!-- 読み込む順番: 台本の読み込み → データ → 台本 → 描画・音 → ゲームの進行 -->
+<script src="js/parser.js"></script>
+<script src="data/cameras.js"></script>
+<script src="data/chapters.js"></script>
+<script src="scenario/chapter1.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/game.js"></script>
 </body>
 </html>
