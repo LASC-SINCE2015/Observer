@@ -5,6 +5,7 @@
 | スクリプト | 用途 |
 |---|---|
 | [render_diagrams.ps1](render_diagrams.ps1) | design/ 配下の PlantUML（.puml）から SVG を生成する |
+| [optimize_images.ps1](optimize_images.ps1) | 絵の元ファイル（assets_src/images/）を、ゲームで使う大きさと形式にして game/assets/ に書き出す |
 | [playtest.js](playtest.js) | 台本を、ブラウザなしで最後まで自動で通して遊び、エラーや行き詰まりを見つける |
 
 ## playtest.js

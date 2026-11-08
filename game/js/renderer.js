@@ -16,6 +16,50 @@
     outside: [205, 212, 228],
   };
 
+  /* ---------- 絵（画像ファイル） ----------
+     - パスは game/assets/ からの相対パス。初めて使うときに読み込み、読み込めたものだけ描く
+     - 読み込めない（ファイルがまだない）ときは null を返し、呼び出し側は線の絵で代わりに描く */
+  const imageCache = {};
+  function image(path) {
+    if (!path) return null;
+    let e = imageCache[path];
+    if (!e) {
+      const img = new Image();
+      e = imageCache[path] = { img, ok: false, failed: false };
+      img.onload = () => { e.ok = true; };
+      img.onerror = () => { e.failed = true; };
+      img.src = `assets/${path}`;
+    }
+    return e.ok ? e.img : null;
+  }
+
+  // 画面いっぱいに、はみ出す部分を切って描く
+  function drawCover(c, img) {
+    const k = Math.max(W / img.width, H / img.height);
+    const w = img.width * k;
+    const h = img.height * k;
+    c.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+  }
+
+  // 監視映像の色にする（明るさは残して、色を緑・琥珀色に寄せる）
+  // - TINT_AMOUNT: 色を寄せる強さ（1 で完全に単色。少し残すと、ドレスの赤などがうっすら見える）
+  // - TINT_DARKEN: 全体を暗くする強さ（掛け合わせる色。255 で暗くしない）
+  const TINT_AMOUNT = 0.65;
+  const TINT_DARKEN = 215;
+  function tintImage(c, tint, strong) {
+    c.save();
+    c.globalCompositeOperation = 'color';
+    c.globalAlpha = strong ? TINT_AMOUNT : 0.25;
+    c.fillStyle = rgba(tint, 1);
+    c.fillRect(0, 0, W, H);
+    c.globalAlpha = 1;
+    c.globalCompositeOperation = 'multiply';
+    const k = strong ? TINT_DARKEN : 235;
+    c.fillStyle = `rgb(${k}, ${k}, ${k})`;
+    c.fillRect(0, 0, W, H);
+    c.restore();
+  }
+
   function rgba(c, a) {
     return `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${a})`;
   }
@@ -255,6 +299,14 @@
     box: (c, x, y, s) => { c.fillStyle = rgba(c.tint, 0.5); c.fillRect(x - 6 * s, y - 8 * s, 12 * s, 8 * s); },
   };
 
+  // 「img:パス kind@x,y,s …」を読む → { img, actors }
+  function parseScene(text) {
+    const toks = (text || '').trim().split(/\s+/).filter(Boolean);
+    const imgTok = toks.find((t) => t.startsWith('img:'));
+    const rest = toks.filter((t) => !t.startsWith('img:'));
+    return { img: imgTok ? imgTok.slice(4) : null, actors: parseActors(rest.join(' ')) };
+  }
+
   // 「kind@x,y,s」を読む
   function parseActors(text) {
     if (!text) return [];
@@ -291,10 +343,25 @@
       drawStatic(c, small ? 260 : 2400);
       center(c, '― 映らない ―', c.tint, small);
     } else {
-      const bg = BACKGROUNDS[view.bg] || BACKGROUNDS.dark;
-      bg(c, t);
-      c.strokeStyle = rgba(c.tint, 0.5);
-      drawActors(c, view.actors, t);
+      // 場面の絵があれば、それだけを描く（人物も絵に入っている）。
+      // なければ、背景の絵（なければ線の背景）の上に、人物の影を描く
+      const scene = image(view.img);
+      const bgImg = scene ? null : image(view.bgimg);
+      const monitorTint = view.tint !== TINTS.outside;
+      if (scene) {
+        drawCover(c, scene);
+        if (monitorTint) tintImage(c, c.tint, true);
+        else tintImage(c, [150, 160, 185], false);
+      } else {
+        if (bgImg) {
+          drawCover(c, bgImg);
+          if (monitorTint) tintImage(c, c.tint, true);
+        } else {
+          (BACKGROUNDS[view.bg] || BACKGROUNDS.dark)(c, t);
+        }
+        c.strokeStyle = rgba(c.tint, 0.5);
+        drawActors(c, view.actors, t);
+      }
       if (view.burned) {
         const k = 0.72 + Math.sin(t * 9) * 0.06;
         c.fillStyle = `rgba(255, 246, 228, ${k})`;
@@ -357,7 +424,21 @@
   }
 
   // 大きい画面だけにかける、ざらついたノイズと横ずれ
+  let pixelNoise = true;
   function postEffects(c, canvas, tint, glitch) {
+    // ファイルを直接開いたときは、画像を描いた Canvas の画素を読めない（ブラウザの安全のための決まり）。
+    // そのときは画素ごとのノイズをやめて、横ずれだけにする
+    if (pixelNoise) {
+      try {
+        noisePixels(c, tint, glitch);
+      } catch (e) {
+        pixelNoise = false;
+      }
+    }
+    bandShift(c, canvas, glitch);
+  }
+
+  function noisePixels(c, tint, glitch) {
     const img = c.getImageData(0, 0, W, H);
     const d = img.data;
     const amount = glitch > 0 ? 90 : 26;
@@ -368,6 +449,9 @@
       d[i + 2] += n * tint[2] / 255;
     }
     c.putImageData(img, 0, 0);
+  }
+
+  function bandShift(c, canvas, glitch) {
     const bands = glitch > 0 ? 6 : (Math.random() < 0.03 ? 1 : 0);
     for (let i = 0; i < bands; i++) {
       const y = Math.floor(Math.random() * H);
@@ -377,5 +461,5 @@
     }
   }
 
-  Observer.renderer = { W, H, TINTS, BACKGROUNDS, ACTORS, parseActors, render, postEffects };
+  Observer.renderer = { W, H, TINTS, BACKGROUNDS, ACTORS, parseActors, parseScene, image, render, postEffects };
 })();

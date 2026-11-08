@@ -7,7 +7,7 @@
    =================================================================== */
 
 (function () {
-  const GAME_VERSION = '0.2.0';
+  const GAME_VERSION = '0.2.1';
   const SAVE_KEY = 'observer.save.v2';          // 場面のセーブ。形式を変えたら v を上げる
   const PROGRESS_KEY = 'observer.progress.v2';  // 章をまたぐ記録
   const DATA_VERSION = 2;
@@ -45,7 +45,7 @@
   function newWorld() {
     const cams = {};
     Observer.cameraOrder.forEach((id) => {
-      cams[id] = { status: 'ok', statusText: '', actors: [], look: null, open: false };
+      cams[id] = { status: 'ok', statusText: '', actors: [], img: null, look: null, open: false };
     });
     return {
       chapter: 1, script: null, label: null,
@@ -53,6 +53,7 @@
       outside: null, flags: {}, items: [], logs: [], burned: [],
       cams, events: [], hotspots: [], marks: {}, wall: Observer.cameraOrder.slice(),
       relay: null, splash: false, black: null, lastHotspot: null,
+      portraits: {},   // 立ち絵 { right: { name, face }, left: … }
     };
   }
 
@@ -248,9 +249,9 @@
     return state.cams[id];
   }
   function parseStill(s) {
-    // 「CAM-07 6/02:20 woman@100 ...」
+    // 「CAM-07 6/02:20 img:パス woman@100 ...」
     const w = words(s);
-    return { cam: w[0], at: parseTime(w[1]), actors: R.parseActors(w.slice(2).join(' ')) };
+    return Object.assign({ cam: w[0], at: parseTime(w[1]) }, R.parseScene(w.slice(2).join(' ')));
   }
 
   const OPS = {
@@ -310,7 +311,10 @@
     },
     feed(ins) {
       const w = words(ins.arg);
-      needCam(w[0]).actors = R.parseActors(w.slice(1).join(' '));
+      const sc = R.parseScene(w.slice(1).join(' '));
+      const c = needCam(w[0]);
+      c.actors = sc.actors;
+      c.img = sc.img;
     },
     look(ins) {
       const w = words(ins.arg);
@@ -324,7 +328,8 @@
       needCam(w[0]);
       const flag = takeOpt(w, 'flag');
       const [from, to] = parseRange(w[1]);
-      state.events.push({ cam: w[0], from, to, flag, actors: R.parseActors(actors || ''), body: ins.body, seen: false });
+      const sc = R.parseScene(actors || '');
+      state.events.push({ cam: w[0], from, to, flag, actors: sc.actors, img: sc.img, body: ins.body, seen: false });
     },
     noevents(ins) {
       const id = ins.arg.trim();
@@ -385,9 +390,11 @@
     outside(ins) {
       const [head, actors] = splitBar(ins.arg);
       const w = words(head);
-      state.outside = { bg: w[0], place: w.slice(1).join(' '), actors: R.parseActors(actors || '') };
+      const sc = R.parseScene(actors || '');
+      state.outside = { bg: w[0], place: w.slice(1).join(' '), actors: sc.actors, img: sc.img };
+      state.portraits = {};   // 場所が変わったら、立ち絵は消す
     },
-    inside() { state.outside = null; },
+    inside() { state.outside = null; state.portraits = {}; },
     fx(ins) {
       const w = words(ins.arg);
       const name = w[0];
@@ -403,6 +410,20 @@
       else throw new Error(`@fx ${name} という演出はありません`);
     },
     sound(ins) { Observer.audio.play(ins.arg.trim()); },
+    // 立ち絵: @show 名前 [表情] [left]  /  @hide [名前|all]
+    show(ins) {
+      const w = words(ins.arg);
+      if (!Observer.characters[w[0]]) throw new Error(`人物 ${w[0]} が data/characters.js にありません`);
+      const side = w.includes('left') ? 'left' : 'right';
+      const face = w.slice(1).find((x) => x !== 'left' && x !== 'right') || 'normal';
+      state.portraits[side] = { name: w[0], face };
+    },
+    hide(ins) {
+      const name = ins.arg.trim();
+      Object.keys(state.portraits).forEach((side) => {
+        if (!name || name === 'all' || state.portraits[side].name === name) delete state.portraits[side];
+      });
+    },
     wipe(ins) {
       run.waitWipe = true;
       el.wipeHint.textContent = ins.arg || '画面をなぞって拭く';
@@ -639,6 +660,59 @@
     el.black.classList.toggle('white', state.black === 'white');
     tiles.forEach((t) => t.btn.classList.toggle('active', t.id === state.cam));
     renderTimeline();
+    renderPortraits();
+  }
+
+  /* ---------- 立ち絵 ----------
+     - 絵のファイルがまだないときは、何も出さない（デバッグのときだけ名前の枠を出す） */
+  const portraitEls = {};
+  // 立ち絵の高さを、テキストウィンドウより上の空きに収まるように合わせる（CSS の高さが上限）
+  function fitPortraits() {
+    const talk = document.querySelector('.talk');
+    if (!talk) return;
+    const room = document.querySelector('.monitor-frame').getBoundingClientRect().top;
+    const space = talk.getBoundingClientRect().top - room;
+    ['left', 'right'].forEach((side) => {
+      const box = $(`portrait-${side}`);
+      box.style.height = '';
+      const css = box.getBoundingClientRect().height;
+      const overlap = window.innerWidth < 600 ? 50 : 70;
+      box.style.height = `${Math.max(120, Math.min(css, space + overlap - 4))}px`;
+    });
+  }
+  window.addEventListener('resize', fitPortraits);
+
+  function renderPortraits() {
+    fitPortraits();
+    ['right', 'left'].forEach((side) => {
+      const box = $(`portrait-${side}`);
+      const p = state.portraits[side];
+      const key = p ? `${p.name}/${p.face}` : '';
+      if (portraitEls[side] === key) return;
+      portraitEls[side] = key;
+      box.innerHTML = '';
+      box.classList.remove('on');
+      if (!p) return;
+      const ch = Observer.characters[p.name];
+      // その表情の絵がまだなければ、normal → smile の順に、同じ人物のふだんの絵で代わりに出す
+      // （密会の場面などの特別な表情は、代わりには使わない）
+      const files = [ch.faces[p.face], ch.faces.normal, ch.faces.smile].filter((f, i, a) => f && a.indexOf(f) === i);
+      const img = document.createElement('img');
+      img.alt = p.name;
+      let n = 0;
+      img.onload = () => box.classList.add('on');
+      img.onerror = () => {
+        n += 1;
+        if (n < files.length) { img.src = `assets/${files[n]}`; return; }
+        if (!DEBUG) return;
+        box.innerHTML = '';
+        box.appendChild(div('portrait-missing', `${p.name}（${p.face}）
+${files[0]}`));
+        box.classList.add('on');
+      };
+      img.src = `assets/${files[0]}`;
+      box.appendChild(img);
+    });
   }
 
   /* ===================================================================
@@ -652,6 +726,7 @@
       const s = state.relay.still;
       return {
         kind: 'feed', bg: Observer.cameras[s.cam] ? Observer.cameras[s.cam].bg : 'dark', actors: s.actors,
+        img: s.img, bgimg: Observer.cameras[s.cam] ? Observer.cameras[s.cam].bgimg : null,
         tint: R.TINTS.past, still: true,
         caption: ['― INCOMING ―', state.relay.caption],
       };
@@ -660,7 +735,7 @@
     if (c.status === 'paused') return { kind: 'paused', status: c.statusText || '停止中', tint };
     const hotspots = small || !exploring() ? [] : state.hotspots.filter((h) => h.cam === id && !h.range && test(h.cond));
     return {
-      kind: 'feed', bg: def.bg, actors: c.actors, tint, hotspots, lamp: lampOn(id),
+      kind: 'feed', bg: def.bg, bgimg: def.bgimg, img: c.img, actors: c.actors, tint, hotspots, lamp: lampOn(id),
       caption: [`${id}  ${def.place}`, `LIVE  ${fmtTime(state.now)}`],
     };
   }
@@ -675,12 +750,17 @@
     const burned = isBurned(state.pastAt);
     const hotspots = !exploring() || burned ? [] : state.hotspots.filter((h) => h.cam === id && h.range
       && h.range[0] <= state.pastAt && state.pastAt <= h.range[1] && test(h.cond));
-    return { kind: 'feed', bg: def.bg, actors: e ? e.actors : [], tint, burned, hotspots, caption };
+    return { kind: 'feed', bg: def.bg, bgimg: def.bgimg, img: e ? e.img : null, actors: e ? e.actors : [], tint, burned, hotspots, caption };
   }
 
   function mainView() {
     if (state.outside) {
-      return { kind: 'feed', bg: state.outside.bg, actors: state.outside.actors, tint: R.TINTS.outside, caption: [state.outside.place] };
+      // 場面の絵がないときは、同じ背景の種類のカメラの背景の絵を使う（監視室なら CAM-00 の絵）
+      const same = Observer.cameraOrder.map((id) => Observer.cameras[id]).find((c) => c.bg === state.outside.bg && c.bgimg);
+      return {
+        kind: 'feed', bg: state.outside.bg, img: state.outside.img, bgimg: same ? same.bgimg : null,
+        actors: state.outside.actors, tint: R.TINTS.outside, caption: [state.outside.place],
+      };
     }
     return state.mode === 'past' ? pastView(state.cam) : liveView(state.cam, false);
   }
@@ -815,7 +895,7 @@
           cv.width = R.W; cv.height = R.H;
           const def = Observer.cameras[it.still.cam];
           R.render(cv.getContext('2d'), {
-            kind: 'feed', bg: def ? def.bg : 'dark', actors: it.still.actors, tint: R.TINTS.past, still: true,
+            kind: 'feed', bg: def ? def.bg : 'dark', bgimg: def ? def.bgimg : null, img: it.still.img, actors: it.still.actors, tint: R.TINTS.past, still: true,
             caption: [`${it.still.cam}  ${def ? def.place : ''}`, `${fmtTime(it.still.at)}`],
           }, 1, false);
           d.appendChild(cv);
@@ -1044,7 +1124,7 @@
     d.appendChild(input);
     const row = div('row');
     const btn = (text, fn) => { const x = document.createElement('button'); x.textContent = text; x.onclick = fn; row.appendChild(x); };
-    btn('ラベルへ', () => { closePanel(); hideCard(); run.waitWipe = false; state.outside = null; state.black = null; go(sel.value); });
+    btn('ラベルへ', () => { closePanel(); hideCard(); run.waitWipe = false; state.outside = null; state.black = null; state.portraits = {}; go(sel.value); });
     btn('立てる', () => {
       const f = input.value.trim(); if (!f) return;
       if (f.startsWith('g:')) progress.flags[f.slice(2)] = true; else state.flags[f] = true;
