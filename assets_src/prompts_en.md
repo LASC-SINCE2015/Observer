@@ -118,19 +118,51 @@ Mood: romantic, flustered, alluring.
 
 ### 城ヶ崎華子
 
-#### hanako_normal（城ヶ崎華子・冷静）
+`hanako_angry` を基準の絵にして、ほかの表情はこの絵を参照して作ります。
+
+#### hanako_angry（城ヶ崎華子・静かな怒り。基準の絵）
 
 ```
-Japanese anime style illustration, character portrait (tachi-e) for a mature suspense visual novel. Delicate line art, crisp cel shading, slightly muted elegant colors. Waist-up, body turned slightly to the side, face looking at the viewer. Vertical 2:3. Background: solid pure green background, bright green screen background, chroma key green, flat solid background, clean sharp edges, no shadows on background. No green light or green reflections on the character. No text, no logo, no watermark.
-Character: a 45-year-old woman, the head partner of a law firm. Black hair pulled back into a tight, neat chignon, thin-framed glasses. A dignified, mature and beautiful woman with an air of authority. Wearing a navy tailored suit over a white blouse, a lawyer's badge on the lapel (fully clothed).
-Expression: calm, cool and composed, with no openings.
+Japanese anime style illustration, character portrait (tachi-e) for a mature suspense visual novel. Delicate line art, crisp cel shading, slightly muted elegant colors. Waist-up, body facing the viewer, turned only slightly to the side, face looking straight at the viewer. Vertical 2:3. Background: solid pure green background, bright green screen background, chroma key green, flat solid background, clean sharp edges, no shadows on background. No green light or green reflections on the character. No text, no logo, no watermark.
+Character: a 45-year-old adult woman, the head partner of a law firm. Long, straight, glossy black hair worn down, flowing past her shoulders to her chest, parted to one side. Thin-framed glasses. A strikingly beautiful mature woman with a severe, intimidating face: sharp narrow eyes, upswept eyeliner, thin arched eyebrows, high cheekbones, a defined jawline, dark red lips. A voluptuous, curvy figure with a full bust and a narrow waist. Wearing a fitted navy tailored suit, fully buttoned, over a white blouse, with a lawyer's badge on the lapel.
+Expression: cold, sharp and commanding, looking down on the viewer slightly, lips closed, with no openings.
 ```
 
-#### hanako_angry（華子・静かな怒り）
+Negative prompt:
 
 ```
-Same character, same outfit, same pose as hanako_normal. Japanese anime style visual novel portrait, vertical 2:3, no text. Background: solid pure green chroma key background, flat solid background, clean sharp edges, no shadows on background. No green light on the character.
-Expression: quiet, ice-cold fury. Eyes narrowed behind the glasses, a frozen stare, lips tight. Not shouting.
+hair bun, updo, ponytail, tied hair, short hair, back view, looking over shoulder, soft face, gentle smile, round eyes, flat chest, green ambient light, green color spill, green glow, text, watermark
+```
+
+#### hanako_normal（華子・静かな笑み）
+
+`hanako_angry` を参照して作ります。参照の効きが強いと表情が変わらないので、Strength は Low〜Mid から試します。
+
+```
+Same character, same outfit, same pose, same art style as the attached image. Only change the eyebrows, eyes and mouth. Japanese anime style visual novel portrait, delicate line art, crisp cel shading, waist-up, vertical 2:3, no text. Background: solid pure green background, bright green screen background, chroma key green, flat solid background, clean sharp edges, no shadows on background. No green light or green reflections on the character.
+Expression: a quiet, composed, faint smile. Eyebrows relaxed, smooth and gently arched, with a smooth forehead and a relaxed space between the brows. Calm, steady eyes looking at the viewer, slightly narrowed with confidence. The corners of her lips turned up just a little, lips closed. A serene, poised, self-assured beauty who reveals nothing.
+```
+
+Negative prompt:
+
+```
+furrowed brows, frown, angry, glaring, scowl, knitted eyebrows, wrinkles between the eyebrows, downturned mouth, open mouth, teeth, wide grin, hair bun, updo, short hair, green ambient light, green color spill, green glow, text, watermark
+```
+
+#### hanako_rage（華子・激高）
+
+`hanako_angry` を参照して作ります。
+
+```
+Same character, same outfit, same art style as the attached image. Only change the facial expression and pose. Japanese anime style visual novel portrait, delicate line art, crisp cel shading, waist-up, vertical 2:3, no text. Background: solid pure green background, bright green screen background, chroma key green, flat solid background, clean sharp edges, no shadows on background. No green light or green reflections on the character.
+Expression: explosive, furious rage. Eyes wide open and blazing behind the glasses, small contracted pupils, eyebrows sharply drawn together and slanted, deep furrow between the brows, flushed cheeks, mouth open mid-shout with clenched teeth visible, jaw tense.
+Pose: leaning forward toward the viewer, shoulders raised and tense, one hand raised, pointing a finger accusingly at the viewer. Long black hair swept and disheveled by the sudden movement, a few strands falling across her face. Her glasses are slightly askew. Still beautiful and intimidating, fully clothed in the navy suit.
+```
+
+Negative prompt:
+
+```
+calm face, smile, closed mouth, soft expression, sad, crying, hair bun, updo, short hair, back view, extra fingers, deformed hands, green ambient light, green color spill, green glow, text, watermark
 ```
 
 ### 瀬名遥
@@ -254,7 +286,7 @@ Scene: a long, empty ground-floor corridor. A woman in a gray cleaning uniform w
 
 ```
 Japanese anime style background art with characters, cinematic. Late night, viewed from a ceiling-mounted security camera in the corner, high angle, slight wide-angle lens distortion. Dim lighting, light spilling in from an open door. Horizontal 16:9. No text, no timestamp, no logo, no watermark.
-Scene: the stockroom behind a luxury boutique with cardboard boxes. A woman in a navy suit with her hair in a tight chignon and glasses stands in the open doorway, cold and furious. A man in a disheveled suit is panicking in front of her. A woman in a black boutique uniform is frozen against the wall, clutching her jacket to her chest. All fully clothed. A tense confrontation.
+Scene: the stockroom behind a luxury boutique with cardboard boxes. A beautiful, stern woman with a curvy figure, a navy suit, long straight black hair worn down and thin-framed glasses stands in the open doorway, cold and furious. A man in a disheveled suit is panicking in front of her. A woman in a black boutique uniform is frozen against the wall, clutching her jacket to her chest. All fully clothed. A tense confrontation.
 ```
 
 ### ch1_monitor_room（監視室）
@@ -281,14 +313,14 @@ Scene: a younger man in a sharp suit stops in front of an elderly white-haired m
 
 ```
 Japanese anime style background art with characters, cinematic. A law firm office at night, large windows with a glittering city night view, two desks, viewed from a ceiling-mounted security camera in the corner, high angle. Horizontal 16:9. No text, no logo, no watermark.
-Scene: at the far desk, a woman in a navy suit with her hair in a chignon and glasses is reading documents. A man in a suit bends low and obsequiously serves her a cup of coffee, rubbing his hands together.
+Scene: at the far desk, a beautiful, stern woman with a curvy figure, a navy suit, long straight black hair worn down and thin-framed glasses is reading documents. A man in a suit bends low and obsequiously serves her a cup of coffee, rubbing his hands together.
 ```
 
 ### ch1_hanako_desk（深夜の華子）
 
 ```
 Japanese anime style background art with a character, cinematic. A law firm office very late at night, only one desk lamp lit, a city night view through the windows, viewed from a ceiling-mounted security camera in the corner, high angle. Horizontal 16:9. No text, no logo, no watermark.
-Scene: a woman in a navy suit with her hair in a tight chignon and glasses sits alone at her desk, reading documents. The other desk is empty.
+Scene: a beautiful, stern woman with a curvy figure, a navy suit, long straight black hair worn down and thin-framed glasses sits alone at her desk, reading documents. The other desk is empty.
 ```
 
 ### ch1_shop_front（店の前の二人）
@@ -335,7 +367,7 @@ Japanese anime style illustration, cinematic, close-up. Early morning sidewalk i
 
 ```
 Japanese anime style background art with characters, cinematic. A law firm office in the early morning, lights on, viewed from a ceiling-mounted security camera in the corner, high angle. Horizontal 16:9. No text, no logo, no watermark.
-Scene: a dejected man in a suit, head hanging, is being escorted out of the office by a uniformed police officer. A woman in a navy suit with her hair in a chignon and glasses watches coldly.
+Scene: a dejected man in a suit, head hanging, is being escorted out of the office by a uniformed police officer. A beautiful, stern woman with a curvy figure, a navy suit, long straight black hair worn down and thin-framed glasses watches coldly.
 ```
 
 ### ch1_relay_sena_usb（机の脇の瀬名と USB）
