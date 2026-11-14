@@ -106,6 +106,7 @@ Observer.script('chapter1', `
 @show 玲子 smile left
 @show 佐伯 smile
 佐伯「玲子さんには、いつも助けてもらってばかりね」
+@show 佐伯 normal
 佐伯は、ふと八島に気づいた。笑顔が、すっと消える。
 @show 佐伯 scorn
 佐伯「……ちょっと。貧乏人が、うろうろしないでくれる？　お客様の気分が悪くなるの」
@@ -151,7 +152,7 @@ Observer.script('chapter1', `
 @cam CAM-00 live
 21 時。夜勤の始まり。
 監視室の天井の隅のカメラには、「故障中・修理手配済み」の札が下がったまま。もう何か月も、そのままだ。
-@feed CAM-02 woman@245
+@feed CAM-02 woman@272
 扉が開いた。入ってきたのは、管理会社の所長、久住だった。
 @show 久住
 事務的で目立たない、灰色のような男。いつも書類の角を、指でそろえている。
@@ -171,7 +172,7 @@ Observer.script('chapter1', `
 // ============================================================
 *watch1_setup
 @time 1/21:20
-@feed CAM-02 woman@250
+@feed CAM-02 woman@272
 @feed CAM-08 img:scenes/ch1_reiko_look.jpg woman@170
 @feed CAM-07 img:scenes/ch1_office_couple.jpg sitman@80,140 sitwoman@240,140
 @look CAM-08 flag=saw_reiko
@@ -234,7 +235,7 @@ Observer.script('chapter1', `
 @feed CAM-08
 @feed CAM-02
 @feed CAM-07 img:scenes/ch1_hanako_desk.jpg sitwoman@240,140
-@feed CAM-03 img:scenes/ch1_sena_mop.jpg cleaner@150,165
+@feed CAM-03 img:scenes/ch1_sena_trace.jpg cleaner@150,165
 @look CAM-03 flag=saw_sena
   1F 東廊下。清掃の作業員が、モップをかけている。
   作業着に、首からタオル。髪を後ろで一つに結んでいる。

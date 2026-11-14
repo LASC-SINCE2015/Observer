@@ -6,12 +6,12 @@
 
 各絵の見出しに、✅（生成済み）か ⬜（未生成）を付けています。`assets_src/images/` はリポジトリに入らないので、絵を置いたら、ここの一覧と見出しのマークを手で更新します。
 
-全 49 枚のうち、生成済みは 49 枚、未生成は 0 枚です（2026-11-14 時点）。
+全 50 枚のうち、生成済みは 50 枚、未生成は 0 枚です（2026-11-14 時点）。
 
 | 種類 | ✅ 生成済み | ⬜ 未生成 | 未生成の絵 |
 |---|---|---|---|
 | 立ち絵 | 18 | 0 | なし |
-| 場面の絵 | 18 | 0 | なし |
+| 場面の絵 | 19 | 0 | なし |
 | カメラの背景 | 13 | 0 | なし |
 
 2026-11-14 に絵を見比べて、絵どうし・絵とシナリオの食い違いを直すことにしました。下の「絵をそろえるための決まり」に合わせ、「作り直し（Gemini で参考画像を添付）」のプロンプトで作り直しました（23 枚、同じ日に完了。新しく作った `ch1_lobby_police`・`cam07_office_day`・`cam09_roof_day` を含め、全部で 49 枚）。作り直した絵の前の版は、`assets_src/images/backup/` に移しています（ゲームには使わない）。
@@ -937,6 +937,70 @@ Generate an image. Japanese anime style illustration, cinematic, in the same art
 ```
 
 > **日本語訳**: 日本のアニメ調のイラスト。映画のような絵づくりで、絵柄は添付の絵に合わせる。場所は、添付の絵のガラスのタワーの玄関の前の、同じ広い舗装の歩道（同じ敷石、植え込み、ガラスの壁面）。早朝の、強くまぶしい日差し。地面に近い低い角度からの寄りの構図: 落ちたコンビニのレジ袋、敷石の上を転がる缶ビール、少し先に落ちたチャーシューのパック。背景にはぼやけたタワーの玄関。男もほかの人も描かない。むごい描写・血なし。画面の外で何か恐ろしいことが起きた直後、という気配。横長 16:9。文字・ラベル・ロゴ・透かしなし。
+
+---
+
+## 絵のレビューを受けた直し（Gemini で今の絵を添付）
+
+ゲームに配置した絵を見直して、次の直しをした（2026-11-14）。どれも、今の絵を 1 枚添付して、変えるところだけを指示した。
+
+- 小さな物（USB など）は、ゲームの解像度 320×180 でも見えるか、縮めて確かめる。
+- ゲームは絵にモニターの色（ライブは緑、過去は琥珀）をかけ、色を置き換えて明るさだけを残す。目立たせたい光は、色のついた光（青など）ではなく、**明るい白い光**にする（青い光は琥珀色で消えた）。
+
+### ch1_relay_sena_usb（USB をはっきり見せる）
+
+添付: `scenes/ch1_relay_sena_usb`（直す前のもの）。2 回直した（1 回目の青い光が、琥珀色をかけると消えたため）。
+
+```
+Generate an image. Edit the attached image. Keep the same office, camera angle, composition, darkness, nameplates and art style, and the same cleaning woman (same face, black ponytail, gray work uniform, towel around her neck). Change only this: the wooden front panel of the husband's desk on the left (the panel facing the camera) is clearly hanging open at an angle, leaving a dark gap, and inside the gap there is a small USB flash drive with a tiny glowing blue light, so it is easy to notice even in a small, low-resolution image. The woman has crouched down low beside that desk and is peering into the gap at the USB drive. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no logo, no watermark.
+```
+
+```
+Generate an image. Edit the attached image. Keep everything exactly the same: the office, the camera angle, the composition, the nameplates, the crouching cleaning woman, the open desk panel, the colors and the art style. Change only the light of the USB flash drive in the gap: make it a much brighter, larger WHITE glow (not blue), like a small bright white lamp, clearly lighting up the inside of the gap and spilling a little white light onto the floor and onto the woman's face, so it stands out as the brightest spot in the lower half of the image even when the picture is small and tinted a single color. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no logo, no watermark.
+```
+
+> **日本語訳**: 1 回目: 事務所・角度・構図・暗さ・名札・絵柄と、清掃の女性はそのまま。左の夫の机の、カメラ側の木の板をはっきり斜めに開かせて暗いすき間を作り、すき間に小さな青い光のついた USB メモリを置く（小さく粗い絵でも気づけるように）。女性は机のわきに低くしゃがみ、すき間の USB をのぞき込む。
+> 2 回目: ほかはすべてそのままで、USB の光だけを、青でなく、ずっと明るく大きな白い光にする。すき間の中を照らし、床と女性の顔に少し白い光がこぼれる。絵が小さく、単色に色づけされても、絵の下半分でいちばん明るい点として目立つように。
+
+### ch1_lobby_police（ロビーの人物を久住に替え、規制線を足す）
+
+添付: `scenes/ch1_lobby_police`（直す前のもの）、`chars/kuzumi_normal`
+
+```
+Generate an image. Edit the first attached image. Keep the same lobby, camera angle, composition, daylight, police car and art style, and keep the two uniformed police officers. Change only these: (1) replace the detective in the beige trench coat with the man from the second attached image: a 55-year-old building management company manager with graying hair and a plain gray suit, holding a stack of documents (ignore his green background); he stands in the right half of the group, talking politely with the officers. (2) Outside the glass entrance, plain yellow police barrier tape with no letters is stretched across the sidewalk, and one more uniformed officer stands guard beside it. Small figures as seen by a security camera. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no numbers, no timestamps, no logo, no watermark.
+```
+
+> **日本語訳**: ロビー・角度・構図・日の光・パトカー・絵柄と、制服の警官 2 人はそのまま。(1) ベージュのトレンチコートの刑事を、2 枚目の男（白髪まじりで地味な灰色のスーツ、書類の束を持つ、55 歳のビル管理会社の所長。緑の背景は無視）に替え、警官たちと丁寧に話している。(2) ガラスの正面玄関の外の歩道に、文字のない黄色い規制テープを張り、そのわきに見張りの警官をもう 1 人立たせる。防犯カメラから見た小さな人物。文字・数字・時刻表示なし。
+
+### ch1_monitor_room（「故障中」の札の下がったカメラを足す）
+
+添付: `scenes/ch1_monitor_room`（直す前のもの）
+
+```
+Generate an image. Edit the attached image. Keep everything exactly the same: the monitoring room, the wall of monitors, the man sitting with his back to us, the empty second chair, the lighting, the colors and the art style. Only add one thing: in the upper corner of the room near the ceiling, clearly visible, a small old security camera mounted on the wall, with a small blank white card hanging from it on a string (an out-of-order tag, with no letters on it). Horizontal 16:9 landscape. No text, no letters, no logo, no watermark.
+```
+
+> **日本語訳**: 監視室・モニターの壁・背を向けて座る男・空いた 2 つ目の椅子・明かり・色・絵柄は、すべてそのまま。部屋の上の隅の天井近くに、古い小さな防犯カメラを 1 台、はっきり見えるように足す。カメラからはひもで小さな白い札（故障中の札。文字なし）が下がっている。
+
+### ch1_sena_trace（1日目 23:00 の瀬名。新しく作る）
+
+添付: `scenes/ch1_sena_mop`
+
+```
+Generate an image. Edit the attached image. Keep the same corridor, camera angle, composition, lighting, the red fire alarm bell, the ceiling sensor and the art style, and the same cleaning woman (same face, black ponytail, gray work uniform, towel around her neck, the men's wristwatch on her left wrist). Change only her action: she has stopped mopping, leaned the mop against the cart, stepped to the stone pillar on the right side of the corridor, and is slowly tracing a thin crack in the wall with her fingertips, looking closely at it. Small figure as seen by a security camera. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no logo, no watermark.
+```
+
+> **日本語訳**: 廊下・角度・構図・明かり・赤い非常ベル・天井のセンサー・絵柄と、清掃の女性（同じ顔、黒髪のポニーテール、グレーの作業着、首にタオル、左手首の男物の腕時計）はそのまま。動きだけを変える: モップがけをやめてモップをカートに立てかけ、廊下の右の石の柱へ寄り、壁の細いひびを指先でゆっくりなぞりながら、じっと見ている。防犯カメラから見た小さな人物。
+
+### ch1_dropped_cans（コンビニ袋を無地に）
+
+添付: `scenes/ch1_dropped_cans`（直す前のもの）
+
+```
+Generate an image. Edit the attached image. Keep everything exactly the same: the sidewalk, the glass tower, the sunlight, the beer can, the pack of roast pork, the composition and the art style. Change only the plastic bag: make it a plain white plastic bag with no colored stripes, no logos and no printing at all. Horizontal 16:9 landscape. No people. No text, no labels, no logo, no watermark.
+```
+
+> **日本語訳**: 歩道・ガラスのタワー・日差し・缶ビール・チャーシューのパック・構図・絵柄は、すべてそのまま。レジ袋だけを、色の帯・ロゴ・印刷のない、無地の白いレジ袋にする。人なし。
 
 ---
 

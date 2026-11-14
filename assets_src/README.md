@@ -98,7 +98,8 @@
 |---|---|---|---|
 | `ch1_reiko_look` | 9F のエレベーターホール。エレベーターを待つ玲子が、ふとカメラを見上げている（こちらと目が合う） | カメラから | A |
 | `ch1_backyard_affair` | ショップの裏の薄暗い倉庫。段ボールの陰で、服を着たままの男女が寄り添い、抱き合っている。顔はぼんやりとしか見えない | カメラから | A |
-| `ch1_sena_mop` | 1F の廊下。作業着の女性（瀬名）がモップをかけ、ふと手を止めて壁を指でなぞっている | カメラから | A |
+| `ch1_sena_mop` | 1F の廊下。作業着の女性（瀬名）がモップをかけている（真解決の最後に使う） | カメラから | A |
+| `ch1_sena_trace` | 1F の廊下。瀬名がモップを置き、柱の壁のひびを指でなぞっている（1日目 23:00 に使う） | カメラから | A |
 | `ch1_backyard_confront` | 同じ倉庫。スーツの女性（華子）が扉のところに立ち、男がうろたえ、女（佐伯）が服をかき抱いて壁際で固まっている修羅場 | カメラから | A |
 | `ch1_monitor_room` | 地下の狭い監視室。壁一面のモニターの光の前で、作業着の男が背を丸め、缶コーヒーを持っている（後ろ姿） | 屋外（監視室） | A |
 | `ch1_shop_card` | 閉店まぎわの高級ブランドショップ。白髪の上品なスーツの男がカードを差し出し、女性の店長（佐伯）が深く頭を下げている | カメラから・屋外 | A |
@@ -143,8 +144,8 @@
 |---|---|---|---|
 | `chars/reiko_normal`・`reiko_smile`・`reiko_sad`・`sena_normal`・`sena_smile`・`saeki_smile`・`saeki_flushed`・`jogasaki_normal`・`jogasaki_aroused`・`jogasaki_after`、`scenes/ch1_reiko_look`・`ch1_backyard_affair`・`ch1_sena_mop`、`bg/cam00_room` | Leonardo.ai（無料プラン）で生成（2026-11-08。玲子の立ち絵は同日に作り直し） | Leonardo.ai の利用規約による。無料プランの生成物は公開され、権利は Leonardo.ai が持つが、商用を含めて利用できると案内されている | 不要（任意） |
 | `chars/hanako_normal`・`hanako_angry`・`hanako_rage`・`kuzumi_normal`・`okochi_normal`、`scenes/ch1_backyard_confront` | Leonardo.ai（無料プラン）で生成（2026-11-10） | 同上 | 不要（任意） |
-| `bg/cam01_lobby`・`cam02_shop`・`cam03_corridor`・`cam04_backyard`・`cam05_elevator`・`cam06_evhall6`・`cam07_office`・`cam08_evhall9`・`cam09_roof`・`cam10_stairs`、`scenes/ch1_monitor_room`・`ch1_shop_card`・`ch1_lobby_bow`・`ch1_office_couple`・`ch1_hanako_desk`・`ch1_shop_front`・`ch1_elevator_close`・`ch1_street_phone`・`ch1_couple_morning`・`ch1_dawn_building`・`ch1_dropped_cans`・`ch1_office_police`・`ch1_relay_sena_usb`、`chars/saeki_scorn`・`saeki_normal`・`jogasaki_scorn`、`scenes/ch1_lobby_police`、`bg/cam07_office_day`・`cam09_roof_day` | Google Gemini（無料）で生成（2026-11-14。人物の入る絵は、上の Leonardo.ai の立ち絵と背景を参考画像として添付して作った。同じ日に、絵どうしの食い違いを直すため、多くを作り直した） |
-| `scenes/ch1_reiko_look`・`ch1_backyard_affair`・`ch1_backyard_confront`・`ch1_sena_mop`（作り直した版） | 上の Leonardo.ai の絵を、Google Gemini（無料）で直したもの（2026-11-14。カメラ本体を消す、非常ベルなどを足す） | Leonardo.ai と Google の、両方の利用規約による | 不要（任意） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
+| `bg/cam01_lobby`・`cam02_shop`・`cam03_corridor`・`cam04_backyard`・`cam05_elevator`・`cam06_evhall6`・`cam07_office`・`cam08_evhall9`・`cam09_roof`・`cam10_stairs`、`scenes/ch1_monitor_room`・`ch1_shop_card`・`ch1_lobby_bow`・`ch1_office_couple`・`ch1_hanako_desk`・`ch1_shop_front`・`ch1_elevator_close`・`ch1_street_phone`・`ch1_couple_morning`・`ch1_dawn_building`・`ch1_dropped_cans`・`ch1_office_police`・`ch1_relay_sena_usb`、`chars/saeki_scorn`・`saeki_normal`・`jogasaki_scorn`、`scenes/ch1_lobby_police`・`ch1_sena_trace`、`bg/cam07_office_day`・`cam09_roof_day` | Google Gemini（無料）で生成（2026-11-14。人物の入る絵は、上の Leonardo.ai の立ち絵と背景を参考画像として添付して作った。同じ日に、絵どうしの食い違いやレビューの指摘を直すため、多くを作り直した） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
+| `scenes/ch1_reiko_look`・`ch1_backyard_affair`・`ch1_backyard_confront`・`ch1_sena_mop`（作り直した版） | 上の Leonardo.ai の絵を、Google Gemini（無料）で直したもの（2026-11-14。カメラ本体を消す、非常ベルなどを足す） | Leonardo.ai と Google の、両方の利用規約による | 不要（任意） |
 
 ## 注意
 
