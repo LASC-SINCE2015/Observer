@@ -37,7 +37,7 @@
 - 実在の人物・作品・ブランドに似せない（名前を出さない）。
 - 露出は服の範囲まで。色気は、服・表情・しぐさ・光で出す。密会の場面の立ち絵（`saeki_flushed`・`jogasaki_aroused`・`jogasaki_after`）だけは、服を大きく乱し、下着が少しのぞく程度まで。裸・胸があらわな姿・性的な行為は描かない（公開するゲームのため。多くのサービスでも断られる）。
 
-英語のサイト向けのプロンプト（そのまま貼り付けられる形と、Stable Diffusion 系のサイト向けの書き方）は [prompts_en.md](prompts_en.md)。
+英語のサイト向けのプロンプト（そのまま貼り付けられる形と、Stable Diffusion 系のサイト向けの書き方）は [prompts_en.md](prompts_en.md)。絵ごとの生成の状況（✅・⬜）と、プロンプトの日本語訳も、そこにあります。
 
 ### 絵柄をそろえるコツ
 
@@ -112,6 +112,7 @@
 | `ch1_dawn_building` | ビルの出口から見上げた、朝日のまぶしいタワービル | 屋外 | B |
 | `ch1_dropped_cans` | 朝の歩道に、缶ビールとおつまみのパックが転がっている。人の姿は描かない | 屋外 | B |
 | `ch1_office_police` | 朝の法律事務所。警官に付き添われて、うなだれたスーツの男が出ていく | カメラから | B |
+| `ch1_lobby_police` | 3 日目の昼前のロビー。外にパトカーが止まり、警官 2 人と刑事が話している | カメラから | B |
 | `ch1_relay_sena_usb` | 深夜の法律事務所。作業着の女性（瀬名）が、机の脇で手を止めている。机の横板が外れかけ、すき間に小さな USB が見える | カメラから | B |
 
 ### カメラの背景 `images/bg/`
@@ -128,8 +129,10 @@
 | `cam05_elevator` | エレベーターの中（天井の階数の表示板） |
 | `cam06_evhall6` | 6F エレベーターホール（エレベーターの扉と階数の表示） |
 | `cam07_office` | 6F 法律事務所（窓の夜景、机が 2 つ、天井のスピーカー） |
+| `cam07_office_day` | 6F 法律事務所の朝（3 日目の朝に使う） |
 | `cam08_evhall9` | 9F エレベーターホール（会員制サロンの入口、観葉植物） |
 | `cam09_roof` | 屋上（手すり、給水塔、夜空） |
+| `cam09_roof_day` | 屋上の昼前（3 日目に使う） |
 | `cam10_stairs` | 非常階段（誘導灯の緑） |
 
 ## 素材の一覧とライセンス
@@ -140,6 +143,8 @@
 |---|---|---|---|
 | `chars/reiko_normal`・`reiko_smile`・`reiko_sad`・`sena_normal`・`sena_smile`・`saeki_smile`・`saeki_flushed`・`jogasaki_normal`・`jogasaki_aroused`・`jogasaki_after`、`scenes/ch1_reiko_look`・`ch1_backyard_affair`・`ch1_sena_mop`、`bg/cam00_room` | Leonardo.ai（無料プラン）で生成（2026-11-08。玲子の立ち絵は同日に作り直し） | Leonardo.ai の利用規約による。無料プランの生成物は公開され、権利は Leonardo.ai が持つが、商用を含めて利用できると案内されている | 不要（任意） |
 | `chars/hanako_normal`・`hanako_angry`・`hanako_rage`・`kuzumi_normal`・`okochi_normal`、`scenes/ch1_backyard_confront` | Leonardo.ai（無料プラン）で生成（2026-11-10） | 同上 | 不要（任意） |
+| `bg/cam01_lobby`・`cam02_shop`・`cam03_corridor`・`cam04_backyard`・`cam05_elevator`・`cam06_evhall6`・`cam07_office`・`cam08_evhall9`・`cam09_roof`・`cam10_stairs`、`scenes/ch1_monitor_room`・`ch1_shop_card`・`ch1_lobby_bow`・`ch1_office_couple`・`ch1_hanako_desk`・`ch1_shop_front`・`ch1_elevator_close`・`ch1_street_phone`・`ch1_couple_morning`・`ch1_dawn_building`・`ch1_dropped_cans`・`ch1_office_police`・`ch1_relay_sena_usb`、`chars/saeki_scorn`・`saeki_normal`・`jogasaki_scorn`、`scenes/ch1_lobby_police`、`bg/cam07_office_day`・`cam09_roof_day` | Google Gemini（無料）で生成（2026-11-14。人物の入る絵は、上の Leonardo.ai の立ち絵と背景を参考画像として添付して作った。同じ日に、絵どうしの食い違いを直すため、多くを作り直した） |
+| `scenes/ch1_reiko_look`・`ch1_backyard_affair`・`ch1_backyard_confront`・`ch1_sena_mop`（作り直した版） | 上の Leonardo.ai の絵を、Google Gemini（無料）で直したもの（2026-11-14。カメラ本体を消す、非常ベルなどを足す） | Leonardo.ai と Google の、両方の利用規約による | 不要（任意） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
 
 ## 注意
 

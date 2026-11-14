@@ -324,7 +324,7 @@ Observer.script('chapter1', `
   映像が、生々しすぎる。ノイズの粒の一つひとつが、そこにある空気のように見える。
   バックヤードの壁の、非常ベル。それが、ぼんやりと点滅して見えた。
 @event CAM-04 2/01:46-2/02:00 | img:scenes/ch1_backyard_affair.jpg couple@120
-@hotspot CAM-04 2/01:28-2/01:45 189,64 非常ベル | 鳴らす=*bell
+@hotspot CAM-04 2/01:28-2/01:45 184,34 非常ベル | 鳴らす=*bell
 画面を拭った瞬間、モニターの色が変わった。
 緑から、琥珀色へ。
 画面の上の文字が「PAST」に変わり、時刻の数字が、ひとりでに戻り始める。
@@ -563,11 +563,11 @@ Observer.script('chapter1', `
 @event CAM-04 3/02:30-3/02:49
 @event CAM-04 3/02:50-3/03:00 flag=saw_g_couple | img:scenes/ch1_backyard_affair.jpg couple@140
   2 時 50 分。二人がバックヤードに入ってくる。
-@hotspot CAM-07 3/02:38-3/02:44 160,16 天井のスピーカー if !h1 | 館内放送のノイズを流す=*h1_early
-@hotspot CAM-07 3/02:45-3/02:52 160,16 天井のスピーカー if !h1 | 館内放送のノイズを流す=*h1
-@hotspot CAM-07 3/02:53-3/02:55 160,16 天井のスピーカー if !h1 | 館内放送のノイズを流す=*h1_late
-@hotspot CAM-07 3/02:38-3/02:55 262,98 華子の机の電話 if !h1 | 鳴らす=*h_phone_no
-@hotspot CAM-07 3/02:36-3/02:44 102,98 城ヶ崎の机の電話 if relay_got & !t_call & !h1 | 内線の呼び出し音を鳴らす=*t_desk
+@hotspot CAM-07 3/02:38-3/02:44 206,17 天井のスピーカー if !h1 | 館内放送のノイズを流す=*h1_early
+@hotspot CAM-07 3/02:45-3/02:52 206,17 天井のスピーカー if !h1 | 館内放送のノイズを流す=*h1
+@hotspot CAM-07 3/02:53-3/02:55 206,17 天井のスピーカー if !h1 | 館内放送のノイズを流す=*h1_late
+@hotspot CAM-07 3/02:38-3/02:55 209,125 華子の机の電話 if !h1 | 鳴らす=*h_phone_no
+@hotspot CAM-07 3/02:36-3/02:44 128,121 城ヶ崎の机の電話 if relay_got & !t_call & !h1 | 内線の呼び出し音を鳴らす=*t_desk
 八島は、6F のモニターを呼び出し、時刻のつまみを戻した。
 2 時 40 分。華子は、まだ机にいる。
 音を送れるのは、カメラのそばの機器だけ。物は動かせない。人は、聞こえた音で、自分で動く。
@@ -620,8 +620,8 @@ Observer.script('chapter1', `
 @event CAM-06 N+2-N+3 | woman@110
   6F エレベーターホール。華子が、扉の前で立ち止まっている。
   呼び出しボタンには、まだ手を伸ばさない。階段で下りるか、迷っているようだ。
-@hotspot CAM-06 N+2-N+3 160,100 エレベーターの扉 if h1 & !h2 | 到着音を鳴らす=*h2
-@hotspot CAM-06 N+2-N+3 160,40 階数の表示 if h1 & !h2 | 文字を出す=*h2_stairs
+@hotspot CAM-06 N+2-N+3 185,110 エレベーターの扉 if h1 & !h2 | 到着音を鳴らす=*h2
+@hotspot CAM-06 N+2-N+3 183,71 階数の表示 if h1 & !h2 | 文字を出す=*h2_stairs
 @goto *guide_wait
 
 *h2
@@ -634,7 +634,7 @@ Observer.script('chapter1', `
 @event CAM-05 N+4-N+5 | woman@160
   エレベーターの中。華子は腕を組んで、階数の表示を見上げている。
   このまま B1 まで下りれば、華子はそのまま車で帰ってしまう。
-@hotspot CAM-05 N+4-N+5 160,31 表示板 if h2 & !h3 | 「1F で停止します」と出す=*h3 | ノイズを出す=*h3_noise
+@hotspot CAM-05 N+4-N+5 139,21 表示板 if h2 & !h3 | 「1F で停止します」と出す=*h3 | ノイズを出す=*h3_noise
 @goto *guide_wait
 
 *h2_stairs
@@ -648,7 +648,7 @@ Observer.script('chapter1', `
 @event CAM-10 N+3-N+5 | woman@160
   非常階段。華子が、ヒールの音を響かせて下りていく。このままでは、B1 まで下りてしまう。
   1F の踊り場の扉の上に、小さな表示板がある。
-@hotspot CAM-10 N+4-N+5 230,40 1F の扉の表示板 if h2s & !h3 | 「B1 への通路は点検中」と出す=*h3s
+@hotspot CAM-10 N+4-N+5 208,27 1F の扉の表示板 if h2s & !h3 | 「B1 への通路は点検中」と出す=*h3s
 @goto *guide_wait
 
 *h3_noise
@@ -668,8 +668,8 @@ Observer.script('chapter1', `
 @event CAM-03 N+6-N+7 | woman@140,170
   1F 東廊下。華子が、苛立った足どりで歩いてくる。
   この廊下の先、突き当たりを曲がれば、ショップのバックヤードだ。
-@hotspot CAM-03 N+6-N+7 262,40 防犯センサー if h3 & !h4 | 警告音を鳴らす=*h4
-@hotspot CAM-03 N+6-N+7 36,68 非常ベル if h3 & !h4 | 鳴らす=*h_bell_no
+@hotspot CAM-03 N+6-N+7 228,9 防犯センサー if h3 & !h4 | 警告音を鳴らす=*h4
+@hotspot CAM-03 N+6-N+7 61,25 非常ベル if h3 & !h4 | 鳴らす=*h_bell_no
 @goto *guide_wait
 
 *h3s
@@ -681,8 +681,8 @@ Observer.script('chapter1', `
 @event CAM-03 N+7-N+8 | woman@140,170
   1F 東廊下。階段から出てきた華子が、苛立った足どりで歩いてくる。
   この廊下の先、突き当たりを曲がれば、ショップのバックヤードだ。
-@hotspot CAM-03 N+7-N+8 262,40 防犯センサー if h3 & !h4 | 警告音を鳴らす=*h4
-@hotspot CAM-03 N+7-N+8 36,68 非常ベル if h3 & !h4 | 鳴らす=*h_bell_no
+@hotspot CAM-03 N+7-N+8 228,9 防犯センサー if h3 & !h4 | 警告音を鳴らす=*h4
+@hotspot CAM-03 N+7-N+8 61,25 非常ベル if h3 & !h4 | 鳴らす=*h_bell_no
 @goto *guide_wait
 
 *h_bell_no
@@ -747,7 +747,7 @@ Observer.script('chapter1', `
 @event CAM-07 D+4-3/02:55 | img:scenes/ch1_hanako_desk.jpg sitwoman@240,140
 @event CAM-07 3/02:56-3/02:56 | woman@240
 @event CAM-07 3/02:57-3/03:10
-@hotspot CAM-07 D+1-D+3 40,96 プリンター if t_call & !t_usb | 白紙を一枚吐かせる=*t_printer
+@hotspot CAM-07 D+1-D+3 42,130 プリンター if t_call & !t_usb | 白紙を一枚吐かせる=*t_printer
 @goto *guide_wait
 
 *t_printer
@@ -830,7 +830,7 @@ Observer.script('chapter1', `
 @inside
 @time 3/07:50
 @status CAM-09 paused 定期点検のため停止
-@feed CAM-07
+@feed CAM-07 img:bg/cam07_office_day.jpg
 @feed CAM-04
 @cam CAM-07 live
 @log 作業予定 | 3日目 05:12 登録　屋上カメラ 7:40〜8:20　定期点検（管理会社）
@@ -875,7 +875,8 @@ Observer.script('chapter1', `
 @time 3/10:30
 @status CAM-00 broken 故障中・修理手配済み
 @status CAM-09 ok
-@feed CAM-01 guard@90 guard@130 man@220
+@feed CAM-01 img:scenes/ch1_lobby_police.jpg guard@90 guard@130 man@220
+@feed CAM-09 img:bg/cam09_roof_day.jpg
 @cam CAM-01 live
 @log 屋上カメラ | 3日目 07:40〜08:20　定期点検のため停止
 ビルの前に止まったパトカーの赤い光が、地下の監視室のモニターにまで、ちらちらと映り込んでいる。
@@ -949,7 +950,7 @@ Observer.script('chapter1', `
 城ヶ崎が、警官に付き添われて事務所を出ていく。うなだれて、まるで小さくなったように見えた。
 事務所の入口の名札が、5 枚並んでいる。八島は、その数を数えなかった。
 屋上へは、誰も行かなかった。
-@feed CAM-07
+@feed CAM-07 img:bg/cam07_office_day.jpg
 @time 3/11:00
 
 *true_police
