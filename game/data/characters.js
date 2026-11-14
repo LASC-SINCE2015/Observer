@@ -26,6 +26,7 @@ Observer.character('佐伯', {
 Observer.character('華子', {
   normal: 'chars/hanako_normal.png',
   angry: 'chars/hanako_angry.png',
+  rage: 'chars/hanako_rage.png',
 });
 Observer.character('瀬名', {
   normal: 'chars/sena_normal.png',
