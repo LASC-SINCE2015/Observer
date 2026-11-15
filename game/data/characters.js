@@ -44,3 +44,14 @@ Observer.character('久住', {
 Observer.character('大河内', {
   normal: 'chars/okochi_normal.png',
 });
+Observer.character('西条', {
+  normal: 'chars/saijo_normal.png',
+  scared: 'chars/saijo_scared.png',
+});
+Observer.character('美咲', {
+  normal: 'chars/misaki_normal.png',
+  smile: 'chars/misaki_smile.png',
+});
+Observer.character('森下', {
+  normal: 'chars/morishita_normal.png',
+});

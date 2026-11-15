@@ -77,6 +77,11 @@
 | `jogasaki_after` | 〃 | 情事を終えて、すっきりした満足げな顔。はだけたシャツのボタンを留め直している | B |
 | `kuzumi_normal` | 久住正臣 | 無表情。書類の角を指でそろえている | B |
 | `okochi_normal` | 大河内誠司 | 鋭い目。ガムをかんでいる | B |
+| `saijo_normal` | 西条賢一郎 | 見下す薄笑い。除菌シートで指を拭く | A |
+| `saijo_scared` | 〃 | 受話器を耳に当てて、おびえる | A |
+| `misaki_normal` | 桐谷美咲 | まっすぐで少し心配そう。おにぎりを持つ（ブルーバック） | A |
+| `misaki_smile` | 〃 | 笑って、小さく手を振る（ブルーバック） | A |
+| `morishita_normal` | 森下圭介 | 雨にぬれ、追いつめられた目。茶封筒を抱える | A |
 
 人物の見た目（共通の指示のあとに付ける）:
 
@@ -114,7 +119,23 @@
 | `ch1_dropped_cans` | 朝の歩道に、缶ビールとおつまみのパックが転がっている。人の姿は描かない | 屋外 | B |
 | `ch1_office_police` | 朝の法律事務所。警官に付き添われて、うなだれたスーツの男が出ていく | カメラから | B |
 | `ch1_lobby_police` | 3 日目の昼前のロビー。外にパトカーが止まり、警官 2 人と刑事が話している | カメラから | B |
+| `ch1_konbini` | 3 日目の朝、1F のコンビニ。作業着の男（八島）が、後ろ姿で缶ビールとチャーシューを袋に入れる | 屋外 | B |
+| `ch1_sena_meet` | 1F 東廊下。モップを持った瀬名が、顔を上げてこちらを見る（真解決の最後。目の高さ） | 屋外 | A |
 | `ch1_relay_sena_usb` | 深夜の法律事務所。作業着の女性（瀬名）が、机の脇で手を止めている。机の横板が外れかけ、すき間に小さな USB が見える | カメラから | B |
+| `ch2_lobby_morishita` | 夜の 1F ロビー。エレベーターの前で、雨にぬれた男（森下）が白衣の院長（西条）に詰め寄る | カメラから | A |
+| `ch2_mailbox` | アパートの郵便受け。督促の封筒にはさまった、白い紙一枚 | 屋外 | B |
+| `ch2_clinic_kuzumi` | 3F クリニック前の廊下。分厚い封筒を抱えた久住が、クリニックに入っていく | カメラから | B |
+| `ch2_backyard_saeki` | 閉店後のバックヤード。段ボールの陰に座りこんだ佐伯が、航空券を 2 枚持って泣いている | カメラから | A |
+| `ch2_backyard_reiko` | 同じ倉庫。玲子が佐伯の肩を抱き、携帯を耳に当てたまま、カメラを見上げている | カメラから | A |
+| `ch2_director_desk` | 院長室。西条が机で、2 冊のカルテを並べて書き写している。机の端に帯封の札束 | カメラから | A |
+| `ch2_director_safe` | 院長室。西条が壁の金庫を開けて、帯封の札束を出している | カメラから | A |
+| `ch2_hydrant_money` | 地下 2 階の非常階段。開いた消火栓のボックスに、紙袋が押しこんである | 屋外 | B |
+| `ch2_misaki_wave` | 3F クリニック前の廊下。看護師（美咲）がカメラを見上げて、小さく手を振る | カメラから | A |
+| `ch2_relay_news` | 昼のロビーのテレビの画面。左に男の顔写真、右に車に乗せられる作業着の男（ぼかし）。文字なし | カメラから | A |
+| `ch2_director_misaki` | 院長室。看護師（美咲）が机のカルテを、スマホで撮っている | カメラから | A |
+| `ch2_parking_saijo` | B1 駐車場。西条が黒い車のドアを開けて、ライトを消している | カメラから | B |
+| `ch2_shop_shutter` | 朝、ブランドショップの前で、佐伯がシャッターを上げている | 屋外 | B |
+| `ch2_lobby_morning` | 朝のロビー。森下と美咲が向き合って立っている | 屋外 | B |
 
 ### カメラの背景 `images/bg/`
 
@@ -135,6 +156,9 @@
 | `cam09_roof` | 屋上（手すり、給水塔、夜空） |
 | `cam09_roof_day` | 屋上の昼前（3 日目に使う） |
 | `cam10_stairs` | 非常階段（誘導灯の緑） |
+| `cam11_clinic` | 3F クリニック前の廊下（すりガラスの扉、奥に院長室の扉） |
+| `cam12_director` | 3F 院長室（天井の隅の隠しカメラから。机と電話、左の壁の金庫、集合写真、天井のスピーカー） |
+| `cam13_parking` | B1 駐車場（黒い高級車、エレベーターの扉） |
 
 ## 素材の一覧とライセンス
 
@@ -146,6 +170,8 @@
 | `chars/hanako_normal`・`hanako_angry`・`hanako_rage`・`kuzumi_normal`・`okochi_normal`、`scenes/ch1_backyard_confront` | Leonardo.ai（無料プラン）で生成（2026-11-10） | 同上 | 不要（任意） |
 | `bg/cam01_lobby`・`cam02_shop`・`cam03_corridor`・`cam04_backyard`・`cam05_elevator`・`cam06_evhall6`・`cam07_office`・`cam08_evhall9`・`cam09_roof`・`cam10_stairs`、`scenes/ch1_monitor_room`・`ch1_shop_card`・`ch1_lobby_bow`・`ch1_office_couple`・`ch1_hanako_desk`・`ch1_shop_front`・`ch1_elevator_close`・`ch1_street_phone`・`ch1_couple_morning`・`ch1_dawn_building`・`ch1_dropped_cans`・`ch1_office_police`・`ch1_relay_sena_usb`、`chars/saeki_scorn`・`saeki_normal`・`jogasaki_scorn`、`scenes/ch1_lobby_police`・`ch1_sena_trace`、`bg/cam07_office_day`・`cam09_roof_day` | Google Gemini（無料）で生成（2026-11-14。人物の入る絵は、上の Leonardo.ai の立ち絵と背景を参考画像として添付して作った。同じ日に、絵どうしの食い違いやレビューの指摘を直すため、多くを作り直した） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
 | `scenes/ch1_reiko_look`・`ch1_backyard_affair`・`ch1_backyard_confront`・`ch1_sena_mop`（作り直した版） | 上の Leonardo.ai の絵を、Google Gemini（無料）で直したもの（2026-11-14。カメラ本体を消す、非常ベルなどを足す） | Leonardo.ai と Google の、両方の利用規約による | 不要（任意） |
+
+| `scenes/ch1_konbini`・`ch1_sena_meet`、`chars/saijo_normal`・`saijo_scared`・`misaki_normal`・`misaki_smile`・`morishita_normal`、`bg/cam11_clinic`・`cam12_director`・`cam13_parking`、`scenes/ch2_*` | Google Gemini（無料）で生成（2026-11-15。今ある立ち絵と背景を参考画像として添付して作った） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
 
 ## 注意
 

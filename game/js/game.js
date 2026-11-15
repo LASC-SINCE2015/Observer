@@ -7,7 +7,7 @@
    =================================================================== */
 
 (function () {
-  const GAME_VERSION = '0.2.6';
+  const GAME_VERSION = '0.2.7';
   const SAVE_KEY = 'observer.save.v2';          // 場面のセーブ。形式を変えたら v を上げる
   const PROGRESS_KEY = 'observer.progress.v2';  // 章をまたぐ記録
   const DATA_VERSION = 2;
@@ -1322,6 +1322,12 @@ ${files[0]}`));
       progress.flags.relay_ch1 = true;
       progress.chapters[1] = Object.assign(progress.chapters[1] || {}, { normal: true, ready: true });
       saveProgress(); toast('第1章の真解決の条件をそろえました。章選択から第1章を始めてください');
+    });
+    btn('第2章の真解決を試す', () => {
+      progress.flags.relay_ch2 = true;
+      [1, 2].forEach((n) => { progress.chapters[n] = Object.assign(progress.chapters[n] || {}, { normal: true }); });
+      progress.chapters[2].ready = true;
+      saveProgress(); toast('第2章の真解決の条件をそろえました。章選択から第2章を始めてください');
     });
     btn('全章クリア扱い', () => {
       [1, 2, 3, 4].forEach((n) => { progress.chapters[n] = Object.assign(progress.chapters[n] || {}, { normal: true }); });
