@@ -6,13 +6,13 @@
 
 各絵の見出しに、✅（生成済み）か ⬜（未生成）を付けています。`assets_src/images/` はリポジトリに入らないので、絵を置いたら、ここの一覧と見出しのマークを手で更新します。
 
-全 50 枚のうち、生成済みは 50 枚、未生成は 0 枚です（2026-11-14 時点）。
+全 74 枚のうち、生成済みは 74 枚、未生成は 0 枚です（2026-11-15 時点）。
 
 | 種類 | ✅ 生成済み | ⬜ 未生成 | 未生成の絵 |
 |---|---|---|---|
-| 立ち絵 | 18 | 0 | なし |
-| 場面の絵 | 19 | 0 | なし |
-| カメラの背景 | 13 | 0 | なし |
+| 立ち絵 | 23 | 0 | なし |
+| 場面の絵 | 35 | 0 | なし |
+| カメラの背景 | 16 | 0 | なし |
 
 2026-11-14 に絵を見比べて、絵どうし・絵とシナリオの食い違いを直すことにしました。下の「絵をそろえるための決まり」に合わせ、「作り直し（Gemini で参考画像を添付）」のプロンプトで作り直しました（23 枚、同じ日に完了。新しく作った `ch1_lobby_police`・`cam07_office_day`・`cam09_roof_day` を含め、全部で 49 枚）。作り直した絵の前の版は、`assets_src/images/backup/` に移しています（ゲームには使わない）。
 
@@ -1010,6 +1010,8 @@ Generate an image. Edit the attached image. Keep everything exactly the same: th
 
 - 文字を描かないよう指示しても、時計や表示が入ることがある。できた絵は、文字が入っていないか確かめる。
 - 立ち絵の美咲は、ピンクの服と緑がかぶらないよう、青一色の背景（ブルーバック）で作った。
+- Gemini の 1 日の画像の上限に届いたら、別の Google アカウントに切り替えて続けた。初めて使うアカウントでは、画像を添付したときに利用の確認が出る。
+- 場面の絵の ch2_shop_shutter は、作ったときの文で人物を「man」と書いてしまったが、添付の立ち絵どおりの女性で描かれた。下の文は正しく直したもの。
 
 ### 第1章の足し
 
@@ -1128,6 +1130,136 @@ Generate an image. Edit the first attached image. Keep exactly the same room, ca
 ```
 
 > **日本語訳**: 1 枚目の絵を直す。部屋・角度・構図・明かり・色・絵柄はそのまま。2 枚目の男（院長）を、机の後ろの椅子に座らせ、前かがみでペンで書かせる。机の上に紙のカルテを 2 冊（古いものと新しいもの）並べて開き、机の端に帯封の付いた古い札束をいくつか積む。
+
+#### ✅ ch2_director_safe（院長室。西条が金庫から札束を出す）
+
+添付: `scenes/ch2_director_desk`
+
+```
+Generate an image. Edit the attached image. Keep exactly the same room, camera angle, composition, lighting, colors and art style, and the same man (clinic director in a white coat with rimless glasses). Change only this: the man has left the desk and stands at the gray wall safe on the left wall, with its heavy door swung open; he is taking out a thick stack of old banknote bundles wrapped in paper bands. His back half-hides the keypad. The chair behind the desk is empty, and the two paper charts still lie open on the desk. Horizontal 16:9 landscape. The camera itself is not visible. No text, no letters, no numbers, no logo, no watermark.
+```
+
+> **日本語訳**: 添付の絵を直す。部屋・角度・構図・明かり・色・絵柄と、院長はそのまま。院長は机を離れ、左の壁の灰色の金庫の前に立つ。重い扉は開いていて、帯封の付いた古い札束の厚い束を取り出している。背中でテンキーが半分隠れる。机の後ろの椅子は空で、2 冊のカルテは机の上に開いたまま。
+
+#### ✅ ch2_director_misaki（院長室。美咲がカルテを撮る）
+
+添付: `bg/cam12_director`、`chars/misaki_normal`
+
+```
+Generate an image. Edit the first attached image. Keep exactly the same room, camera angle, composition, lighting, colors and art style (the safe on the left wall, the group photo, the bookshelf, the desk, the lamp and the phone stay where they are). Add one person: the young nurse from the second attached image (short dark brown bob with a hair clip, pale pink scrubs, white cardigan; ignore its blue background). She stands at the desk, leaning over it, holding up a smartphone with both hands and photographing two open paper medical charts lying side by side on the desk. A few stacks of old banknote bundles wrapped in paper bands sit at the edge of the desk. The leather chair is empty and pushed back. Tense, hurried atmosphere. Small figure as seen by a hidden ceiling camera. Horizontal 16:9 landscape. The camera itself is not visible. No text, no letters, no numbers, no logo, no watermark.
+```
+
+> **日本語訳**: 1 枚目の絵を直す。部屋・角度・構図・明かり・色・絵柄はそのまま。2 枚目の若い看護師（ブルーバックは無視）を、机に身を乗り出させ、両手でスマホを構えて、並べて開いた 2 冊の紙のカルテを撮らせる。机の端に帯封の札束。革の椅子は空で、後ろに引いてある。張りつめた、急いだ空気。
+
+#### ✅ ch2_misaki_wave（クリニック前の廊下。美咲がカメラに手を振る）
+
+添付: `bg/cam11_clinic`、`chars/misaki_smile`
+
+```
+Generate an image. Edit the first attached image. Keep exactly the same corridor, camera angle, composition, lighting, colors and art style (the clinic glass doors on the left, the director's door with light under it, the bench and plants). Add one person: the young nurse from the second attached image (short dark brown bob with a hair clip, pale pink scrubs, white cardigan; ignore its blue background). She stands in the middle of the corridor, has stopped walking, looks straight up into the security camera, and gives it a small, shy wave with one hand and a warm little smile. Small figure as seen by a ceiling security camera, but her face and the waving hand are clearly readable. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no numbers, no logo, no watermark.
+```
+
+> **日本語訳**: 1 枚目の絵を直す。廊下・角度・構図・明かり・色・絵柄はそのまま。2 枚目の若い看護師を、廊下の真ん中で立ち止まらせ、監視カメラをまっすぐ見上げて、片手で小さく、はにかむように手を振らせ、温かい小さな笑みを浮かべさせる。顔と振る手ははっきり見えるように。
+
+#### ✅ ch2_lobby_morishita（夜のロビー。森下が西条に詰め寄る）
+
+添付: `bg/cam01_lobby`、`chars/morishita_normal`、`chars/saijo_normal`
+
+```
+Generate an image. Edit the first attached image. Keep exactly the same night lobby, camera angle, composition, lighting, colors and art style. Add two people in front of the elevator doors: the man from the second attached image (34-year-old man in a rain-damp dark gray jacket, messy wet black hair, holding a brown envelope; ignore its green background) is angrily confronting the man from the third attached image (48-year-old clinic director in a white doctor's coat, rimless glasses; ignore its green background), leaning toward him and shouting, one hand raised. The doctor leans back with a disgusted, contemptuous look, holding up a hand to keep him away. Small figures as seen by a ceiling security camera. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no numbers, no logo, no watermark.
+```
+
+> **日本語訳**: 1 枚目の夜のロビーはそのまま。エレベーターの扉の前に 2 人を足す。2 枚目の男（雨に濡れた濃い灰色の上着、茶封筒を持つ）が、3 枚目の院長に、身を乗り出し片手を上げて怒鳴りながら詰め寄る。院長は身を引き、嫌悪と軽蔑の顔で、手を上げて遠ざけようとする。
+
+#### ✅ ch2_backyard_saeki（バックヤード。佐伯がひとりで泣く）
+
+添付: `bg/cam04_backyard`、`chars/saeki_normal`
+
+```
+Generate an image. Edit the first attached image. Keep exactly the same stockroom, camera angle, composition, lighting, colors and art style (metal shelves, cardboard boxes, the door at the end and the red fire alarm bell above it). Add one person: the woman from the second attached image (boutique manager with a curled chestnut bob, black fitted jacket and skirt uniform, silk scarf; ignore its green background). She sits alone on the floor in the aisle with her back against a cardboard box, knees pulled up, head bowed, crying quietly, holding two airline tickets in her hand. Lonely, quiet, late at night after closing. Small figure as seen by a ceiling security camera. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no numbers, no logo, no watermark.
+```
+
+> **日本語訳**: 1 枚目の倉庫はそのまま（金属の棚、段ボール、奥の扉とその上の赤い火災ベル）。2 枚目の女（店長）を、通路の床に、段ボールに背をあずけて膝を抱えて座らせ、うつむいて静かに泣かせる。手には航空券が 2 枚。閉店後の深夜の、さびしく静かな空気。
+
+#### ✅ ch2_backyard_reiko（バックヤード。玲子が佐伯の肩を抱き、カメラを見上げる）
+
+添付: `chars/reiko_normal`（`ch2_backyard_saeki` を作ったチャットで続けて頼む）
+
+```
+Generate an image. Edit the stockroom image you just made. Keep exactly the same stockroom, camera angle, composition, lighting, colors and art style, and keep the crying boutique manager sitting on the floor in the same place. Add one more person: the woman from the attached portrait (long wavy black hair swept to one side, off-the-shoulder wine-red evening gown, gold necklace; ignore its green background). She crouches beside the crying woman with one arm around her shoulders, and with her other hand she holds a smartphone to her ear, and she is looking straight up into the security camera, meeting the viewer's eyes with a calm, unreadable face. Small figures as seen by a ceiling security camera, but the gowned woman's upturned face is clearly visible. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no numbers, no logo, no watermark.
+```
+
+> **日本語訳**: さっき作った倉庫の絵を直す。倉庫・角度・構図・明かり・色・絵柄と、床で泣く店長はそのまま。添付の女（ワインレッドのドレス）を足す。泣く店長のそばにかがんで片腕で肩を抱き、もう片方の手でスマホを耳に当て、監視カメラをまっすぐ見上げて、落ち着いた読めない顔で見る側と目を合わせる。
+
+#### ✅ ch2_relay_news（昼のロビーのテレビ。森下と逮捕のニュース）
+
+添付: `scenes/ch1_lobby_police`、`chars/morishita_normal`
+
+```
+Generate an image. Same art style and coloring as the first attached image (Japanese anime style, the same daytime tower lobby). Composition: a close, slightly high-angle view from a ceiling security camera, zoomed in on the large flat-screen TV mounted on the lobby wall, so the TV screen fills most of the frame, with a little of the lobby wall and a potted plant around its edges. On the TV screen, a midday news broadcast in two panels: on the left panel, a formal headshot photo of the man from the second attached image (34-year-old man with short black hair, tired eyes; neat, dry hair this time, wearing a plain suit; ignore its green background); on the right panel, news footage of a man in a plain navy security guard work uniform being led into a black car by two plainclothes detectives in front of a glass tower, with his face covered by a mosaic blur. The bottom of the screen has a plain blank caption bar with no letters. No readable text anywhere. Horizontal 16:9 landscape. No letters, no numbers, no logo, no watermark.
+```
+
+> **日本語訳**: 1 枚目と同じ絵柄・塗り（昼のタワーのロビー）。天井のカメラから少し見下ろして、壁の大きなテレビに寄る（画面が画面のほとんどを占める）。テレビは昼のニュースで 2 分割。左に 2 枚目の男の、きちんとした顔写真（髪は乾いて整い、地味なスーツ）。右に、ガラスのタワーの前で、紺の警備員の作業着の男が 2 人の私服の刑事に黒い車へ連れて行かれる映像（顔はモザイク）。下の字幕の帯は無地。
+
+#### ✅ ch2_parking_saijo（地下駐車場。西条が車のライトを消す）
+
+添付: `bg/cam13_parking`、`chars/saijo_normal`
+
+```
+Generate an image. Edit the first attached image. Keep exactly the same parking garage, camera angle, composition, lighting, colors and art style, and the same black luxury sedan in the same place. Changes: the sedan's headlights are now switched OFF. Add one person: the man from the second attached image (48-year-old clinic director in a white doctor's coat, rimless glasses; ignore its green background), standing at the open driver's door of the sedan, leaning in to switch off the lights, with an irritated face. Small figure as seen by a ceiling security camera. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no numbers, no license plate characters, no logo, no watermark.
+```
+
+> **日本語訳**: 1 枚目の駐車場と、同じ場所の黒い高級車はそのまま。車のヘッドライトを消した状態にする。2 枚目の院長を、開いた運転席のドアのところに立たせ、身をかがめてライトを消させる。いらだった顔。
+
+#### ✅ ch2_clinic_kuzumi（クリニック前の廊下。久住が封筒を運ぶ）
+
+添付: `bg/cam11_clinic`、`chars/kuzumi_normal`
+
+```
+Generate an image. Edit the first attached image. Keep exactly the same corridor, camera angle, composition, lighting, colors and art style (the clinic glass doors on the left, the director's wooden door with light under it, the bench and plants). Add one person: the man from the second attached image (55-year-old building manager, graying hair, plain gray suit; ignore its green background). He walks down the corridor toward the director's door, carrying a thick brown envelope tucked under one arm, his face calm and expressionless. Small figure as seen by a ceiling security camera. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no numbers, no logo, no watermark.
+```
+
+> **日本語訳**: 1 枚目の廊下はそのまま。2 枚目の男（55 歳のビル管理者、白髪まじり、地味な灰色のスーツ）を、院長室の扉へ向かって歩かせる。厚い茶封筒を小脇に抱え、落ち着いた無表情。
+
+#### ✅ ch2_hydrant_money（地下 2 階の非常階段。消火栓の中の札束）
+
+添付: `bg/cam10_stairs`
+
+```
+Generate an image. Same art style and coloring as the attached image (Japanese anime style background art, cinematic, the same emergency stairwell with green exit-sign light), but this time an eye-level view, not from a security camera. Scene: the bottom landing of the emergency staircase on the second basement level, late at night. On the concrete wall, a red fire hydrant cabinet with its metal door swung open; inside, behind the coiled fire hose, a plain brown paper bag is pushed in, its top slightly open, showing the edges of thick stacks of old banknotes. Dim, cold, uneasy light. No people. Horizontal 16:9 landscape. No text, no letters, no numbers, no signs, no logo, no watermark.
+```
+
+> **日本語訳**: 添付の絵と同じ絵柄・塗り（緑の非常口の光の非常階段）。ただし監視カメラではなく目の高さ。深夜の地下 2 階の、非常階段のいちばん下の踊り場。コンクリートの壁の赤い消火栓の扉が開いていて、巻いたホースの奥に無地の茶色の紙袋が押し込まれ、口から古い札束の端がのぞく。薄暗く冷たい、落ち着かない光。人はいない。
+
+#### ✅ ch2_mailbox（古いアパートの郵便受け）
+
+添付: `scenes/ch1_street_phone`
+
+```
+Generate an image. Same art style and coloring as the attached image (Japanese anime style background art, cinematic), but a very different place: the row of cheap metal mailboxes in the entrance of a run-down old apartment building, in the evening, under a flickering fluorescent light. Eye-level close view of one small mailbox with its little door open. Inside, a few stiff window envelopes (overdue bills), and sticking out between them, a single plain sheet of white paper folded in half, with no envelope and no stamp. Peeling paint, a little rust, lonely and shabby mood. No people. Horizontal 16:9 landscape. No readable text, no letters, no numbers, no names, no logo, no watermark.
+```
+
+> **日本語訳**: 添付の絵と同じ絵柄・塗り。ただし場所はまったく違い、古くさびれたアパートの入口の、安い金属の郵便受けの列。夕方、ちらつく蛍光灯の下。小さな郵便受けの 1 つに目の高さで寄り、小さな扉が開いている。中には窓付きの封筒（督促状）が数通と、その間から、封筒にも入っておらず切手もない、二つ折りの白い紙が 1 枚はみ出している。塗装のはがれ、少しのさび。さびしく、みすぼらしい空気。人はいない。
+
+#### ✅ ch2_shop_shutter（朝。佐伯が店のシャッターを上げる）
+
+添付: `scenes/ch1_shop_front`、`chars/saeki_normal`
+
+```
+Generate an image. Same art style, same coloring and same shop front as the first attached image (Japanese anime style background art, cinematic). Scene: early morning, about 7 am, cool pale morning light, the street is empty. The woman from the second attached image (the boutique manager; same face, hair and clothes) is standing in front of the shop, raising its metal roll-up shutter halfway with both hands, seen from the side. Her expression is tired but calm. Eye-level view from across the narrow street. Horizontal 16:9 landscape. No text, no letters, no signs with writing, no logo, no watermark.
+```
+
+> **日本語訳**: 1 枚目と同じ絵柄・塗り・店先。朝 7 時ごろの、冷たく淡い朝の光。通りに人はいない。2 枚目の女（店長。顔・髪・服は同じ）が店の前に立ち、金属の巻き上げシャッターを両手で半分まで上げている。横から見る。疲れているが落ち着いた顔。細い通りの向かいから、目の高さで見る。
+
+#### ✅ ch2_lobby_morning（朝のロビー。森下と美咲が向き合う）
+
+添付: `scenes/ch1_lobby_police`、`chars/morishita_normal`、`chars/misaki_normal`
+
+```
+Generate an image. Same art style, same coloring and same building lobby as the first attached image (Japanese anime style background art, cinematic), but without any police officers. Scene: morning, about 8 am, soft bright sunlight through the glass entrance, the lobby is quiet. Two people stand facing each other in the middle of the lobby, a few steps apart, seen from the side at eye level: on the left, the young man from the second attached image (same face, hair and clothes; ignore its plain background), looking down a little awkwardly; on the right, the young woman from the third attached image (same face, hair and clothes; ignore its blue background), looking at him with a gentle, slightly sad smile. Medium-small figures, full body. Horizontal 16:9 landscape. No text, no letters, no logo, no watermark.
+```
+
+> **日本語訳**: 1 枚目と同じ絵柄・塗り・ロビー。ただし警官はいない。朝 8 時ごろ、ガラスの入口から柔らかく明るい日ざし。静かなロビー。真ん中に 2 人が数歩離れて向き合い、横から目の高さで見る。左に 2 枚目の若い男（少しぎこちなく目を伏せる）、右に 3 枚目の若い女（彼を見て、やさしく、少し悲しげに微笑む）。人物は全身で、やや小さめ。
 
 ---
 
