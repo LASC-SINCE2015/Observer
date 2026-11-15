@@ -28,7 +28,8 @@
 │  │  └─ characters.js … 立ち絵の一覧（人物と表情ごとの絵）
 │  ├─ assets/         … 絵（chars/ 立ち絵・scenes/ 場面・bg/ カメラの背景）
 │  └─ scenario/
-│     └─ chapter1.js  … 第1章の台本
+│     ├─ chapter1.js  … 第1章の台本
+│     └─ chapter2.js  … 第2章の台本
 ├─ assets_src/  … 素材の元ファイル（編集用）。公開されない
 ├─ testing/     … 確認の計画と結果
 └─ tools/       … 開発用スクリプト（台本の自動テストなど）

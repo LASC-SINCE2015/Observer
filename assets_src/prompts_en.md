@@ -1004,6 +1004,133 @@ Generate an image. Edit the attached image. Keep everything exactly the same: th
 
 ---
 
+## 第1章の足し・第2章（Gemini で参考画像を添付）
+
+2026-11-15 に作った絵です。作り方は「作り直し（Gemini で参考画像を添付）」と同じ（1 枚ごとに新しいチャット。表情違いは同じチャットで続けて頼む）。人物の入る絵は、立ち絵や背景を添付して作ります。
+
+- 文字を描かないよう指示しても、時計や表示が入ることがある。できた絵は、文字が入っていないか確かめる。
+- 立ち絵の美咲は、ピンクの服と緑がかぶらないよう、青一色の背景（ブルーバック）で作った。
+
+### 第1章の足し
+
+#### ✅ ch1_konbini（3 日目の朝、1F のコンビニ）
+
+添付: `scenes/ch1_street_phone`
+
+```
+Generate an image. Same art style, same coloring and same building as the attached image (Japanese anime style background art, cinematic). Scene: early morning, about 8 am, inside a small, bright convenience store on the ground floor of the same glass tower. Eye-level view from behind the checkout counter area, slightly to the side. A tired 35-year-old man in a plain navy security guard work uniform, seen from behind and slightly from the side so his face is not visible, is putting a can of premium beer and a pack of thick-sliced roast pork into a plain white plastic bag at the counter. Morning sunlight comes through the glass storefront. Plain shelves with unbranded products. Horizontal 16:9 landscape. No text, no letters, no labels, no logos, no price tags, no watermark.
+```
+
+> **日本語訳**: 添付の絵と同じ絵柄・塗り・建物。朝 8 時ごろ、同じガラスのタワーの 1 階の、小さく明るいコンビニの中。レジのあたりの後ろから、少し横の目の高さで見る。紺の地味な警備員の作業着の、疲れた 35 歳の男が、後ろ姿（顔は見えない）で、レジで高い缶ビールと厚切りのチャーシューのパックを無地の白いレジ袋に入れている。ガラスの店先から朝日。棚の商品は無地。文字・ラベル・ロゴ・値札なし。
+
+#### ✅ ch1_sena_meet（真解決の最後、1F 東廊下で瀬名と向き合う）
+
+添付: `scenes/ch1_sena_mop`、`chars/sena_normal`
+
+```
+Generate an image. Use the first attached image for the place and art style: the same marble ground-floor corridor of the luxury tower, the same lighting and the same anime art style (Japanese anime style background art with a character, cinematic). The woman is the one in the second attached image (same face, black hair tied back in a ponytail, gray cleaning work uniform, towel around her neck, an oversized men's wristwatch on her left wrist; ignore its green background). This time the view is NOT from a security camera: eye level, as seen by a man who has just walked up to her in the corridor, about three meters away. She has stopped mopping, holds the mop handle with both hands, and has just raised her face to look straight at the viewer, with a slightly teasing, bittersweet small smile. Late morning, soft indoor light. Horizontal 16:9 landscape. No text, no letters, no logo, no watermark.
+```
+
+> **日本語訳**: 場所と絵柄は 1 枚目（同じ大理石の 1 階の廊下・明かり・絵柄）。女性は 2 枚目の人（同じ顔、黒髪のポニーテール、グレーの作業着、首にタオル、左手首に男物の大きな腕時計。緑の背景は無視）。今回は防犯カメラからではなく、廊下で 3 メートルほどの所まで歩み寄った男の目の高さから見る。モップがけをやめ、柄を両手で持ち、顔を上げてまっすぐこちらを見る。少しからかうような、ほろ苦い小さな笑み。昼前のやわらかな光。
+
+### 第2章の立ち絵
+
+#### ✅ saijo_normal（西条賢一郎・見下す顔）
+
+添付: `chars/kuzumi_normal`（絵柄の参考だけ）
+
+```
+Generate an image. Same art style, same coloring, same line quality and same framing as the attached character portrait, but a completely different person (do not copy his face or clothes). Japanese anime style illustration, character portrait (tachi-e) for a mature suspense visual novel. Delicate line art, crisp cel shading, slightly muted elegant colors. Waist-up, body turned slightly to the side, face looking at the viewer. Vertical 2:3 portrait. Background: solid pure green background, chroma key green, flat solid background, clean sharp edges, no shadows on background. No green light or green reflections on the character. No text, no logo, no watermark. Character: a 48-year-old man, the director of a cosmetic surgery clinic. Neatly slicked-back black hair with gray at the temples, thin rimless glasses, clean-shaven, pale, fastidious and well-groomed. A crisp white doctor's coat over an expensive pale blue shirt and a dark navy tie. He is wiping his fingers with a small white disinfectant wet wipe. Expression: looking down at the viewer with a condescending, sneering half-smile.
+```
+
+> **日本語訳**: 添付の立ち絵と同じ絵柄・塗り・線・構図で、まったく別の人物。【立ち絵の共通指示】。人物: 48 歳の男。美容クリニックの院長。こめかみに白髪のまじる、なでつけた黒髪。細い縁なし眼鏡。ひげはなく、色白で、潔癖で身なりがよい。白衣の下に高そうな薄い水色のシャツと紺のネクタイ。小さな白い除菌シートで指を拭いている。表情: こちらを見下す、さげすんだ薄笑い。
+
+#### ✅ saijo_scared（西条・怯える顔）
+
+同じチャットで続けて頼んだ。
+
+```
+Generate an image. Same character, same outfit, same glasses, same art style, same framing and the same solid chroma key green background as the image you just made. He is no longer holding the wet wipe: he holds an old desk phone receiver to his ear with a trembling hand. Only change the facial expression to: frightened and cowering, eyes wide behind his glasses, sweat on his forehead, mouth half open as if pleading to someone above him. Vertical 2:3 portrait. No green light on the character. No text, no logo, no watermark.
+```
+
+> **日本語訳**: 同じ人物・服・眼鏡・絵柄・構図・緑の背景。除菌シートはもう持たず、震える手で古い机の電話の受話器を耳に当てている。表情だけを、おびえて縮こまった顔に（眼鏡の奥で目を見開き、額に汗、目上の誰かに頼みこむように口が半開き）。
+
+#### ✅ misaki_normal（桐谷美咲・ふだん）
+
+添付: `chars/sena_normal`（絵柄の参考だけ）
+
+```
+Generate an image. Same art style, same coloring, same line quality and same framing as the attached character portrait, but a completely different person (do not copy her face, hair or clothes). Japanese anime style illustration, character portrait (tachi-e) for a mature suspense visual novel. Delicate line art, crisp cel shading, slightly muted colors. Waist-up, body turned slightly to the side, face looking at the viewer. Vertical 2:3 portrait. Background: solid pure blue background, chroma key blue, flat solid background, clean sharp edges, no shadows on background. No blue light or blue reflections on the character. No text, no logo, no watermark. Character: a 24-year-old woman, a newly qualified night-shift nurse at a cosmetic surgery clinic. Short dark brown bob hair with a small hair clip, big frank eyes, light natural makeup, healthy and lively. Wearing a pale pink nurse scrub top with a plain white cardigan over it, a pen in the chest pocket, a simple wristwatch on a nurse's watch strap. She holds a small plastic-wrapped homemade rice ball in one hand. Expression: straightforward and a little worried, looking right at the viewer as if about to ask a question.
+```
+
+> **日本語訳**: 添付の立ち絵と同じ絵柄で、まったく別の人物。背景は青一色のクロマキー（人物に青い光なし）。人物: 24 歳の女性。美容クリニックの新人の夜勤の看護師。小さな髪留めの、こげ茶のショートボブ。大きくまっすぐな目、薄い化粧、元気で健康的。薄いピンクのスクラブに白い無地のカーディガン、胸ポケットにペン、ナースウォッチ。ラップに包んだ手作りのおにぎりを片手に持つ。表情: まっすぐで少し心配そう、何か聞きかけるようにこちらを見る。
+
+#### ✅ misaki_smile（美咲・笑って手を振る）
+
+同じチャットで続けて頼んだ（1 回目は絵が出ず、文字だけが返ってきたので、「再試行」で作り直した）。
+
+```
+Generate an image. Same character, same outfit, same art style, same framing and the same solid chroma key blue background as the image you just made. She is no longer holding the rice ball; she raises one hand near her shoulder in a small, shy wave. Only change the facial expression to: a warm, bright, slightly teasing smile. Vertical 2:3 portrait. No blue light on the character. No text, no logo, no watermark.
+```
+
+> **日本語訳**: 同じ人物・服・絵柄・構図・青の背景。おにぎりはもう持たず、片手を肩のあたりに上げて、小さく照れたように手を振る。表情だけを、あたたかく明るい、少しからかうような笑顔に。
+
+#### ✅ morishita_normal（森下圭介）
+
+添付: `chars/kuzumi_normal`（絵柄の参考だけ）
+
+```
+Generate an image. Same art style, same coloring, same line quality and same framing as the attached character portrait, but a completely different person (do not copy his face or clothes). Japanese anime style illustration, character portrait (tachi-e) for a mature suspense visual novel. Delicate line art, crisp cel shading, slightly muted colors. Waist-up, body turned slightly to the side, face looking at the viewer. Vertical 2:3 portrait. Background: solid pure green background, chroma key green, flat solid background, clean sharp edges, no shadows on background. No green light or green reflections on the character. No text, no logo, no watermark. Character: a 34-year-old ordinary office worker whose younger sister has been left in a coma after surgery. Short black hair wet and disheveled from the rain, unshaven for a few days, tired red eyes with dark circles. A cheap dark gray suit jacket damp with rain over a wrinkled white shirt, no tie, holding a crumpled brown document envelope against his chest. Expression: desperate, exhausted and accusing, staring straight at the viewer with quiet anger and grief.
+```
+
+> **日本語訳**: 添付の立ち絵と同じ絵柄で、まったく別の人物。【立ち絵の共通指示】。人物: 手術のあと妹が目を覚まさない、34 歳のふつうの会社員。雨でぬれて乱れた短い黒髪、数日そっていないひげ、くまのある疲れて赤い目。雨で湿った安い濃い灰色の上着、しわの寄った白いシャツ、ネクタイなし。くしゃくしゃの茶封筒を胸に抱える。表情: 追いつめられ、疲れきり、責めるような目で、静かな怒りと悲しみを込めてこちらを見すえる。
+
+### 第2章のカメラの背景
+
+#### ✅ cam11_clinic（CAM-11 3F クリニック前の廊下）
+
+添付: `bg/cam03_corridor`
+
+```
+Generate an image. Same art style, same coloring and the same security-camera viewpoint as the attached image (Japanese anime style background art, cinematic; viewed from a ceiling-mounted security camera in the corner, high angle, slight wide-angle lens distortion), but a different place in the same luxury tower: the 3rd-floor corridor in front of a high-end cosmetic surgery clinic, late at night. On the left, the clinic's frosted glass double doors with a small blank white sign panel (no letters), closed for the night. Further down the corridor on the right, a solid wooden door to the director's private office, with warm light leaking out from under the door onto the floor. White walls, polished floor, a few potted plants, a bench. Dim night lighting, quiet and uneasy. No people. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no numbers, no logo, no watermark.
+```
+
+> **日本語訳**: 添付の絵と同じ絵柄・塗り・防犯カメラの視点で、同じタワーの別の場所。深夜の、高級美容クリニックの前の 3 階の廊下。左にクリニックのすりガラスの両開きの扉（文字のない白い表示板）。廊下の奥の右に、院長室の木の扉。扉の下から、あたたかい明かりが床に漏れている。白い壁、磨いた床、観葉植物、ベンチ。人なし。
+
+#### ✅ cam12_director（CAM-12 3F 院長室）
+
+添付: `bg/cam07_office`（絵柄の参考だけ）
+
+```
+Generate an image. Same art style and coloring as the attached image (Japanese anime style background art, cinematic), but a different room: the private office of a cosmetic surgery clinic director, late at night, seen from a tiny hidden camera high in the corner of the ceiling, steep high angle, strong wide-angle lens distortion. Layout: a large dark wooden executive desk in the center-right, with a desk lamp switched on, a black IP desk phone on the right edge of the desk, a leather chair behind it. On the left wall, a gray steel wall safe at waist height with a small keypad (the keypad faces away so its buttons cannot be read). On the back wall: one large framed group photo of about ten clinic staff in white coats and nurse uniforms standing in two rows, and next to it a small framed certificate of gratitude. A bookshelf with medical books. In the upper center of the image, a small round ceiling speaker grille. Warm lamp light, the rest of the room dim. No people. Horizontal 16:9 landscape. The camera itself is not visible. No text, no letters, no numbers, no logo, no watermark.
+```
+
+> **日本語訳**: 添付の絵と同じ絵柄・塗りで、別の部屋。深夜の、美容クリニックの院長室を、天井の隅の高いところの小さな隠しカメラから見下ろす（急な角度、強い広角のゆがみ）。右寄りの真ん中に大きな木の机（電気スタンドがついている、机の右端に黒い電話、後ろに革の椅子）。左の壁の腰の高さに灰色の金庫（番号のボタンは向こう向きで読めない）。奥の壁に、白衣と看護師の服の 10 人ほどが 2 列に並んだ大きな集合写真の額と、小さな感謝状の額。医学書の本棚。絵の上の真ん中に、天井の丸いスピーカーの網。人なし。
+
+#### ✅ cam13_parking（CAM-13 B1 駐車場）
+
+添付: `bg/cam10_stairs`
+
+```
+Generate an image. Same art style, same coloring and the same security-camera look as the attached image (Japanese anime style background art, cinematic; viewed from a ceiling-mounted security camera in the corner, high angle, slight wide-angle lens distortion), but a different place in the same luxury tower: the underground B1 parking garage late at night. Concrete pillars, painted parking lines, fluorescent ceiling lights, a few parked cars. In the center-left foreground, an expensive black luxury sedan parked alone in its space, with its headlights left switched ON, shining brightly onto the concrete wall in front of it. On the right, the silver doors of an elevator lobby. No people. Horizontal 16:9 landscape. The security camera itself is not visible. No text, no letters, no numbers, no license plate characters, no signs, no logo, no watermark.
+```
+
+> **日本語訳**: 添付の絵と同じ絵柄・塗り・防犯カメラの見え方で、同じタワーの地下 1 階の駐車場（深夜）。コンクリートの柱、駐車の白線、天井の蛍光灯。左寄りの手前に、黒い高級セダンが 1 台。ヘッドライトがつけっぱなしで、前の壁を明るく照らしている。右に、エレベーターの銀色の扉。人なし。ナンバーの文字なし。
+
+### 第2章の場面の絵
+
+#### ✅ ch2_director_desk（院長室。西条がカルテを書き写す）
+
+添付: `bg/cam12_director`、`chars/saijo_normal`
+
+```
+Generate an image. Edit the first attached image. Keep exactly the same room, camera angle, composition, lighting, colors and art style (the safe on the left wall, the group photo, the bookshelf, the desk, the lamp and the phone stay where they are). Add one person: the man from the second attached image (48-year-old clinic director, slicked-back hair with gray temples, rimless glasses, white doctor's coat; ignore its green background), sitting in the chair behind the desk, bent over and writing with a pen. On the desk in front of him lie two open paper medical charts side by side (an old worn one and a new clean one), and at the edge of the desk a few stacks of old banknote bundles, each wrapped with a paper band. Small figure as seen by a hidden ceiling camera. Horizontal 16:9 landscape. The camera itself is not visible. No text, no letters, no numbers, no logo, no watermark.
+```
+
+> **日本語訳**: 1 枚目の絵を直す。部屋・角度・構図・明かり・色・絵柄はそのまま。2 枚目の男（院長）を、机の後ろの椅子に座らせ、前かがみでペンで書かせる。机の上に紙のカルテを 2 冊（古いものと新しいもの）並べて開き、机の端に帯封の付いた古い札束をいくつか積む。
+
+---
+
 ## Stable Diffusion 系のサイト向け
 
 「Prompt」と「Negative prompt」を分けて入れるサイトでは、文章のプロンプトの代わりに、次のような単語を並べる書き方も効きます。

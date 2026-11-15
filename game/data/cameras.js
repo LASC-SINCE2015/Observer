@@ -18,3 +18,6 @@ Observer.camera('CAM-07', { place: '6F 城ヶ崎・高東法律事務所', bg: '
 Observer.camera('CAM-08', { place: '9F エレベーターホール', bg: 'evhall9', bgimg: 'bg/cam08_evhall9.jpg' });
 Observer.camera('CAM-09', { place: '屋上', bg: 'roof', bgimg: 'bg/cam09_roof.jpg' });
 Observer.camera('CAM-10', { place: '非常階段', bg: 'stairs', bgimg: 'bg/cam10_stairs.jpg' });
+Observer.camera('CAM-11', { place: '3F クリニック前の廊下', bg: 'corridor', bgimg: 'bg/cam11_clinic.jpg' });
+Observer.camera('CAM-12', { place: '3F 院長室', bg: 'office', mic: true, bgimg: 'bg/cam12_director.jpg' });
+Observer.camera('CAM-13', { place: 'B1 駐車場', bg: 'dark', bgimg: 'bg/cam13_parking.jpg' });

@@ -44,7 +44,7 @@ Observer.script('chapter1', `
 @open none
 @power off
 @time 1/20:50
-@cameras all
+@cameras CAM-00 CAM-01 CAM-02 CAM-03 CAM-04 CAM-05 CAM-06 CAM-07 CAM-08 CAM-09 CAM-10
 @cam CAM-02 live
 @fx unblack
 @title | 1日目　20:50
@@ -885,7 +885,7 @@ Observer.script('chapter1', `
 その前に、華子が立っていた。名札の列を、しばらく見ている。それから、事務所の奥へ消えた。
 端末のログに、管理会社の作業予定が一行増えていた。八島は、気にも留めなかった。
 @time 3/08:10
-@outside street 3日目 朝　1F コンビニ | man@150
+@outside street 3日目 朝　1F コンビニ | img:scenes/ch1_konbini.jpg man@150
 夜勤明け。こんなに気分のいい朝は、いつ以来だろう。
 八島「今朝は、ちょっと贅沢するか」
 ビルの 1F のコンビニで、いつもより高い缶ビールと、厚切りのチャーシューを買った。
@@ -1050,7 +1050,7 @@ Observer.script('chapter1', `
 
 *true_sena
 監視室を出る。持ち場を離れるのは、この仕事を始めてから、初めてだった。
-@outside corridor 1F 東廊下 | cleaner@160,165
+@outside corridor 1F 東廊下 | img:scenes/ch1_sena_meet.jpg cleaner@160,165
 階段を上がり、1F の廊下に出る。
 モップの音が止まった。作業員が、顔を上げる。
 8 年ぶりの第一声は、うまく出なかった。

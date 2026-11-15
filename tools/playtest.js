@@ -104,8 +104,12 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* ---------- 自動で遊ぶ ---------- */
 // 外れの干渉（押すと、立て直しの道に入るか、失敗して「この夜を、もう一度」になる）
-const MISTAKES = ['*h1_early', '*h1_late', '*h_phone_no', '*h2_stairs', '*h3_noise', '*h_bell_no'];
+const MISTAKES = ['*h1_early', '*h1_late', '*h_phone_no', '*h2_stairs', '*h3_noise', '*h_bell_no',
+  '*p_ring', '*p_noise', '*p_voice_safe', '*send_wrong'];
+// バッドエンドへ進む選択肢
+const GIVE_UP = /やめておく|何もしない/;
 const tried = new Set();
+const used = {};   // 選択肢を選んだ回数
 let badSeen = false;
 const log = [];
 
@@ -141,8 +145,10 @@ function explore() {
   const choices = T.choices();
   // 選択肢の好み（ルートで変える）
   const prefer = (o) => {
-    if (route === 'bad' && !badSeen && o.text.includes('やめておく')) return 3;
-    if (o.text.includes('やめておく')) return -1;
+    if (route === 'bad' && !badSeen && GIVE_UP.test(o.text)) return 3;
+    if (GIVE_UP.test(o.text)) return -1;
+    // 真解決のルートでは、脅さない（「脅さない」を選べるときだけ）
+    if (route === 'true' && o.text === '脅さない') return 3;
     return 0;
   };
   const sorted = choices.slice().sort((a, b) => prefer(b) - prefer(a));
@@ -156,7 +162,7 @@ function explore() {
   }
   if (sorted.length && prefer(sorted[0]) > 0) {
     say(`  選ぶ: ${sorted[0].text}`);
-    if (sorted[0].text.includes('やめておく')) badSeen = true;
+    if (GIVE_UP.test(sorted[0].text)) badSeen = true;
     T.choose(sorted[0]);
     return true;
   }
@@ -170,7 +176,6 @@ function explore() {
   };
   const cands = [];
   st.hotspots.forEach((h, i) => {
-    if (!h.range) return;
     h.actions.forEach((a) => {
       const key = `h:${h.cam}:${h.name}:${h.range}:${a.target}`;
       if (!tried.has(key) && score(a) > -9) cands.push({ h, a, key, s: score(a), i });
@@ -178,10 +183,21 @@ function explore() {
   });
   cands.sort((x, y) => y.s - x.s || x.i - y.i);
   for (const c of cands) {
-    T.switchMode('past');
-    T.setPast(c.h.range[0]);
-    if (st.cam !== c.h.cam) T.switchCam(c.h.cam);
-    const vis = T.hotspots().find((x) => x.name === c.h.name && x.cam === c.h.cam && String(x.range) === String(c.h.range));
+    const find = () => T.hotspots().find((x) => x.name === c.h.name && x.cam === c.h.cam && String(x.range) === String(c.h.range));
+    let vis = null;
+    if (c.h.range) {
+      // 時間帯の中で、まだ焼き付いていない最初の時刻で押す
+      T.switchMode('past');
+      for (let at = c.h.range[0]; at <= c.h.range[1] && !vis; at++) {
+        T.setPast(at);
+        if (st.cam !== c.h.cam) T.switchCam(c.h.cam);
+        vis = find();
+      }
+    } else {
+      T.switchMode('live');   // 今の映像で押せる機器
+      if (st.cam !== c.h.cam) T.switchCam(c.h.cam);
+      vis = find();
+    }
     if (!vis) continue;
     tried.add(c.key);
     say(`  干渉: ${c.h.cam} ${c.h.name} / ${c.a.text}`);
@@ -189,15 +205,20 @@ function explore() {
     return true;
   }
   if (sorted.length) {
-    say(`  選ぶ: ${sorted[0].text}`);
-    T.choose(sorted[0]);
+    // 同じ選択肢ばかり選ばないよう、選んだ回数のいちばん少ないものを選ぶ（好みが同じものの中で）
+    const top = sorted.filter((o) => prefer(o) === prefer(sorted[0]));
+    const pick = top.slice().sort((a, b) => (used[a.target] || 0) - (used[b.target] || 0))[0];
+    used[pick.target] = (used[pick.target] || 0) + 1;
+    say(`  選ぶ: ${pick.text}`);
+    T.choose(pick);
     return true;
   }
   return false;
 }
 
 async function main() {
-  if (route === 'true') T.progress.flags.relay_ch1 = true;
+  // 真解決: その章へ一枚が届いた扱いにする（第1章は relay_ch1、第2章は relay_ch2）
+  if (route === 'true') T.progress.flags[`relay_ch${chapterNo}`] = true;
   T.startChapter(chapterNo);
   let idle = 0;
   let retries = 0;
