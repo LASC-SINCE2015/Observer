@@ -13,45 +13,45 @@ Observer.character = function (name, faces) {
 };
 
 Observer.character('玲子', {
-  normal: 'chars/reiko_normal.png',
-  smile: 'chars/reiko_smile.png',
-  sad: 'chars/reiko_sad.png',
+  normal: 'chars/reiko_normal.webp',
+  smile: 'chars/reiko_smile.webp',
+  sad: 'chars/reiko_sad.webp',
 });
 Observer.character('佐伯', {
-  normal: 'chars/saeki_normal.png',
-  smile: 'chars/saeki_smile.png',
-  scorn: 'chars/saeki_scorn.png',
-  flushed: 'chars/saeki_flushed.png',
+  normal: 'chars/saeki_normal.webp',
+  smile: 'chars/saeki_smile.webp',
+  scorn: 'chars/saeki_scorn.webp',
+  flushed: 'chars/saeki_flushed.webp',
 });
 Observer.character('華子', {
-  normal: 'chars/hanako_normal.png',
-  angry: 'chars/hanako_angry.png',
-  rage: 'chars/hanako_rage.png',
+  normal: 'chars/hanako_normal.webp',
+  angry: 'chars/hanako_angry.webp',
+  rage: 'chars/hanako_rage.webp',
 });
 Observer.character('瀬名', {
-  normal: 'chars/sena_normal.png',
-  smile: 'chars/sena_smile.png',
+  normal: 'chars/sena_normal.webp',
+  smile: 'chars/sena_smile.webp',
 });
 Observer.character('城ヶ崎', {
-  normal: 'chars/jogasaki_normal.png',
-  scorn: 'chars/jogasaki_scorn.png',
-  aroused: 'chars/jogasaki_aroused.png',
-  after: 'chars/jogasaki_after.png',
+  normal: 'chars/jogasaki_normal.webp',
+  scorn: 'chars/jogasaki_scorn.webp',
+  aroused: 'chars/jogasaki_aroused.webp',
+  after: 'chars/jogasaki_after.webp',
 });
 Observer.character('久住', {
-  normal: 'chars/kuzumi_normal.png',
+  normal: 'chars/kuzumi_normal.webp',
 });
 Observer.character('大河内', {
-  normal: 'chars/okochi_normal.png',
+  normal: 'chars/okochi_normal.webp',
 });
 Observer.character('西条', {
-  normal: 'chars/saijo_normal.png',
-  scared: 'chars/saijo_scared.png',
+  normal: 'chars/saijo_normal.webp',
+  scared: 'chars/saijo_scared.webp',
 });
 Observer.character('美咲', {
-  normal: 'chars/misaki_normal.png',
-  smile: 'chars/misaki_smile.png',
+  normal: 'chars/misaki_normal.webp',
+  smile: 'chars/misaki_smile.webp',
 });
 Observer.character('森下', {
-  normal: 'chars/morishita_normal.png',
+  normal: 'chars/morishita_normal.webp',
 });

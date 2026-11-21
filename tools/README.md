@@ -7,6 +7,7 @@
 | [render_diagrams.ps1](render_diagrams.ps1) | design/ 配下の PlantUML（.puml）から SVG を生成する |
 | [optimize_images.ps1](optimize_images.ps1) | 絵の元ファイル（assets_src/images/）を、ゲームで使う大きさと形式にして game/assets/ に書き出す |
 | [playtest.js](playtest.js) | 台本を、ブラウザなしで最後まで自動で通して遊び、エラーや行き詰まりを見つける |
+| [portraits_to_webp.js](portraits_to_webp.js) | 立ち絵の PNG を、透明を残したまま WebP にする（公開サイトでの読み込みを速くする） |
 
 ## playtest.js
 
@@ -20,6 +21,18 @@ node tools/playtest.js 1 normal
 - `OK` なら最後まで通った。`NG` のときは、止まったラベルと、直前の操作を表示して、終了コード 1 で終わる。
 - `VERBOSE=1 node tools/playtest.js 1 normal` で、自動でした操作をすべて表示する。
 - 見た目（描画）は確かめない。見た目はブラウザで開いて確かめる。
+
+## portraits_to_webp.js
+
+立ち絵は PNG のままだと 1 枚 1MB 前後になり、公開サイトで台詞より遅れて出ます。`optimize_images.ps1` で `game/assets/chars/*.png` を書き出したら、これで WebP にします。Node.js とブラウザだけで動きます（ほかのインストールは不要）。
+
+```bash
+node tools/portraits_to_webp.js
+```
+
+1. 表示された URL（http://127.0.0.1:8766/）をブラウザで開く。ブラウザが PNG を WebP に変換し、`game/assets/chars/` に `<名前>.webp` を保存する。
+2. 終わるとサーバーは自動で止まる。
+3. `game/data/characters.js` のパスを `.webp` にし、PNG を消す。
 
 ## render_diagrams.ps1
 
