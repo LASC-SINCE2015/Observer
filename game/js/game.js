@@ -7,7 +7,7 @@
    =================================================================== */
 
 (function () {
-  const GAME_VERSION = '0.2.8';
+  const GAME_VERSION = '0.2.9';
   const SAVE_KEY = 'observer.save.v2';          // 場面のセーブ。形式を変えたら v を上げる
   const PROGRESS_KEY = 'observer.progress.v2';  // 章をまたぐ記録
   const DATA_VERSION = 2;
@@ -62,6 +62,7 @@
       portraits: {},   // 立ち絵 { right: { name, face }, left: … }
       notebook: [],    // 八島の手帳（この周回で書いたもの）。{ id, ch, at, where, text, unread }
       clockHidden: false,   // @time - で、ステータスの時刻を隠す（月末・数か月後など、章の外の時間）
+      cinema: false,        // @cinema on で、予告のあいだだけ画面の枠（時刻・モニター壁・操作ボタン・文章）を隠す
       vars: {},        // @settime で覚えた時刻（相対の時刻「N+3」に使う）
     };
   }
@@ -110,9 +111,9 @@
     monitor: $('monitor'), main: $('main'), rec: $('rec'), splash: $('splash'), black: $('mon-black'),
     wipeHint: $('wipe-hint'), placeTag: $('place-tag'),
     timeline: $('timeline'), tlRange: $('tl-range'), tlLabel: $('tl-label'), tlMarks: $('tl-marks'), tlRemain: $('tl-remain'),
-    wallWrap: $('wall-wrap'), wall: $('wall'), wallToggle: $('wall-toggle'),
+    wallWrap: $('wall-wrap'), wall: $('wall'),
     btnLive: $('btn-live'), btnPast: $('btn-past'), btnLog: $('btn-log'), btnItems: $('btn-items'),
-    btnHistory: $('btn-history'), btnSkip: $('btn-skip'), btnSave: $('btn-save'), btnMenu: $('btn-menu'),
+    btnHistory: $('btn-history'), btnSkip: $('btn-skip'), btnAuto: $('btn-auto'), btnSave: $('btn-save'), btnMenu: $('btn-menu'),
     btnNote: $('btn-note'),
     textbox: $('textbox'), speaker: $('speaker'), message: $('message'), choices: $('choices'),
     panel: $('panel'), panelTitle: $('panel-title'), panelBody: $('panel-body'), panelClose: $('panel-close'),
@@ -134,6 +135,11 @@
      テキストウィンドウ
      =================================================================== */
   const typer = { item: null, i: 0, timer: null, auto: null, onDone: null };
+  // オート: 文を読み終えたころに、自動で次へ進む（選択肢・探索・パネルが出ているあいだは止まる）
+  let autoPlay = false;
+  let autoTimer = null;
+  const AUTO_BASE_MS = 900;
+  const AUTO_PER_CHAR_MS = 55;
 
   function isTyping() { return !!typer.item; }
 
@@ -171,11 +177,40 @@
     typer.timer = null;
     if (typer.item) el.message.textContent = typer.item.text;
     el.textbox.classList.add('waiting');
+    scheduleAuto();
+  }
+
+  function scheduleAuto() {
+    clearTimeout(autoTimer);
+    autoTimer = null;
+    if (!autoPlay || !typer.item) return;
+    const wait = AUTO_BASE_MS + typer.item.text.length * AUTO_PER_CHAR_MS;
+    const tick = () => {
+      autoTimer = null;
+      if (!autoPlay || !typer.item || typer.timer) return;
+      // 履歴・手帳などを開いているあいだは待つ
+      if (el.card.classList.contains('on') || el.panel.classList.contains('on')) { autoTimer = setTimeout(tick, 600); return; }
+      advanceText();
+    };
+    autoTimer = setTimeout(tick, wait);
+  }
+
+  function setAuto(on, quiet) {
+    autoPlay = on;
+    el.btnAuto.classList.toggle('active', on);
+    if (on) setSkip(false);
+    else { clearTimeout(autoTimer); autoTimer = null; }
+    progress.auto = on;
+    saveProgress();
+    if (on && typer.item && !typer.timer) scheduleAuto();
+    if (!quiet) toast(on ? 'オート: 文章が自動で進みます' : 'オートをやめました');
   }
 
   function stopTyping() {
     if (typer.timer) clearInterval(typer.timer);
     if (typer.auto) clearTimeout(typer.auto);
+    clearTimeout(autoTimer);
+    autoTimer = null;
     typer.timer = null;
     typer.auto = null;
   }
@@ -238,6 +273,7 @@
 
   function setSkip(on) {
     skipping = on;
+    if (on && autoPlay) setAuto(false, true);
     el.btnSkip.classList.toggle('active', on);
     if (on && typer.item && !typer.timer && !typer.auto) advanceText();
   }
@@ -344,6 +380,8 @@
       glitch = 8;
     },
     mode(ins) { state.mode = ins.arg.trim(); glitch = 8; },
+    // @cinema on|off: 予告のあいだだけ、画面の枠を隠して、映像だけを見せる
+    cinema(ins) { state.cinema = ins.arg.trim() !== 'off'; },
     power(ins) { state.power = ins.arg.trim() !== 'off'; if (!state.power) state.mode = 'live'; },
     open(ins) {
       const w = words(ins.arg);
@@ -416,14 +454,18 @@
       const a = ins.arg.trim();
       const w = words(a);
       if (a === 'here') {
-        if (state.lastHotspot && state.lastHotspot.range) state.burned.push(state.lastHotspot.range.slice());
+        // 焼き付くのは、干渉したカメラの、その時間だけ（ほかのカメラの同じ時刻は、そのまま見られる）
+        if (state.lastHotspot && state.lastHotspot.range) state.burned.push([...state.lastHotspot.range, state.lastHotspot.cam]);
       } else if (w[0] === 'now') {
         // @burn now [幅]: いま過去で見ている時刻（幅を書くと、その前後の分も。書かなければ、その 1 分だけ）
         if (state.pastAt === null) throw new Error('@burn now: 過去の時刻がまだありません');
         const k = w[1] !== undefined ? +w[1] : 0;
-        state.burned.push([state.pastAt - k, state.pastAt + k]);
+        state.burned.push([state.pastAt - k, state.pastAt + k, state.cam]);
       } else {
-        state.burned.push(parseRange(a));
+        // @burn カメラ 時間帯（例: @burn CAM-04 3/03:00-3/03:00）。カメラを書かなければ、全カメラ
+        const cam = /^CAM-[0-9]+$/.test(w[0]) ? w.shift() : null;
+        const range = parseRange(w.join(' '));
+        state.burned.push(cam ? [...range, cam] : range);
       }
     },
     relay(ins) {
@@ -494,6 +536,7 @@
       el.wipeHint.textContent = ins.arg || '画面をなぞって拭く';
       el.wipeHint.classList.add('on');
       el.monitor.classList.add('wiping');
+      renderLocks();
       showHint('モニターの上を、指（マウス）で左右になぞる。');
       return WAIT;
     },
@@ -613,7 +656,8 @@
     return null;
   }
 
-  function isBurned(at) { return state.burned.some(([a, b]) => a <= at && at <= b); }
+  // カメラごとに調べる（古いセーブのように、カメラが書かれていない焼き付きは、全カメラに効く）
+  function isBurned(at, cam) { return state.burned.some(([a, b, c]) => a <= at && at <= b && (!c || !cam || c === cam)); }
 
   // いま映っているもので、まだ読んでいない @look・@event
   function unreadHere() {
@@ -661,7 +705,7 @@
      カメラ・映像モード・タイムライン
      =================================================================== */
   function switchCam(id) {
-    if (state.outside || run.waitWipe) return;
+    if (cameraLocked()) return;
     if (state.cam === id) return;
     abortReading();
     state.cam = id;
@@ -672,7 +716,7 @@
   }
 
   function switchMode(mode) {
-    if (state.outside || run.waitWipe || state.mode === mode) return;
+    if (cameraLocked() || state.mode === mode) return;
     if (mode === 'past' && !state.power) return;
     abortReading();
     state.mode = mode;
@@ -722,16 +766,16 @@
     el.tlRange.value = state.pastAt;
     const ago = state.now - state.pastAt;
     el.tlLabel.textContent = `${fmtTime(state.pastAt)}（${Math.floor(ago / 60)}時間${ago % 60}分前）`;
-    el.tlRemain.textContent = isBurned(state.pastAt) ? '焼き付き' : '';
+    el.tlRemain.textContent = isBurned(state.pastAt, state.cam) ? '動かせない時間' : '';
     el.tlMarks.innerHTML = '';
     // 焼き付いた時間帯（白い帯）
-    state.burned.forEach(([a, b]) => {
-      if (b < min || a > state.now) return;
+    state.burned.forEach(([a, b, c]) => {
+      if (b < min || a > state.now || (c && c !== state.cam)) return;
       const s = document.createElement('i');
       s.className = 'band';
       s.style.left = pos(Math.max(a, min));
       s.style.width = `${Math.max(0.6, ((Math.min(b, state.now) - Math.max(a, min) + 1) / span) * 100)}%`;
-      s.title = `焼き付き ${fmtTime(a)}〜${fmtTime(b)}`;
+      s.title = `動かせない時間 ${fmtTime(a)}〜${fmtTime(b)}`;
       el.tlMarks.appendChild(s);
     });
     // このカメラの出来事の印（見たものは塗り、まだ見ていないものは白抜き）
@@ -744,13 +788,15 @@
       s.style.left = pos(m);
       s.title = fmtTime(m);
       if (!seenMarks.includes(m)) s.classList.add('unseen');
-      if (isBurned(m)) s.classList.add('burned');
+      if (isBurned(m, state.cam)) s.classList.add('burned');
       s.addEventListener('click', () => setPast(m));
       el.tlMarks.appendChild(s);
     });
   }
 
-  /* ---------- モニター壁 ---------- */
+  /* ---------- モニター壁 ----------
+     - カメラの名前だけのボタンを並べる（映像は出さない。スマホでも場所をとらない）
+     - 監視室の外の場面・画面を拭くあいだなど、カメラを切り替えられないときは、消さずにグレーにする */
   const tiles = [];
   function buildWall() {
     el.wall.innerHTML = '';
@@ -758,15 +804,16 @@
     state.wall.forEach((id) => {
       const b = document.createElement('button');
       b.className = 'tile';
-      const cv = document.createElement('canvas');
-      cv.width = 160; cv.height = 90;
+      const num = document.createElement('span');
+      num.className = 'tnum';
+      num.textContent = id.replace('CAM-', '');
       const lab = document.createElement('span');
       lab.className = 'tlabel';
-      lab.textContent = `${id.replace('CAM-', '')} ${Observer.cameras[id].place}`;
-      b.appendChild(cv); b.appendChild(lab);
+      lab.textContent = Observer.cameras[id].place;
+      b.appendChild(num); b.appendChild(lab);
       b.addEventListener('click', () => switchCam(id));
       el.wall.appendChild(b);
-      tiles.push({ id, btn: b, ctx: cv.getContext('2d') });
+      tiles.push({ id, btn: b });
     });
     el.wallWrap.classList.toggle('empty', !state.wall.length);
     renderWallMarks();
@@ -781,14 +828,17 @@
     return c.open && state.events.some((e) => e.cam === id && !e.seen && (e.body.length || e.flag) && e.to >= limit && e.from <= state.now);
   }
   function renderWallMarks() {
-    let hidden = false;
-    tiles.forEach((t, i) => {
-      const n = hasUnseen(t.id);
-      t.btn.classList.toggle('new', n);
-      if (n && i >= 4) hidden = true;
-    });
-    const collapsed = el.wall.classList.contains('collapsed');
-    el.wallToggle.classList.toggle('new', collapsed && hidden);
+    tiles.forEach((t) => t.btn.classList.toggle('new', hasUnseen(t.id)));
+  }
+
+  // カメラを切り替えられないあいだ（監視室の外の場面・画面を拭くあいだ）は、モニター壁と「現在／過去」をグレーにする
+  function cameraLocked() { return !!state.outside || run.waitWipe; }
+  function renderLocks() {
+    const locked = cameraLocked();
+    el.wall.classList.toggle('locked', locked);
+    tiles.forEach((t) => { t.btn.disabled = locked; });
+    el.btnLive.disabled = locked;
+    el.btnPast.disabled = locked || !state.power;
   }
 
   /* ---------- 状態が変わったときに、画面の文字やボタンを合わせる ---------- */
@@ -798,20 +848,21 @@
     el.stTime.textContent = state.clockHidden ? '' : fmtTime(state.now);
     document.body.classList.toggle('mode-past', state.mode === 'past' && !state.outside);
     document.body.classList.toggle('outside', !!state.outside);
+    document.body.classList.toggle('cinema', !!state.cinema);
     el.rec.textContent = state.mode === 'past' ? '◀◀ PLAYBACK' : '● REC';
     el.btnLive.classList.toggle('active', state.mode === 'live');
     el.btnPast.classList.toggle('active', state.mode === 'past');
-    el.btnPast.disabled = !state.power;
     el.btnItems.textContent = state.items.length ? `アイテム(${state.items.length})` : 'アイテム';
     el.btnNote.classList.toggle('new', state.notebook.some((n) => n.unread));
     el.placeTag.textContent = state.outside ? state.outside.place : '';
     el.placeTag.classList.toggle('on', !!(state.outside && state.outside.place));
     renderWallMarks();
+    renderLocks();
     el.monitor.classList.toggle('has-mic', !!Observer.cameras[state.cam].mic && !state.outside);
     el.splash.classList.toggle('on', state.splash);
     el.black.classList.toggle('on', !!state.black);
     el.black.classList.toggle('white', state.black === 'white');
-    tiles.forEach((t) => t.btn.classList.toggle('active', t.id === state.cam));
+    tiles.forEach((t) => t.btn.classList.toggle('active', t.id === state.cam && !state.outside));
     renderTimeline();
     renderPortraits();
   }
@@ -906,7 +957,7 @@ ${files[0]}`));
     if (!c.open) return { kind: 'closed', tint, caption };
     const e = activeEvent(id, state.pastAt);
     if (e && e.noise) return { kind: 'closed', tint, caption };
-    const burned = isBurned(state.pastAt);
+    const burned = isBurned(state.pastAt, id);
     const hotspots = !exploring() || burned ? [] : state.hotspots.filter((h) => h.cam === id && h.range
       && h.range[0] <= state.pastAt && state.pastAt <= h.range[1] && test(h.cond));
     return { kind: 'feed', bg: def.bg, bgimg: def.bgimg, img: e ? e.img : null, actors: e ? e.actors : [], tint, burned, hotspots, caption };
@@ -928,7 +979,6 @@ ${files[0]}`));
 
   /* ---------- 描画の繰り返し ---------- */
   let lastFrame = 0;
-  let tileIndex = 0;
   let currentHotspots = [];
   function loop(now) {
     requestAnimationFrame(loop);
@@ -940,15 +990,9 @@ ${files[0]}`));
     currentHotspots = view.hotspots || [];
     view.bigCaption = el.main.clientWidth < 560;
     R.render(mainCtx, view, t, false);
-    R.postEffects(mainCtx, el.main, view.tint, glitch);
+    // 監視室の外の場面は、カメラ越しではなく八島の目で見ているので、ノイズをかけない（切り替えの一瞬だけ乱す）
+    if (!state.outside || glitch > 0) R.postEffects(mainCtx, el.main, view.tint, glitch);
     if (glitch > 0) glitch -= 1;
-    // モニター壁は、1 回に 3 枚ずつ描き直す
-    for (let k = 0; k < Math.min(3, tiles.length); k++) {
-      const tile = tiles[tileIndex % tiles.length];
-      tileIndex += 1;
-      tile.ctx.setTransform(0.5, 0, 0, 0.5, 0, 0);
-      R.render(tile.ctx, liveView(tile.id, true), t, true);
-    }
   }
 
   /* ===================================================================
@@ -1013,6 +1057,7 @@ ${files[0]}`));
       el.splash.style.opacity = '';
       el.wipeHint.classList.remove('on');
       el.monitor.classList.remove('wiping');
+      renderLocks();
       showHint('');
       step();
     }
@@ -1249,7 +1294,8 @@ ${files[0]}`));
   // 台本で使う場面の絵と、登場する人物の立ち絵を、先に読み込んでおく（初めて出るときの遅れと、線画の一瞬を防ぐ）
   function preloadScript(script) {
     const src = JSON.stringify(script.code);
-    const paths = new Set((src.match(/img:[\w/.-]+/g) || []).map((s) => s.slice(4)));
+    const paths = new Set();
+    (src.match(/img:[\w/.,-]+/g) || []).forEach((s) => s.slice(4).split(',').forEach((p) => paths.add(p)));
     Object.values(Observer.cameras).forEach((c) => { if (c.bgimg) paths.add(c.bgimg); });
     paths.forEach((p) => R.preload(p));
     // @show 名前 表情 で使う立ち絵（本文の中の @show も含む）
@@ -1408,6 +1454,7 @@ ${files[0]}`));
     el.errors.addEventListener('click', () => el.errors.classList.remove('on'));
 
     if (progress.sound) Observer.audio.setEnabled(true);
+    if (progress.auto) setAuto(true, true);
 
     $('btn-new').addEventListener('click', () => {
       if (loadSave() && !confirm('保存した進み具合は消えます。はじめから始めますか？')) return;
@@ -1433,6 +1480,7 @@ ${files[0]}`));
     el.btnNote.addEventListener('click', openNote);
     el.btnHistory.addEventListener('click', openHistory);
     el.btnSkip.addEventListener('click', () => setSkip(!skipping));
+    el.btnAuto.addEventListener('click', () => setAuto(!autoPlay));
     el.btnSave.addEventListener('click', manualSave);
     el.btnMenu.addEventListener('click', openMenu);
     el.panelClose.addEventListener('click', closePanel);
@@ -1449,24 +1497,6 @@ ${files[0]}`));
     el.tlRange.addEventListener('input', () => setPast(+el.tlRange.value));
     el.timeline.querySelectorAll('[data-step]').forEach((b) => {
       b.addEventListener('click', () => setPast(state.pastAt + (+b.dataset.step)));
-    });
-
-    // 幅の狭い画面・背の低い画面では、モニター壁を 1 行にたたんでおく（幅や向きが変わったら、合わせ直す）
-    let wallUserSet = false;
-    const fitWall = () => {
-      const can = window.innerWidth < 600 || window.innerHeight < 860;
-      el.wallWrap.classList.toggle('can-collapse', can);
-      if (!can) el.wall.classList.remove('collapsed');
-      else if (!wallUserSet) el.wall.classList.add('collapsed');
-      el.wallToggle.textContent = el.wall.classList.contains('collapsed') ? '▼ モニターをひろげる' : '▲ モニターをたたむ';
-      renderWallMarks();
-    };
-    fitWall();
-    window.addEventListener('resize', fitWall);
-    el.wallToggle.addEventListener('click', () => {
-      wallUserSet = true;
-      el.wall.classList.toggle('collapsed');
-      fitWall();
     });
 
     showScreen('title');
