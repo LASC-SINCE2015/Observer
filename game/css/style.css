@@ -298,6 +298,7 @@ body.mode-past:not(.outside) .timeline.enabled { display: block; }
 .notebook .note { border-bottom: 1px solid #cfc6b1; padding: 4px 0 6px; }
 .notebook .note-head { font-family: "Consolas", monospace; font-size: 11px; color: #7d7364; }
 .notebook .note-text { font-size: 15px; line-height: 1.6; }
+.notebook .note.struck .note-text { text-decoration: line-through; text-decoration-thickness: 2px; color: #6b6255; }
 .notebook .note.unread .note-text::before { content: "● "; color: #b0402c; font-size: 10px; vertical-align: middle; }
 .notebook .empty { color: #7d7364; }
 

@@ -173,6 +173,7 @@
 
 | `scenes/ch1_konbini`・`ch1_sena_meet`、`chars/saijo_normal`・`saijo_scared`・`misaki_normal`・`misaki_smile`・`morishita_normal`、`bg/cam11_clinic`・`cam12_director`・`cam13_parking`、`scenes/ch2_*` | Google Gemini（無料）で生成（2026-11-15。今ある立ち絵と背景を参考画像として添付して作った） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
 | `scenes/ch1_shop_saeki_alone`・`ch1_jump_aftermath`・`ch2_lobby_makabe`・`ch2_clinic_morishita`・`ch2_director_kuzumi`・`ch2_news_footbridge`、`bg/cam03_corridor`・`chars/jogasaki_aroused`（描き直した版） | Google Gemini（無料）で生成（2026-11-21。今ある背景・場面・立ち絵を参考画像として添付して作った） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
+| `bg/cam14_salon_back`・`cam15_salon_entrance`・`cam16_stair_landing`・`cam17_b1_machine`・`cam18_stair_door9`・`cam20_machine_corridor`・`cam23_service_lift`・`cam24_unknown_line`・`cam26_viewing_room`・`cam27_salon_front`、`chars/saori_normal`・`saori_smile`・`makabe_normal`・`makabe_smile`、`scenes/ch3_*`（10 枚）・`ch4_machine_corridor`・`ch4_salon_3am`・`ch4_cart_kuzumi`・`ch4_viewing_room`・`ch5_machine_room_tape`・`ch5_viewing_empty`・`ch5_viewing_kuzumi`・`ch5_viewing_members`・`ch5_viewing_raid` | Google Gemini（無料）で生成（2026-11-21。今ある背景・場面・立ち絵を参考画像として添付して作った） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
 
 ## 注意
 
