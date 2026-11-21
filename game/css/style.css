@@ -178,6 +178,13 @@ button.active {
   animation: blink 1.2s steps(1) infinite;
 }
 .monitor .mic { top: auto; bottom: 8px; color: var(--tint); animation: none; display: none; }
+/* 場所の札（監視室の外の場面）。立ち絵より手前に出す */
+.monitor .place-tag {
+  position: absolute; top: 8px; left: 10px; z-index: 6; display: none;
+  padding: 2px 8px; border-radius: 3px; background: rgba(0, 0, 0, 0.55);
+  color: #d6dbe8; font-size: 12px; font-family: "Consolas", monospace; letter-spacing: 0.04em;
+}
+.monitor .place-tag.on { display: block; }
 .monitor.has-mic .mic { display: block; }
 body.mode-past .monitor .rec { color: var(--past); }
 body.outside .monitor .rec, body.outside .monitor .mic { display: none; }
@@ -443,10 +450,20 @@ body.outside .wall-wrap, body.outside .controls { display: none; }
   40% { transform: translate(5px, -4px); } 60% { transform: translate(-4px, 2px); } 80% { transform: translate(3px, -2px); }
 }
 
+/* 背の低い画面では、モニターを少し小さくして、選択肢まで 1 画面に収める */
+@media (max-height: 860px) {
+  .monitor { width: min(100%, calc(34vh * 16 / 9)); }
+  .room { gap: 8px; }
+  .timeline { padding: 5px 12px; }
+  .tl-track { margin: 8px 0 3px; }
+  .tl-buttons button { padding: 4px 2px; }
+}
+
 @media (max-width: 600px) {
-  .portrait { height: min(48vh, 400px); bottom: calc(100% - 50px); }
-  .portrait.right { right: -40px; }
-  .portrait:not(.right) { left: -50px; }
+  /* 立ち絵が場面の絵を覆いすぎないよう、小さく外側に寄せる */
+  .portrait { height: min(38vh, 300px); bottom: calc(100% - 40px); }
+  .portrait.right { right: -70px; }
+  .portrait:not(.right) { left: -80px; }
   .room { padding: 8px 10px 20px; gap: 8px; }
   .monitor-frame { padding: 6px; border-radius: 6px; }
   .textbox { min-height: 140px; padding: 12px 14px 26px; }

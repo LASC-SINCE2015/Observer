@@ -6,7 +6,7 @@
 # - 元ファイル: assets_src/images/chars/  … 立ち絵（緑一色・青一色・白の背景なら、背景を自動で透明にする。透明な PNG ならそのまま）
 #               assets_src/images/scenes/ … 場面の絵（16:9）
 #               assets_src/images/bg/     … カメラの背景（16:9、人のいない絵）
-# - 書き出し先: game/assets/chars/*.png（高さ 1200px まで）
+# - 書き出し先: game/assets/chars/*.png（高さ 1200px まで）。このあと tools/portraits_to_webp.js で WebP にし、PNG は消す
 #               game/assets/scenes/*.jpg・game/assets/bg/*.jpg（1280x720 に切り抜き、画質 82）
 # - ファイル名は、元ファイルの名前（拡張子を除く）をそのまま使う。
 # - Windows に入っている .NET の画像の機能（System.Drawing）だけを使う。インストールは要らない。

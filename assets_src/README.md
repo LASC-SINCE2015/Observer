@@ -21,7 +21,7 @@
 
 | 種類 | 書き出し | 大きさ |
 |---|---|---|
-| 立ち絵 | `game/assets/chars/<名前>.png` | 高さ 1200px まで（透明はそのまま） |
+| 立ち絵 | `game/assets/chars/<名前>.webp` | 高さ 1200px まで（透明はそのまま）。`optimize_images.ps1` で PNG を書き出したあと、`tools/portraits_to_webp.js` で WebP にする（1 枚 40〜100KB ほどになる） |
 | 場面・背景 | `game/assets/scenes/<名前>.jpg`・`game/assets/bg/<名前>.jpg` | 1280x720（真ん中を 16:9 に切り抜く） |
 
 - ファイル名は、下の一覧の名前にしてください（拡張子は .png でも .jpg でもよい）。名前が合っていれば、ゲームが自動で使います。**絵がまだない場所は、今までどおりの線の絵で動きます。**

@@ -32,6 +32,11 @@
     }
     return e.ok ? e.img : null;
   }
+  // 読み込み中（まだ読めていないが、失敗もしていない）か
+  function loading(path) {
+    const e = path && imageCache[path];
+    return !!(e && !e.ok && !e.failed);
+  }
 
   // 画面いっぱいに、はみ出す部分を切って描く
   function drawCover(c, img) {
@@ -348,7 +353,11 @@
       const scene = image(view.img);
       const bgImg = scene ? null : image(view.bgimg);
       const monitorTint = view.tint !== TINTS.outside;
-      if (scene) {
+      // 絵の読み込み中は、線の代わりの絵を出さずに暗いままにする（読めた瞬間に絵が切り替わって見えないように）
+      const waiting = !scene && (loading(view.img) || (!view.img && !bgImg && loading(view.bgimg)));
+      if (waiting) {
+        drawStatic(c, small ? 60 : 300);
+      } else if (scene) {
         drawCover(c, scene);
         if (monitorTint) tintImage(c, c.tint, true);
         else tintImage(c, [150, 160, 185], false);
@@ -380,9 +389,11 @@
 
     if (view.caption && !small) {
       c.fillStyle = rgba(c.tint, 0.85);
-      c.font = '8px monospace';
+      // 小さく表示されるとき（スマホの幅）は、文字を大きくする
+      const fs = view.bigCaption ? 12 : 8;
+      c.font = `${fs}px monospace`;
       c.textBaseline = 'top';
-      view.caption.forEach((s, i) => c.fillText(s, 6, 6 + i * 11));
+      view.caption.forEach((s, i) => c.fillText(s, 6, 6 + i * (fs + 3)));
     }
     if (view.lamp && Math.floor(t * 4) % 2 === 0) {
       c.fillStyle = 'rgba(255, 40, 40, 0.95)';
@@ -461,5 +472,5 @@
     }
   }
 
-  Observer.renderer = { W, H, TINTS, BACKGROUNDS, ACTORS, parseActors, parseScene, image, render, postEffects };
+  Observer.renderer = { W, H, TINTS, BACKGROUNDS, ACTORS, parseActors, parseScene, image, preload: image, render, postEffects };
 })();
