@@ -219,6 +219,8 @@ function explore() {
 async function main() {
   // 真解決: その章へ一枚が届いた扱いにする（第1章は relay_ch1、第2章は relay_ch2）
   if (route === 'true') T.progress.flags[`relay_ch${chapterNo}`] = true;
+  // 時間切れ（@idle）は発火させない（選択肢を押して進む）
+  T.setNoIdle(true);
   T.startChapter(chapterNo);
   let idle = 0;
   let retries = 0;
