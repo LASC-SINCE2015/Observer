@@ -14,7 +14,7 @@ Observer.camera('CAM-03', { place: '1F 東廊下', bg: 'corridor', bgimg: 'bg/ca
 Observer.camera('CAM-04', { place: '1F バックヤード', bg: 'backyard', mic: true, bgimg: 'bg/cam04_backyard.jpg' });
 Observer.camera('CAM-05', { place: 'エレベーター 1号機', bg: 'elevator', bgimg: 'bg/cam05_elevator.jpg' });
 Observer.camera('CAM-06', { place: '6F エレベーターホール', bg: 'evhall', bgimg: 'bg/cam06_evhall6.jpg' });
-Observer.camera('CAM-07', { place: '6F 城ヶ崎・高東法律事務所', bg: 'office', bgimg: 'bg/cam07_office.jpg' });
+Observer.camera('CAM-07', { place: '6F 城ヶ崎法律事務所', bg: 'office', bgimg: 'bg/cam07_office.jpg' });
 Observer.camera('CAM-08', { place: '9F エレベーターホール', bg: 'evhall9', bgimg: 'bg/cam08_evhall9.jpg' });
 Observer.camera('CAM-09', { place: '屋上', bg: 'roof', bgimg: 'bg/cam09_roof.jpg' });
 Observer.camera('CAM-10', { place: '非常階段', bg: 'stairs', bgimg: 'bg/cam10_stairs.jpg' });

@@ -13,6 +13,7 @@ Observer.script('chapter1', `
 // ============================================================
 *start
 @chapter 1
+@cinema on
 @cameras none
 @status CAM-00 broken 故障中・修理手配済み
 @time 2/02:00
@@ -47,6 +48,7 @@ Observer.script('chapter1', `
 @cameras CAM-00 CAM-01 CAM-02 CAM-03 CAM-04 CAM-05 CAM-06 CAM-07 CAM-08 CAM-09 CAM-10
 @cam CAM-02 live
 @fx unblack
+@cinema off
 @title | 1日目　20:50
 
 // ============================================================
@@ -54,7 +56,7 @@ Observer.script('chapter1', `
 // ============================================================
 *prologue
 @feed CAM-02 img:scenes/ch1_shop_card.jpg oldman@205 woman@245
-@feed CAM-07 sitman@80,140 sitwoman@240,140
+@feed CAM-07 img:scenes/ch1_office_couple.jpg
 @outside shop | img:scenes/ch1_shop_card.jpg oldman@205 woman@245
 
 都心にそびえる、ガラスと光の塔。アークレジデンス＆タワー。
@@ -154,9 +156,10 @@ Observer.script('chapter1', `
 @inside
 @time 1/21:00
 @cam CAM-00 live
+@feed CAM-02
+@feed CAM-07 img:scenes/ch1_office_couple.jpg
 21 時。夜勤の始まり。
 監視室の天井の隅のカメラには、「故障中・修理手配済み」の札が下がったまま。もう何か月も、そのままだ。
-@feed CAM-02 woman@272
 扉が開いた。入ってきたのは、管理会社の所長、久住だった。
 @show 久住
 事務的で目立たない、灰色のような男。いつも書類の角を、指でそろえている。
@@ -183,9 +186,9 @@ Observer.script('chapter1', `
 // ============================================================
 *watch1_setup
 @time 1/21:20
-@feed CAM-02 woman@272
-@feed CAM-08 img:scenes/ch1_reiko_look.jpg woman@170
-@feed CAM-07 img:scenes/ch1_office_couple.jpg sitman@80,140 sitwoman@240,140
+@feed CAM-02 img:scenes/ch1_shop_saeki_alone.jpg
+@feed CAM-08 img:scenes/ch1_reiko_look.jpg
+@feed CAM-07 img:scenes/ch1_office_couple.jpg
 @look CAM-08 flag=saw_reiko
   9F エレベーターホール。会員制サロン「ル・シエル」の前。
   エレベーターを待っている女性がいる。サロンのママ、一ノ瀬玲子だ。
@@ -212,7 +215,7 @@ Observer.script('chapter1', `
   音のない画面に、勝手に声を当てる。ひとりの夜の、八島の遊びだ。
   @note 1F カメラ奉行。閉店後、売り物のバッグを肩にかけて、鏡の前。値札を見て、棚に戻した。レジの金は二度数える。
 @look CAM-07 flag=saw_office
-  6F、城ヶ崎・高東法律事務所。入口の壁に、弁護士の名札が 6 枚並んでいる。
+  6F、城ヶ崎法律事務所。入口の壁に、弁護士の名札が 6 枚並んでいる。
   奥の机で書類を読んでいるのが、代表弁護士の城ヶ崎華子。夫の拓海は、その手前の席だ。
   拓海が立ち上がり、妻の机へコーヒーを運ぶ。腰を低くして、揉み手をしながら。
   八島「『はいっ、華子先生のおっしゃるとおりで』……ってか」
@@ -559,7 +562,7 @@ Observer.script('chapter1', `
 *relay_in
 @sound glitch
 @fx glitch
-@relay CAM-00 | 6日目 02:20　6F 城ヶ崎・高東法律事務所 | CAM-07 6/02:20 img:scenes/ch1_relay_sena_usb.jpg cleaner@95
+@relay CAM-00 | 6日目 02:20　6F 城ヶ崎法律事務所 | CAM-07 6/02:20 img:scenes/ch1_relay_sena_usb.jpg cleaner@95
 @cam CAM-00 live
 そのとき、壁の隅のモニターが、ちかちかと光った。
 ずっと「故障中」の札が出ていた、壁の隅のカメラの枠だ。
@@ -574,7 +577,7 @@ Observer.script('chapter1', `
 おとといの夜、8 年ぶりに見た顔だった。
 @item relay1 未来から届いた一枚 | 6日目 2:20 の 6F。城ヶ崎の机の横板のすき間に、USB。そのそばで手を止める瀬名。 | still=CAM-07 6/02:20 img:scenes/ch1_relay_sena_usb.jpg cleaner@95
 @set relay_got
-@burn 3/03:00-3/03:00
+@burn CAM-04 3/03:00-3/03:00
 誰が、どうやって、こんなものを。
 わからない。わからないが、一つだけはっきりしている。
 城ヶ崎の「あれ」は、あの机の中にある。
@@ -835,19 +838,36 @@ Observer.script('chapter1', `
 @feed CAM-04 img:scenes/ch1_backyard_confront.jpg man@120 woman@150 woman@215
 現在の映像に戻す。
 1F バックヤード。影が、三つになっていた。
-スピーカーが、割れるような声を拾う。
+最初、スピーカーは、何も拾わなかった。華子は扉の前に立ったまま、動かない。
+@show 華子 normal
+華子「……何をしているの」
+声は、驚くほど静かだった。
+城ヶ崎「は、華子……！　違うんだ、これは、その」
+城ヶ崎は、ほどけたネクタイを握りしめて、言い訳を探している。
+佐伯が、服をかき抱いたまま、壁際で固まっている。
+城ヶ崎「仕事だ、打ち合わせで……そう、取引先の、店長さんと」
+華子「午前 1 時半に、段ボールの陰で？」
+華子は、笑った。笑おうとして、口の端が、少しだけ震えた。
 @show 華子 angry
-華子「――説明して。今すぐ」
+華子「結婚して、何年になるかしら。覚えてる？」
+城ヶ崎「……じゅ、十年」
+華子「十一年よ」
+華子「毎晩、私が 3 時前に出るのを、あなたは数えてたのね。……私がいなくなるのを、待ってたの」
 @if !t_usb -> *confront2
-華子の手には、あの USB が握られていた。
-華子「お金のことも。……全部よ」
+華子は、握っていた USB を、二人の前に突き出した。
+華子「これも。事務所のお金のことも。……全部」
+城ヶ崎の顔から、血の気が引いた。
 
 *confront2
-城ヶ崎「は、華子……ち、違うんだ、これは」
-佐伯が、服をかき抱いたまま、壁際で固まっている。
 華子「事務所の名前に泥を塗ったわね」
 華子の声は、怒鳴るよりもずっと静かで、ずっと冷たかった。
 城ヶ崎「待ってくれ、華子、話を――」
+華子「話？　今さら、何を聞けというの」
+佐伯が、何か言いかけた。華子は、そちらを見もしない。
+華子「あなたの話は、あとで、弁護士を通して聞くわ」
+華子の指が、眼鏡の縁を押さえた。その手が、小さく震えているのが、画面越しにもわかった。
+華子「……私は、ずっと、あなたの隣で――」
+華子の声が、そこで、割れた。
 @show 華子 rage
 華子「あなたの席は、もうない！」
 スピーカーが、音を立てて割れた。あの女が声を荒らげるのを、八島は初めて聞いた。
@@ -910,6 +930,7 @@ Observer.script('chapter1', `
 @fx unblack
 @outside dawn 3日目 朝　ビルの前 | img:scenes/ch1_dropped_cans.jpg box@150,156 box@175,160
 袋が手から落ちて、缶ビールが歩道を転がっていく。チャーシューのパックが、その先で止まった。
+@outside dawn 3日目 朝　ビルの前 | img:scenes/ch1_jump_aftermath.jpg,scenes/ch1_dropped_cans.jpg
 八島の目と鼻の先に、誰かが倒れている。
 見たくない。でも、見えてしまった。上等なスーツ。昨日、すれ違いざまに怒鳴ってきた男の。
 八島「え……？　屋上から……飛び降り……！？」
