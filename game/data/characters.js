@@ -55,3 +55,16 @@ Observer.character('美咲', {
 Observer.character('森下', {
   normal: 'chars/morishita_normal.webp',
 });
+// 第3章: 玲子のあとのサロンのママ（三枝沙織）
+if (!Observer.characters['沙織']) {
+  Observer.character('沙織', {
+    normal: 'chars/saori_normal.webp',
+    smile: 'chars/saori_smile.webp',
+  });
+}
+if (!Observer.characters['真壁']) {
+  Observer.character('真壁', {
+    normal: 'chars/makabe_normal.webp',
+    smile: 'chars/makabe_smile.webp',
+  });
+}

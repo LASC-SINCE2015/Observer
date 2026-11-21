@@ -7,7 +7,7 @@
    =================================================================== */
 
 (function () {
-  const GAME_VERSION = '0.2.9';
+  const GAME_VERSION = '0.3.0';
   const SAVE_KEY = 'observer.save.v2';          // 場面のセーブ。形式を変えたら v を上げる
   const PROGRESS_KEY = 'observer.progress.v2';  // 章をまたぐ記録
   const DATA_VERSION = 2;
@@ -69,7 +69,8 @@
 
   // chapterNotes: 章を通常解決で終えたときの手帳（章を選んで始めるとき、前の章までの分を手帳に入れる）
   function newProgress() {
-    return { chapters: {}, flags: {}, endings: {}, read: {}, unlocked: {}, shown: {}, sound: false, chapterNotes: {} };
+    // noIdle: 「時間切れなし」（メニューで切り替える。オンのとき、台本の @idle は無視する）
+    return { chapters: {}, flags: {}, endings: {}, read: {}, unlocked: {}, shown: {}, sound: false, chapterNotes: {}, noIdle: false };
   }
 
   let state = newWorld();
@@ -286,8 +287,42 @@
     if (idx === undefined) { reportError(`ラベル ${label} が見つかりません`); return; }
     run.pc = idx;
     run.choice = null;
+    clearIdle();   // 場面が変わったら、時間切れの設定は解除する
     clearChoices();
     step();
+  }
+
+  /* ---------- 時間切れ（@idle） ----------
+     - 「@idle ミリ秒 *ラベル」のあとの選択肢で、何も押されないまま時間がたつと、ラベルへ飛ぶ。
+     - 押された（画面・キー）たびに、数え直す。文章を表示しているあいだや、パネルを開いているあいだは待つ。
+     - 選択された・場面が変わった（go）・「@idle off」で解除する。セーブには入れない（ラベルの先頭から読み直すと、また設定される）。 */
+  const idle = { spec: null, timer: null };
+  function clearIdle() {
+    clearTimeout(idle.timer);
+    idle.timer = null;
+    idle.spec = null;
+  }
+  function armIdle() {
+    clearTimeout(idle.timer);
+    idle.timer = null;
+    if (!idle.spec || progress.noIdle || !run.choice) return;
+    idle.timer = setTimeout(() => {
+      idle.timer = null;
+      if (!idle.spec || !run.choice) return;
+      const busy = isTyping() || run.waitWipe
+        || el.card.classList.contains('on') || el.panel.classList.contains('on') || el.hotmenu.classList.contains('on');
+      if (busy) { armIdle(); return; }
+      const label = idle.spec.label;
+      run.choice = null;
+      clearChoices();
+      closeHotMenu();
+      go(label);
+    }, idle.spec.ms);
+  }
+  function setNoIdle(on) {
+    progress.noIdle = !!on;
+    saveProgress();
+    if (on) { clearTimeout(idle.timer); idle.timer = null; } else armIdle();
   }
 
   function step() {
@@ -342,8 +377,17 @@
     choice(ins) {
       run.choice = ins;
       renderChoices();
+      armIdle();
       checkExplore();
       return WAIT;
+    },
+    // @idle ミリ秒 *ラベル: 直後の選択肢で、何も押されないまま時間がたったら、ラベルへ飛ぶ。@idle off で解除
+    idle(ins) {
+      const a = ins.arg.trim();
+      if (a === 'off') { clearIdle(); return; }
+      const m = a.match(/^(\d+)\s+(\*\S+)$/);
+      if (!m) throw new Error('@idle は「@idle ミリ秒 *ラベル」か「@idle off」で書いてください');
+      idle.spec = { ms: +m[1], label: m[2] };
     },
     goto(ins) { jumpInline(ins.arg.trim()); },
     if(ins) {
@@ -354,6 +398,7 @@
     set(ins) { words(ins.arg).forEach((f) => { state.flags[f] = true; }); },
     unset(ins) { words(ins.arg).forEach((f) => { delete state.flags[f]; }); },
     gset(ins) { words(ins.arg).forEach((f) => { progress.flags[f] = true; }); saveProgress(); },
+    gunset(ins) { words(ins.arg).forEach((f) => { delete progress.flags[f]; }); saveProgress(); },
     pause(ins) { setTimeout(step, +ins.arg || 800); return WAIT; },
 
     /* ----- 時刻・モニター ----- */
@@ -492,6 +537,8 @@
       state.logs.push({ kind, text: text || '' });
     },
     note(ins) { addNote(ins.arg, ins.ln); },
+    // @strike キー …: @note #キー で書いた手帳の行に、取り消し線を引く（その行がなければ、何もしない）
+    strike(ins) { words(ins.arg).forEach((k) => strikeNote(k.replace(/^#/, ''))); },
 
     /* ----- 場面・演出 ----- */
     outside(ins) {
@@ -1116,6 +1163,10 @@ ${files[0]}`));
      - 章をまたいで残る（progress.notebook）。同じ行を二度は書かない。 */
   function addNote(text, ln) {
     const id = `${run.script ? run.script.name : ''}:${ln}`;
+    // 「#キー 本文」「#キー 場所 | 本文」と書けば、その行に名前を付けられる（あとで @strike キー で線を引く）
+    let key = null;
+    const km = /^#(\S+)\s+([\s\S]+)$/.exec(text);
+    if (km) { key = km[1]; text = km[2]; }
     // 「場所 | 本文」と書けば、場所を台本で決められる（書かなければ、いま映っているカメラ）
     const m = /^(.+?)\s*\|\s*(.+)$/.exec(text);
     if (m) text = m[2];
@@ -1123,9 +1174,25 @@ ${files[0]}`));
     const past = !state.outside && state.mode === 'past' && state.pastAt !== null;
     const at = past ? state.pastAt : state.now;
     const where = m ? m[1] : state.outside ? state.outside.place.replace(/^\S*日目\s*\S*\s*/, '') : `${state.cam}  ${Observer.cameras[state.cam].place}`;
-    state.notebook.push({ id, ch: state.chapter, at, where, text, unread: true });
+    const note = { id, ch: state.chapter, at, where, text, unread: true };
+    if (key) note.key = key;
+    state.notebook.push(note);
     el.btnNote.classList.add('new');
     toast('手帳に書き留めた');
+  }
+
+  // キーを付けた手帳の行に、取り消し線を引く（同じキーの行すべて。まだ線がない行だけ）
+  function strikeNote(key) {
+    let hit = false;
+    state.notebook.forEach((n) => {
+      if (n.key !== key || n.struck) return;
+      n.struck = true;
+      n.unread = true;
+      hit = true;
+    });
+    if (!hit) return;
+    el.btnNote.classList.add('new');
+    toast('手帳の一行に、線を引いた');
   }
 
   function openNote() {
@@ -1143,7 +1210,7 @@ ${files[0]}`));
           const c = Observer.chapters.find((x) => x.no === ch);
           b.appendChild(div('note-ch', c ? `第${c.no}章　${c.title}` : ''));
         }
-        const d = div(n.unread ? 'note unread' : 'note');
+        const d = div(`note${n.unread ? ' unread' : ''}${n.struck ? ' struck' : ''}`);
         d.appendChild(div('note-head', `${fmtTime(n.at)}　${n.where || ''}`));
         d.appendChild(div('note-text', n.text));
         b.appendChild(d);
@@ -1176,6 +1243,7 @@ ${files[0]}`));
         box.appendChild(x);
       };
       add(`音: ${Observer.audio.enabled ? 'あり' : 'なし'}`, () => { toggleSound(); closePanel(); });
+      add(`時間切れ: ${progress.noIdle ? 'なし' : 'あり'}`, () => { setNoIdle(!progress.noIdle); toast(progress.noIdle ? '時間切れをなしにしました（待たされることはありません）' : '時間切れをありにしました'); closePanel(); });
       add('この章を最初から', () => {
         if (!confirm('この章を最初からやり直しますか？')) return;
         closePanel(); startChapter(state.chapter);
@@ -1469,6 +1537,9 @@ ${files[0]}`));
     $('about-version').textContent = `v${GAME_VERSION}`;
 
     el.textbox.addEventListener('click', advanceText);
+    // 何かが押されたら、時間切れ（@idle）の数え直し
+    document.addEventListener('pointerdown', () => { if (idle.timer) armIdle(); });
+    document.addEventListener('keydown', () => { if (idle.timer) armIdle(); });
     document.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); advanceText(); }
@@ -1529,6 +1600,8 @@ ${files[0]}`));
     resume,
     retryFrom,
     openNote,
+    setNoIdle,   // playtest は、時間切れを発火させない（選択肢を押す）ために、先にオンにする
+    idle,
   };
 
   init();
