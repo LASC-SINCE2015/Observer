@@ -172,6 +172,7 @@
 | `scenes/ch1_reiko_look`・`ch1_backyard_affair`・`ch1_backyard_confront`・`ch1_sena_mop`（作り直した版） | 上の Leonardo.ai の絵を、Google Gemini（無料）で直したもの（2026-11-14。カメラ本体を消す、非常ベルなどを足す） | Leonardo.ai と Google の、両方の利用規約による | 不要（任意） |
 
 | `scenes/ch1_konbini`・`ch1_sena_meet`、`chars/saijo_normal`・`saijo_scared`・`misaki_normal`・`misaki_smile`・`morishita_normal`、`bg/cam11_clinic`・`cam12_director`・`cam13_parking`、`scenes/ch2_*` | Google Gemini（無料）で生成（2026-11-15。今ある立ち絵と背景を参考画像として添付して作った） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
+| `scenes/ch1_shop_saeki_alone`・`ch1_jump_aftermath`・`ch2_lobby_makabe`・`ch2_clinic_morishita`・`ch2_director_kuzumi`・`ch2_news_footbridge`、`bg/cam03_corridor`・`chars/jogasaki_aroused`（描き直した版） | Google Gemini（無料）で生成（2026-11-21。今ある背景・場面・立ち絵を参考画像として添付して作った） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
 
 ## 注意
 

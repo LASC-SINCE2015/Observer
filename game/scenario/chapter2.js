@@ -61,7 +61,7 @@ Observer.script('chapter2', `
 窓口の向こうで、男は、八島の目が一瞬泳いだのを見ていた。
 
 *lobby2
-@outside lobby 1F ロビー | man@150
+@outside lobby 1F ロビー
 八島はロビーへ上がり、男の腕を取って、外へ連れ出した。男は抵抗しなかった。
 外は雨だった。出口で、男は振り返った。
 @show 森下
@@ -114,7 +114,7 @@ Observer.script('chapter2', `
 八島「……なんで応募したのか、自分でもわからない」
 @inside
 @cam CAM-01 live
-@feed CAM-01 oldman@120 man@165
+@feed CAM-01 img:scenes/ch2_lobby_makabe.jpg
 ロビーのモニター。監視室を出た西条が、エレベーターから降りてきた白髪の男に、深々と頭を下げている。
 ビルの会長、真壁だ。
 八島は、モニターから目をそらした。
@@ -131,7 +131,7 @@ Observer.script('chapter2', `
   前の晩、4 日目の 21 時半。診療が終わったクリニックへ、所長の久住が入っていく。
   脇に、分厚い封筒を抱えている。
   管理会社の所長が、テナントを訪ねるのは珍しくない。八島は、気にも留めなかった。
-@event CAM-11 5/20:47-5/20:52 flag=saw_morishita | man@120,120,0.8
+@event CAM-11 5/20:47-5/20:52 flag=saw_morishita | img:scenes/ch2_clinic_morishita.jpg
   今夜の 20 時 47 分。あの男が、エレベーターで 3 階に上がってきている。
   男はクリニックのガラスの扉をたたき、閉まっているとわかると、奥の院長室の扉の前に立った。
   何度もノックしている。中から、明かりが漏れている。
@@ -422,7 +422,7 @@ Observer.script('chapter2', `
 @goto *pin_after
 
 *pin_quick
-@burn 5/23:15-5/23:15
+@burn CAM-12 5/23:15-5/23:15
 @set got_pin
 前と同じように、電話のスピーカーから、音声案内を流す。
 西条は、あわてて付箋に数字を書いた。「4812」
@@ -629,7 +629,7 @@ Observer.script('chapter2', `
 数えるたびに、少し足りない気がする。財布に移した分と混ざって、よくわからない。
 八島「……気のせいだ」
 @time 7/01:00
-@feed CAM-01 img:bg/cam01_lobby.jpg
+@feed CAM-01 img:scenes/ch2_news_footbridge.jpg,bg/cam01_lobby.jpg
 深夜 1 時。ロビーのテレビに、ニュース速報の字幕が流れた。
 「アークレジデンス＆タワーの近くの歩道橋の階段の下で、男性が倒れているのが見つかり、死亡が確認されました。警察は、事故と事件の両面で……」
 八島は、他人事として聞き流した。
@@ -695,7 +695,7 @@ Observer.script('chapter2', `
 八島「……俺、か」
 1 日半後の日付。脅せば、あの男が死に、自分が疑われる。
 @item relay2 未来から届いた一枚 | 7日目 11:50 のロビーのテレビ。死んだ男の顔写真と、車に乗せられる自分。 | still=CAM-01 7/11:50 img:scenes/ch2_relay_news.jpg man@200
-@burn 6/02:00-6/02:00
+@burn CAM-00 6/02:00-6/02:00
 なぜ、故障中のカメラの枠に映ったのか。
 八島は椅子を引いて、壁の隅のカメラの裏をのぞきこんだ。
 配線が、外されている。外されて、別の線につなぎ替えられていた。
@@ -733,7 +733,7 @@ Observer.script('chapter2', `
 @feed CAM-12 img:scenes/ch2_director_desk.jpg sitman@200,130
 @feed CAM-11
 @look CAM-07 flag=saw_usb
-  6F、城ヶ崎・高東法律事務所。明かりの消えた部屋で、清掃の作業員が、机の脇にしゃがみこんでいる。
+  6F、城ヶ崎法律事務所。明かりの消えた部屋で、清掃の作業員が、机の脇にしゃがみこんでいる。
   城ヶ崎の机だ。横板が外れかけ、そのすき間に、小さな USB が見えている。
   「あれさえあれば、俺たちは自由だ」
   死んだ男が、最後まで手放さなかった「あれ」。それが、いま、作業員の目の前にある。
@@ -792,7 +792,7 @@ Observer.script('chapter2', `
 見るだけなら、焼き付かない。院長室のカメラの過去を、さかのぼる。
 @open CAM-12
 @noevents all
-@event CAM-12 4/21:28-4/21:33 flag=saw_kuzumi_voice | man@120,140 man@200,140
+@event CAM-12 4/21:28-4/21:33 flag=saw_kuzumi_voice | img:scenes/ch2_director_kuzumi.jpg
   前の晩、4 日目の 21 時半。院長室に、所長の久住がいる。
   久住は、分厚い封筒を、西条の机に置いた。スピーカーが、声を拾う。
   @show 久住

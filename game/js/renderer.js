@@ -22,6 +22,16 @@
   const imageCache = {};
   function image(path) {
     if (!path) return null;
+    // 「パス1,パス2」と書くと、1 つめがなければ 2 つめ、の順に探す（まだない絵の代わりに、今ある絵を出すため）
+    if (path.indexOf(',') >= 0) {
+      const list = path.split(',');
+      for (let i = 0; i < list.length; i++) {
+        const got = image(list[i]);
+        if (got) return got;
+        if (loading(list[i])) return null;
+      }
+      return null;
+    }
     let e = imageCache[path];
     if (!e) {
       const img = new Image();
@@ -34,8 +44,13 @@
   }
   // 読み込み中（まだ読めていないが、失敗もしていない）か
   function loading(path) {
+    if (path && path.indexOf(',') >= 0) return path.split(',').some((p, i, a) => loading(p) && a.slice(0, i).every((q) => failed(q)));
     const e = path && imageCache[path];
     return !!(e && !e.ok && !e.failed);
+  }
+  function failed(path) {
+    const e = path && imageCache[path];
+    return !!(e && e.failed);
   }
 
   // 画面いっぱいに、はみ出す部分を切って描く
@@ -359,8 +374,8 @@
         drawStatic(c, small ? 60 : 300);
       } else if (scene) {
         drawCover(c, scene);
+        // 監視室の外の場面は、八島が自分の目で見ているので、カメラの色はかけない
         if (monitorTint) tintImage(c, c.tint, true);
-        else tintImage(c, [150, 160, 185], false);
       } else {
         if (bgImg) {
           drawCover(c, bgImg);
@@ -371,12 +386,7 @@
         c.strokeStyle = rgba(c.tint, 0.5);
         drawActors(c, view.actors, t);
       }
-      if (view.burned) {
-        const k = 0.72 + Math.sin(t * 9) * 0.06;
-        c.fillStyle = `rgba(255, 246, 228, ${k})`;
-        c.fillRect(0, 0, W, H);
-        center(c, '― 焼き付いている ―', [120, 90, 60], small);
-      }
+      if (view.burned) drawLocked(c, t, small);
       if (!small && !view.burned) drawHotspots(c, view.hotspots || [], t);
     }
 
@@ -400,6 +410,33 @@
       c.beginPath(); c.arc(W - 14, 14, small ? 6 : 4, 0, Math.PI * 2); c.fill();
     }
     c.restore();
+  }
+
+  // 干渉済みで、もう動かせない時間: 映像が白くかすんで固まり、札が貼られる
+  function drawLocked(c, t, small) {
+    const k = 0.6 + Math.sin(t * 2) * 0.03;
+    c.fillStyle = `rgba(255, 246, 228, ${k})`;
+    c.fillRect(0, 0, W, H);
+    c.strokeStyle = 'rgba(120, 90, 60, 0.14)';
+    c.lineWidth = 1;
+    for (let x = -H; x < W; x += 9) line(c, x, H, x + H, 0);
+    const bw = small ? 220 : 170;
+    const bh = small ? 56 : 40;
+    const x = (W - bw) / 2;
+    const y = (H - bh) / 2;
+    c.fillStyle = 'rgba(40, 28, 16, 0.78)';
+    c.fillRect(x, y, bw, bh);
+    c.strokeStyle = 'rgba(255, 236, 200, 0.7)';
+    c.strokeRect(x + 2.5, y + 2.5, bw - 5, bh - 5);
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.fillStyle = 'rgba(255, 236, 200, 0.95)';
+    c.font = small ? '16px sans-serif' : '13px sans-serif';
+    c.fillText('動かせない時間', W / 2, y + bh * 0.4);
+    c.fillStyle = 'rgba(255, 236, 200, 0.7)';
+    c.font = small ? '11px sans-serif' : '9px sans-serif';
+    c.fillText('一度、手を入れた過去', W / 2, y + bh * 0.75);
+    c.textAlign = 'left';
   }
 
   function center(c, text, tint, small) {

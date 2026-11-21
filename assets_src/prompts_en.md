@@ -6,12 +6,12 @@
 
 各絵の見出しに、✅（生成済み）か ⬜（未生成）を付けています。`assets_src/images/` はリポジトリに入らないので、絵を置いたら、ここの一覧と見出しのマークを手で更新します。
 
-全 74 枚のうち、生成済みは 74 枚、未生成は 0 枚です（2026-11-15 時点）。
+全 80 枚のうち、生成済みは 80 枚、未生成は 0 枚です（2026-11-21 時点）。2026-11-21 のレビューで、新しい絵 6 枚と描き直し 2 枚を足しました（下の「2026-11-21 のレビューで、増やす・描き直す絵」）。
 
 | 種類 | ✅ 生成済み | ⬜ 未生成 | 未生成の絵 |
 |---|---|---|---|
 | 立ち絵 | 23 | 0 | なし |
-| 場面の絵 | 35 | 0 | なし |
+| 場面の絵 | 41 | 0 | なし |
 | カメラの背景 | 16 | 0 | なし |
 
 2026-11-14 に絵を見比べて、絵どうし・絵とシナリオの食い違いを直すことにしました。下の「絵をそろえるための決まり」に合わせ、「作り直し（Gemini で参考画像を添付）」のプロンプトで作り直しました（23 枚、同じ日に完了。新しく作った `ch1_lobby_police`・`cam07_office_day`・`cam09_roof_day` を含め、全部で 49 枚）。作り直した絵の前の版は、`assets_src/images/backup/` に移しています（ゲームには使わない）。
@@ -23,6 +23,119 @@
 - `ch1_lobby_police`: 右上と右下に時刻の文字が入ったため、文字だけを消す直しをした。
 - `ch1_office_couple`: 壁に時刻を表示するデジタル時計が入ったため、時計だけを消す直しをした。
 - 文字を描かないよう指示しても、時計や時刻の表示が入ることがある。できた絵は、文字が入っていないか必ず確かめる。
+
+## 2026-11-21 のレビューで、増やす・描き直す絵（すべて ✅ 作成済み）
+
+遊んだ人（ユーザー）の指摘で、次の 4 枚を作りました（2026-11-21。Gemini で参考画像を添付して作った）。
+
+| 状態 | 絵 | 備考 |
+|---|---|---|
+| ✅ 新しく | `scenes/ch1_shop_saeki_alone`（21:20 のショップ。店長がひとり） | レジで札束を数える店長。店の構図は元のまま |
+| ✅ 新しく | `scenes/ch1_jump_aftermath`（飛び降りの結果。3 日目の朝） | 体は映さず、ブルーシート・野次馬・手前の缶と袋で見せる |
+| ✅ 描き直し | `bg/cam03_corridor`（非常ベルを、壁に埋まって見えない形から、本物らしい形に） | 取り付け箱・発信機・表示灯のセットで描いた。前の版は `backup/` |
+| ✅ 描き直し | `chars/jogasaki_aroused`（襟が破れたように見える） | 襟も肩も破れていない形に直した。`game/data/characters.js` の `aroused` は元の `jogasaki_aroused.webp` に戻した |
+
+
+### 第2章の見直し（R25）で足した絵（✅）
+
+人影（線で描いた仮の人）をやめた場面の絵です（2026-11-21 作成）。どれも、監視カメラの絵の共通の指示（隅の天井から見下ろす）で、背景の絵（`bg/`）を添付して、人を足す形で作ります。
+
+| ファイル名 | 場面 | 描くもの | 添付する背景 |
+|---|---|---|---|
+| ✅ `scenes/ch2_lobby_makabe` | 5 日目 21:40、1F ロビー | エレベーターから降りた白髪の高齢の男（会長）に、白衣の男（院長）が深々と頭を下げている | `bg/cam01_lobby` |
+| ✅ `scenes/ch2_clinic_morishita` | 5 日目 20:47、3F クリニック前の廊下 | 30 代の男が、閉まったクリニックのガラスの扉の前から、奥の院長室の扉へ向かい、何度もノックしている（後ろ姿） | `bg/cam11_clinic` |
+| ✅ `scenes/ch2_director_kuzumi` | 4 日目 21:28、3F 院長室 | 灰色のスーツの男（所長）が、分厚い封筒を、白衣の男（院長）の机に置く。院長は両手で受け取って頭を下げる | `bg/cam12_director` |
+| ✅ `scenes/ch2_news_footbridge` | 7 日目 1:00、ロビーのテレビのニュース | テレビ画面に、夜の歩道橋の階段と、規制線・パトカーの赤い光（人の体は映さない）。ニュース番組の画面で、字幕の文字は入れない | `bg/cam01_lobby` |
+
+### ✅ ch2_lobby_makabe（5 日目 21:40、1F ロビー）
+
+添付: `bg/cam01_lobby`（変換済みの軽い版）
+
+```
+Generate an image. Edit the attached image. Keep exactly the same lobby, camera angle, composition, lighting, colors and art style: a modern office building ground-floor lobby at night, viewed from a ceiling-mounted security camera in the corner, high angle, slight wide-angle lens distortion. Add two people near the elevators: an elderly man with white hair in a dark suit who has just stepped out of the elevator, standing upright with his hands behind his back, and in front of him a middle-aged man in a white doctor's coat bowing deeply at the waist with his head lowered, as if apologizing. Small figures as seen from a high angle. The security camera itself is not visible. No text, no letters, no clock, no timestamp, no logo.
+```
+
+> **日本語訳**: 添付の絵を直す。ロビー・角度・構図・明かり・色・絵柄はそのまま（夜のオフィスビル 1 階のロビー。隅の天井の防犯カメラから見下ろす）。エレベーターのそばに 2 人を足す: エレベーターから降りたばかりの白髪の高齢の男（暗い色のスーツ。背筋を伸ばし、手を後ろで組む）と、その前で、白衣の中年の男が、腰から深く頭を下げて謝っている。高い角度から見た小さな人影。防犯カメラ自体は映さない。文字・時計・時刻・ロゴは入れない。
+
+### ✅ ch2_clinic_morishita（5 日目 20:47、3F クリニック前の廊下）
+
+添付: `bg/cam11_clinic`（変換済みの軽い版）
+
+```
+Generate an image. Edit the attached image. Keep exactly the same corridor, clinic glass door, camera angle, composition, lighting, colors and art style: a night-time third-floor clinic corridor, viewed from a ceiling-mounted security camera in the corner, high angle, slight wide-angle lens distortion. Add one person: a man in his 30s in a rumpled dark suit and loosened tie, seen from behind, walking away from the closed glass door of the clinic toward the director's office door at the end of the corridor, and knocking on that door with his fist, desperate and tense. Small figure as seen from a high angle. The security camera itself is not visible. No text, no letters, no clock, no timestamp, no logo.
+```
+
+> **日本語訳**: 添付の絵を直す。廊下・クリニックのガラスの扉・角度・構図・明かり・色・絵柄はそのまま（夜の 3 階のクリニックの廊下）。人を 1 人足す: 30 代の男。しわのある暗い色のスーツで、ネクタイをゆるめている。後ろ姿で、閉まったクリニックのガラスの扉から、廊下の奥の院長室の扉へ向かい、こぶしでその扉をたたいている。必死で張りつめた様子。高い角度から見た小さな人影。防犯カメラ自体は映さない。文字・時計・時刻・ロゴは入れない。
+
+### ✅ ch2_director_kuzumi（4 日目 21:28、3F 院長室）
+
+添付: `bg/cam12_director`（変換済みの軽い版）
+
+```
+Generate an image. Edit the attached image. Keep exactly the same director's office, desk, camera angle, composition, lighting, colors and art style, viewed from a ceiling-mounted security camera in the corner, high angle, slight wide-angle lens distortion. Add two people: a middle-aged man in a gray suit (a lawyer) standing at the front of the large desk, setting a thick brown envelope on the desk; and behind the desk a man in a white doctor's coat (the clinic director) half rising from his chair, receiving the envelope with both hands and bowing his head. Small figures as seen from a high angle. The security camera itself is not visible. No text, no letters, no clock, no timestamp, no logo.
+```
+
+> **日本語訳**: 添付の絵を直す。院長室・机・角度・構図・明かり・色・絵柄はそのまま（隅の天井の防犯カメラから見下ろす）。2 人を足す: 灰色のスーツの中年の男（弁護士）が大きな机の手前に立ち、厚い茶封筒を机の上に置いている。机の奥では、白衣の男（院長）が椅子から腰を半分上げ、両手で封筒を受け取って頭を下げている。高い角度から見た小さな人影。防犯カメラ自体は映さない。文字・時計・時刻・ロゴは入れない。
+
+### ✅ ch2_news_footbridge（7 日目 1:00、ロビーのテレビのニュース）
+
+添付: `bg/cam01_lobby`（変換済みの軽い版）
+
+```
+Generate an image. Edit the attached image. Keep exactly the same lobby, camera angle, composition, lighting, colors and art style, viewed from a ceiling-mounted security camera in the corner, high angle. The lobby is empty of people. Only change what is shown on the wall-mounted TV screen: it now shows a night news broadcast scene of a pedestrian footbridge staircase, with yellow police tape across the stairs and red flashing police car lights reflecting on the steps, wet pavement below. No people, no body, no blood, no injury shown. The TV screen glows blue-white and casts a faint glow into the dark lobby. The security camera itself is not visible. No text, no letters, no captions, no logo, no timestamp.
+```
+
+> **日本語訳**: 添付の絵を直す。ロビー・角度・構図・明かり・色・絵柄はそのまま（隅の天井の防犯カメラから見下ろす）。ロビーに人はいない。壁のテレビの画面に映るものだけを変える: 夜のニュースの、歩道橋の階段の場面。階段に黄色い規制線が張られ、赤く点滅するパトカーの光が段に映り、下の路面は濡れている。人・体・血・けがは映さない。テレビの画面は青白く光り、暗いロビーにほのかに光を落とす。防犯カメラ自体は映さない。文字・字幕・ロゴ・時刻は入れない。
+
+> 注: 描かれたテレビは小さく、画面の中身は大まかな赤い光の階段として見える。字幕は入っていない。
+
+### ✅ ch1_shop_saeki_alone（21:20 のブランドショップ。閉店後、店長がひとり）
+
+添付: `bg/cam02_shop`
+
+```
+Generate an image. Edit the attached image. Keep exactly the same boutique, camera angle, composition, lighting and art style: a closed luxury brand shop at night, shutters down, handbags lit on the shelves. Add one person: the shop manager, a woman in her early 30s in a dark tailored dress uniform with her hair in a neat bun, standing alone behind the cash register counter, seen from a high angle, counting a stack of banknotes with her head bowed. Her face is not smiling and a little tired. The rest of the shop is empty. No text, no clock, no timestamp, no logo. Viewed from a ceiling-mounted security camera in the corner, high angle, slight wide-angle lens distortion.
+```
+
+> **日本語訳**: 添付の絵を直す。店・角度・構図・明かり・絵柄はそのまま（夜の閉店後の高級ブランドショップ、シャッターは下りて、棚のハンドバッグが明るく照らされている）。人を 1 人だけ足す: 店長。30 代前半の女性で、濃い色の仕立てのよい制服のワンピース、髪はきちんとしたまとめ髪。レジのカウンターの奥にひとりで立ち、高い角度から見て、うつむいて札束を数えている。笑っておらず、少し疲れた顔。店のほかの場所には誰もいない。文字・時計・時刻・ロゴは入れない。隅の天井に付いた防犯カメラから見た構図。
+
+### ✅ ch1_jump_aftermath（飛び降りの結果。3 日目の朝、ビルの前）
+
+添付: `scenes/ch1_dropped_cans`（缶と袋の絵）、`scenes/ch1_dawn_building`（朝日のビル）
+
+```
+Generate an image. Wide horizontal 16:9. Japanese anime style background art, same art style and morning light as the attached images. A morning scene on the pavement in front of a glass skyscraper, just after a fatal fall. Do not show the body in any detail: in the middle distance, at the edge of the shadow of the building, a person's dark suit jacket and one leather shoe are visible, mostly hidden by people's legs and a half-unfolded blue tarp being held up by two police officers. A few onlookers in silhouette stand back with their hands over their mouths; one is running toward the scene. In the foreground, slightly out of focus, a spilled plastic shopping bag, a rolling beer can and a tray of sliced roast pork, the same as in the first attached image. Bright, cold morning light that contrasts with the horror. No blood, no gore, no injury details. No text.
+```
+
+> **日本語訳**: 横長 16:9。日本のアニメ調の背景美術。絵柄と朝の光は、添付の絵と同じ。ガラスの高層ビルの前の歩道、人が落ちた直後の朝の場面。体は詳しく描かない。中景の、ビルの影のはしに、濃い色のスーツの上着と革靴の片方が見えるが、人々の足と、警察官 2 人が持ち上げた半開きの青いシートで、ほとんど隠れている。数人の野次馬が、口を手でおおって、影のように離れて立つ。ひとりは現場へ走っていく。手前に、少しぼかして、散らばったレジ袋、転がるビール缶、チャーシューのパック（最初の添付の絵と同じもの）。朝のまぶしい冷たい光が、惨状と対照的。血・残酷な表現・けがの描写はなし。文字なし。
+
+### ✅ cam03_corridor（背景）の描き直し: 非常ベル
+
+現在の絵は、大理石の壁の何もない面に、ベルだけが埋まっているように見えます。ベルを、本物の非常ベルの形にします。
+
+添付: `bg/cam03_corridor`（今の絵）
+
+```
+Generate an image. Edit the attached image. Keep exactly the same corridor, camera angle, composition, lighting, colors and art style. Only change the red fire alarm bell on the left marble wall: make it look like a real wall-mounted fire alarm unit. A round red alarm bell mounted on a small white rectangular backplate box, a short grey conduit pipe running up from the box into the ceiling, and a small square red manual call point (pull station) box just below it, with a tiny red indicator lamp. Keep it exactly one alarm unit, in the same position near the left edge. Do not change anything else. No text, no letters, no labels.
+```
+
+> **日本語訳**: 添付の絵を直す。廊下・角度・構図・明かり・色・絵柄はそのまま。左の大理石の壁の赤い非常ベルだけを、壁に取り付けられた本物の非常ベルの設備に見えるようにする。小さな白い四角い取り付け箱に丸い赤いベルが付き、箱から短い灰色の配管が天井へ上がり、すぐ下に小さな四角い赤い手動の発信機（押しボタンの箱）と、小さな赤い表示灯がある。設備は 1 つだけ、位置は今と同じ、左端の近く。ほかは変えない。文字・ラベルは入れない。
+
+### ✅ jogasaki_aroused（城ヶ崎・情事のさなか）の描き直し: 襟
+
+現在の絵は、シャツが肩から落ちて、襟と肩口が破れたように見えます。服は乱れていても、**破れても、ちぎれてもいない**形にします。
+
+添付: `chars/jogasaki_aroused`（今の絵）、`chars/jogasaki_after`（服の描き方の手本）
+
+```
+Same character, same face, same expression and hair as the first attached image. Japanese anime style visual novel portrait, vertical 2:3, no text. Redraw only the clothing: the white dress shirt is unbuttoned from the collar down to the chest and the collar is open, but both shoulders are still covered by the shirt, the collar is intact, the fabric is clean and whole, with no tears, no ripped edges, no frayed fabric. The tie is yanked loose and hangs crooked. Sleeves rolled up. Same as the second attached image in how neatly the shirt is drawn. Background: solid pure green chroma key background, flat solid background, clean sharp edges, no shadows on background. No green light on the character.
+```
+
+> **日本語訳**: 1 枚目の添付の絵と同じ人物・顔・表情・髪。日本のアニメ調のノベルゲームの立ち絵、縦長 2:3、文字なし。服だけを描き直す: 白いワイシャツは、襟から胸までボタンが外れて襟元が開いているが、両方の肩はシャツで覆われたまま、襟はそのまま、布はきれいで破れていない。裂け目・ちぎれた縁・ほつれはなし。ネクタイは引っぱってゆるめられ、曲がって垂れている。袖はまくっている。シャツのきちんとした描き方は、2 枚目の添付の絵と同じ。背景はクロマキー用の緑一色。人物に緑の光は入れない。
+
+Negative prompt は、「密会の場面の立ち絵の Negative prompt」に、`torn clothes, ripped collar, torn shirt, tattered, frayed fabric` を足して使います。
+
+---
 
 ## 絵をそろえるための決まり
 
