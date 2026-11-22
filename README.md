@@ -5,6 +5,7 @@
 - 純粋な HTML5 / CSS / JavaScript（外部ライブラリなし）
 - セーブはブラウザの `localStorage`（サーバー不要）
 - GitHub Pages で公開
+- 第1〜5章を遊べます（v0.3.1）
 
 ## 遊び方
 
@@ -22,5 +23,5 @@
 | [game/](game/) | ゲーム本体。このフォルダが GitHub Pages で公開される |
 | [assets_src/](assets_src/README.md) | 素材の元ファイル（編集用）とライセンスの記録 |
 | [testing/](testing/README.md) | 確認内容（テスト計画）と確認結果 |
-| [tools/](tools/README.md) | 開発用スクリプト（PlantUML → SVG など） |
+| [tools/](tools/README.md) | 開発用スクリプト（台本の自動テスト・絵の変換・PlantUML → SVG） |
 | [.github/workflows/](.github/workflows/pages.yml) | GitHub Pages への公開（GitHub Actions） |

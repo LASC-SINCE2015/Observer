@@ -6,6 +6,8 @@
              mistakes（外れの干渉を先に全部試してから通常解決）
    - 画面の部品は、何もしない「仮の部品」に置き換えて動かす
    - 台本のエラー、実行中のエラー、行き詰まり（何も押せなくなる）を見つけたら、終了コード 1 で終わる
+   - 台本・cameras.js・characters.js が指す絵が game/assets/ にあるかも確かめる（最後に「見つからない絵」を出す）
+     - assets_src/new_prompts_ch*.md の ⬜（未生成）にある名前は「未生成（既知）」、それ以外は「参照の誤り」（終了コード 1）
    =================================================================== */
 
 const fs = require('fs');
@@ -108,6 +110,7 @@ const MISTAKES = ['*h1_early', '*h1_late', '*h_phone_no', '*h2_stairs', '*h3_noi
   '*p_ring', '*p_noise', '*p_voice_safe', '*send_wrong'];
 // バッドエンドへ進む選択肢
 const GIVE_UP = /やめておく|何もしない/;
+let startScript = null;   // 最初に読み込んだ章の台本
 const tried = new Set();
 const used = {};   // 選択肢を選んだ回数
 let badSeen = false;
@@ -222,6 +225,7 @@ async function main() {
   // 時間切れ（@idle）は発火させない（選択肢を押して進む）
   T.setNoIdle(true);
   T.startChapter(chapterNo);
+  startScript = T.run.script;
   let idle = 0;
   let retries = 0;
   for (let n = 0; n < 5000; n++) {
@@ -256,6 +260,76 @@ async function main() {
   fail('手数が多すぎます（無限ループの疑い）');
 }
 
+/* ---------- 絵のパスの検査 ---------- */
+// assets_src/new_prompts_ch*.md の「### ⬜ 名前」から、未生成（既知）の名前を集める。読めなければ null
+function readPending() {
+  try {
+    const dir = path.join(__dirname, '..', 'assets_src');
+    const files = fs.readdirSync(dir).filter((n) => /^new_prompts_ch.*\.md$/.test(n));
+    if (!files.length) return null;
+    const set = new Set();
+    files.forEach((n) => {
+      fs.readFileSync(path.join(dir, n), 'utf8').split(/\r?\n/).forEach((l) => {
+        const m = l.match(/^#+\s*⬜\s*([\w/.-]+)/);
+        if (m) set.add(stem(m[1]));
+      });
+    });
+    return set;
+  } catch (e) { return null; }
+}
+function stem(p) { return p.replace(/^.*\//, '').replace(/\.[A-Za-z0-9]+$/, ''); }
+
+// 台本（@feed・@event・@outside などの img:、@show の立ち絵）と cameras.js の bgimg を集めて、実在を確かめる
+function checkImages() {
+  const refs = [];   // { p, where }
+  const bad = [];    // { where, msg }
+  const add = (p, where) => { if (p) refs.push({ p, where }); };
+  const script = startScript;   // 章の途中で次の章へ進んでも、最初の章の台本を調べる
+  let label = '(先頭)';
+  const scanShow = (arg, where) => {
+    const w = arg.split(/\s+/).filter(Boolean);
+    const ch = O.characters[w[0]];
+    if (!ch) return;   // 人物がいない誤りは、実行時のエラーとして出る
+    const face = w.slice(1).find((x) => x !== 'left' && x !== 'right') || 'normal';
+    if (!ch.faces[face]) { bad.push({ where, msg: `表情 ${w[0]} ${face} が characters.js にない` }); return; }
+    add(ch.faces[face], where);
+  };
+  if (script) {
+    script.code.forEach((ins) => {
+      if (ins.op === 'label') label = ins.name;
+      const where = `第${chapterNo}章 L${ins.ln} ${label}`;
+      if (ins.op === 'show') scanShow(ins.arg || '', where);
+      (ins.arg || '').split(/\s+/).forEach((t) => {
+        if (t.startsWith('img:')) t.slice(4).split(',').forEach((p) => add(p, where));
+      });
+      (ins.body || []).forEach((b) => { if (b.cmd === 'show') scanShow(b.arg || '', `第${chapterNo}章 L${b.ln} ${label}`); });
+    });
+  }
+  Object.keys(O.cameras).forEach((id) => add(O.cameras[id].bgimg, `cameras.js ${id}`));
+
+  const pending = readPending();
+  const seen = new Set();
+  const missing = [];   // { p, where, kind: 'known' | 'wrong' | 'unknown' }
+  refs.forEach((r) => {
+    if (seen.has(r.p)) return;
+    seen.add(r.p);
+    if (fs.existsSync(path.join(GAME, 'assets', r.p))) return;
+    const kind = pending === null ? 'unknown' : pending.has(stem(r.p)) ? 'known' : 'wrong';
+    missing.push({ p: r.p, where: r.where, kind });
+  });
+  const tag = { known: '未生成（既知）', wrong: '参照の誤り', unknown: '見つからない（未生成の一覧を読めない）' };
+  const lines = bad.map((b) => `  [参照の誤り] ${b.where}: ${b.msg}`)
+    .concat(missing.map((m) => `  [${tag[m.kind]}] ${m.where}: ${m.p}`));
+  const wrong = bad.length + missing.filter((m) => m.kind === 'wrong').length;
+  if (lines.length) {
+    console.log(`  絵の検査: 参照の誤り ${wrong} 件 / 未生成（既知） ${missing.filter((m) => m.kind === 'known').length} 件` +
+      (pending === null ? ' / 未生成の一覧（assets_src/new_prompts_ch*.md）を読めないため、見つからない絵は警告のみ' : ''));
+    lines.slice(0, 30).forEach((l) => console.log(l));
+    if (lines.length > 30) console.log(`  ほか ${lines.length - 30} 件`);
+  }
+  return wrong;
+}
+
 function report() {
   const p = T.progress;
   console.log(`  章の記録: ${JSON.stringify(p.chapters)}  見たエンディング: ${Object.keys(p.endings).join('、') || 'なし'}`);
@@ -266,7 +340,7 @@ function finish(msg) {
   if (T.errors.length) { fail(`台本のエラー:\n  ${T.errors.join('\n  ')}`); return; }
   console.log(`OK 第${chapterNo}章 ${route}: ${msg}`);
   report();
-  process.exit(0);
+  process.exit(checkImages() ? 1 : 0);
 }
 
 function fail(msg) {
@@ -274,6 +348,7 @@ function fail(msg) {
   console.log(log.slice(-15).join('\n'));
   if (T.errors.length) console.log(`台本のエラー:\n  ${T.errors.join('\n  ')}`);
   report();
+  checkImages();
   process.exit(1);
 }
 
