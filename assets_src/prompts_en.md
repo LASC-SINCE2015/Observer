@@ -6,12 +6,12 @@
 
 各絵の見出しに、✅（生成済み）か ⬜（未生成）を付けています。`assets_src/images/` はリポジトリに入らないので、絵を置いたら、ここの一覧と見出しのマークを手で更新します。
 
-全 80 枚のうち、生成済みは 80 枚、未生成は 0 枚です（2026-11-22 時点。この表と下の一覧は、第1・2章と共通の立ち絵の分です）。2026-11-21 のレビューで、新しい絵 6 枚と描き直し 2 枚を足しました（下の「2026-11-21 のレビューで、増やす・描き直す絵」）。
+全 113 枚のうち、生成済みは 113 枚、未生成は 0 枚です（2026-11-22 時点。この表と下の一覧は、第1・2章と共通の立ち絵の分です）。2026-11-21 のレビューで、新しい絵 6 枚と描き直し 2 枚を足しました（下の「2026-11-21 のレビューで、増やす・描き直す絵」）。
 
 | 種類 | ✅ 生成済み | ⬜ 未生成 | 未生成の絵 |
 |---|---|---|---|
-| 立ち絵 | 23 | 0 | なし |
-| 場面の絵 | 41 | 0 | なし |
+| 立ち絵 | 26 | 0 | なし |
+| 場面の絵 | 71 | 0 | なし |
 | カメラの背景 | 16 | 0 | なし |
 
 第3〜5章で足した絵は、章ごとのファイルで管理しています（作った絵は、素材の一覧 [README.md](README.md) に入れます）。
@@ -22,7 +22,7 @@
 | [new_prompts_ch4.md](new_prompts_ch4.md)（第4章） | 22（背景 3・場面 19。うち 1 枚は第3章と共有） | 22 | 0 |
 | [new_prompts_ch5.md](new_prompts_ch5.md)（第5章） | 16 | 16 | 0 |
 
-ゲームの絵は、ここまでの合計で 134 枚（`game/assets/` の `chars` 27・`scenes` 81・`bg` 26）が作ってあります。未生成の絵はありません（2026-11-22 に、第4章の 14 枚と第5章の 7 枚を生成。同じ日に、会員が写る絵 6 枚と `cam26_viewing_room`・`ch4_salon_3am`・`saori_normal`・`saori_smile` を作り直した）。
+ゲームの絵は、ここまでの合計で 167 枚（`game/assets/` の `chars` 30・`scenes` 111・`bg` 26）が作ってあります。未生成の絵はありません（2026-11-22 に、第4章の 14 枚と第5章の 7 枚を生成。同じ日に、会員が写る絵 6 枚と `cam26_viewing_room`・`ch4_salon_3am`・`saori_normal`・`saori_smile` を作り直した）。
 
 2026-11-14 に絵を見比べて、絵どうし・絵とシナリオの食い違いを直すことにしました。下の「絵をそろえるための決まり」に合わせ、「作り直し（Gemini で参考画像を添付）」のプロンプトで作り直しました（23 枚、同じ日に完了。新しく作った `ch1_lobby_police`・`cam07_office_day`・`cam09_roof_day` を含め、全部で 49 枚）。作り直した絵の前の版は、`assets_src/images/backup/` に移しています（ゲームには使わない）。
 
@@ -1411,3 +1411,89 @@ nsfw, nude, nipples, underwear, lingerie, cleavage cutout, lowres, bad anatomy, 
 - 人物を変えるときは、`1girl` 以下の見た目の単語を、上の各人物の英語の説明から拾って並べ替えます（例: 佐伯は `chestnut hair, bob cut, curled hair, winged eyeliner, black blazer, pencil skirt, silk scarf`）。
 - 男性は `1boy, mature male` にします。
 - 場面の絵は、`from above, security camera view, fisheye, night, dim lighting, scenery` を足し、`simple background` 以降（緑の背景の指定）を消します。
+
+
+## 2026-11-22 のレビューで足した絵・描き直した絵（すべて ✅）
+
+遊んだ人（ユーザー）の指摘で、次の絵を Google Gemini（無料）で作りました。どれも、参考画像を添付し、人物の見た目は添付の絵に合わせています。
+
+### 立ち絵（3 枚）
+
+#### ✅ saeki_bag（第1章。閉店後、バッグを肩にかけて値札を見る）
+添付: `chars/saeki_smile`
+```
+Generate an image. Use the attached image as the reference for the same character, same face, same hairstyle and same outfit (black fitted boutique jacket, pencil skirt, silk scarf). Japanese anime style illustration, character portrait (tachi-e) for a mature suspense visual novel. Delicate line art, crisp cel shading, slightly muted elegant colors. Waist-up, vertical 2:3. Background: solid pure green background, bright green screen background, chroma key green, flat solid background, clean sharp edges, no shadows on background. No green light or green reflections on the character. Pose: after closing time, she has taken a luxury handbag from the shelf and hangs it on her shoulder, standing slightly turned to the side as if looking into a mirror. With her other hand she holds the small price tag of the bag, turned over, and looks down at it. Expression: the polished smile is gone; a quiet, tired, wistful face, lips pressed lightly, a trace of longing and resignation. The handbag is an elegant leather handbag, no logo, no brand marks. No text, no letters, no numbers on the tag, no logo, no watermark.
+```
+> **日本語訳**: 添付の絵と同じ人物・顔・髪・服（黒のジャケット、ペンシルスカート、スカーフ）。閉店後、棚の高級バッグを肩にかけ、鏡を見るように少し横を向く。もう片方の手で、バッグの小さな値札を裏返して見下ろす。接客の笑顔は消え、静かで疲れた、物ほしげであきらめた顔。バッグにロゴなし。文字なし。（1 回目の生成で上限に当たり、別のアカウントで作った）
+
+#### ✅ reiko_look（第1章。エレベーターホールで、こちらを見る）
+添付: `chars/reiko_smile`
+```
+（1 回目）Generate an image. Use the attached image as the reference for the same character, ... Pose: she stands waiting for an elevator and lifts her chin, tilting her head slightly upward, looking up toward a camera above and in front of her, so her gaze meets the viewer from slightly below. One hand rests lightly on her bag strap. Expression: a soft, practiced, gentle smile that does not quite reach her eyes; a faint shadow of sadness and unease behind the elegance.
+（2 回目、同じチャットで）Edit the image you just made. Keep exactly the same woman ... Change only the pose: her hand must NOT touch her hair; both hands rest lightly at the shoulder bag strap in front of her. Tilt her head back and lift her chin clearly, so she is looking UP at a camera mounted above her ...
+```
+> **日本語訳**: エレベーターを待ちながら、あごを上げ、頭を少し上へ傾けて、上のカメラを見上げる。目が、下からこちらに合う。手はバッグの紐に軽く添える。やわらかく、作り慣れた笑み。目までは届かない。優雅さの奥に、悲しみと不安の影。（1 回目は髪に手をやる姿勢になったので、手を髪に触れさせず、バッグの紐に添える直しを頼んだ。結果は、こちらをまっすぐ見る顔で、採用した）
+
+#### ✅ reiko_nod（第1章。カメラに会釈する）
+添付: `chars/reiko_smile`
+```
+Generate an image. Use the attached image as the reference for the same character, same face, same hairstyle, same makeup and same dress. ... Pose: she gives a small, polite nod of greeting toward the viewer, head tilted down a little, both hands lightly clasped in front of her, her eyes glancing up shyly at the viewer. Expression: a gentle, slightly shy, tender smile, a little surprised at her own gesture.
+```
+> **日本語訳**: こちらへ小さく丁寧に会釈する。頭を少し下げ、両手を前で軽く重ね、はにかんで目だけ上目づかいにこちらを見る。やさしく、少し照れた、自分のしぐさに少し驚いたような笑み。
+
+### 場面の絵（新しく 10 枚）
+
+背景の絵（`bg/`）か、元の場面の絵を土台に、人物を足す・動かす形で作りました。人物の見た目は `chars/hanako_normal`（華子）に合わせています。共通の決まり: 部屋・角度・構図・明かり・絵柄は動かさない。防犯カメラから見下ろした小さな人物。カメラ本体は写さない。文字・ロゴなし。
+
+| 絵 | 添付 | 足す・変えるもの |
+|---|---|---|
+| ✅ `ch1_jogasaki_desk` | `scenes/ch1_hanako_desk` | 机の華子はそのまま。40 歳の弁護士（城ヶ崎）が、窓際の空いた机の脇にかがんで、手のひらで横板を押さえ、華子のほうを見上げる |
+| ✅ `ch1_hanako_pack` | `scenes/ch1_hanako_desk` | 華子が、椅子のそばに立ち、書類を閉じてバッグにしまう（ノートパソコンは閉じ、ランプは点いたまま） |
+| ✅ `ch1_hanako_husband_desk` | `scenes/ch1_hanako_desk` | 華子の机は空。華子は、窓際の空いた机（夫の机）のそばに立ち、机の上を見下ろす |
+| ✅ `ch1_hanako_evhall6` | `bg/cam06_evhall6`、`chars/hanako_normal` | 華子が、閉じたエレベーターの扉の前に立ち、肩にバッグ。呼び出しボタンへ手を伸ばす |
+| ✅ `ch1_hanako_elevator` | `bg/cam05_elevator`、`chars/hanako_normal` | 華子がひとりでエレベーターの中に立ち、ボタンを押す |
+| ✅ `ch1_hanako_stairs` | `bg/cam10_stairs`、`chars/hanako_normal` | 華子が、手すりに手を添えて階段を下りる |
+| ✅ `ch1_couple_corridor` | `bg/cam03_corridor`、`chars/jogasaki_normal`、`chars/saeki_smile` | 城ヶ崎と佐伯が、寄り添って、ささやき笑いながら、廊下の奥へ歩く |
+| ✅ `ch2_saijo_elevator` | `bg/cam05_elevator`、`chars/saijo_normal` | 白衣の西条が、エレベーターの中でひとりでボタンを押す。落ち着かない様子 |
+| ✅ `ch2_saijo_corridor` | `bg/cam11_clinic`、`chars/saijo_normal` | 西条が、後ろを気にしながら、小さな鍵を手に、院長室の扉へ急ぐ |
+| ✅ `ch1_hanako_corridor` | `bg/cam03_corridor`、`chars/hanako_normal` | 華子が、廊下の奥へ向かって足早に歩く（非常ベル・発信機・センサーはそのまま） |
+
+### 描き直した絵（4 枚）
+
+| 絵 | 添付 | 直したこと |
+|---|---|---|
+| ✅ `ch1_sena_mop` | `bg/cam03_corridor`、`chars/sena_normal` | 背景の非常ベル（箱・発信機つき）と場面の絵の非常ベル（むき出し）が食い違っていたので、背景の絵を土台に、清掃の女性・カート・バケツを足して作り直した |
+| ✅ `ch1_sena_trace` | （上のチャットで続けて） | 上の絵から、モップを立てかけ、右の柱のひびを指でなぞる動きに変えた |
+| ✅ `ch1_konbini` | `scenes/ch1_konbini`（元の絵） | 八島がレジの中（店員側）にいるように見えた。商品の棚の側に客（八島）、カウンターを挟んだレジの側に店員、という配置に直し、立ち位置が一目で分かるようにした（レジの向きだけの直しでは、変わらなかった） |
+| ✅ `ch1_jump_aftermath` | `scenes/ch1_jump_aftermath`（元の絵） | 缶・袋・チャーシューのパックが、人や靴に比べて巨大だったので、実物の大きさに小さく描き直した。靴は、シートのそばに、実物の大きさで置いた |
+
+
+### 第3・5章の仮の人影を置き換えた場面の絵（20 枚。2026-11-22）
+
+台本で、人物を線の影（仮の人影）で出していた場面の絵です。背景の絵（`bg/`）に人物を足す形で、Google Gemini（無料）で作りました。共通のプロンプトの型は、「添付の 1 枚目を直す。部屋・角度・構図・明かり・色・絵柄はそのまま、何も動かさない。足すのは、（人物の説明と動き）だけ。防犯カメラから見下ろした小さな人物。カメラ本体は写さない。文字・ロゴなし」です。人物の見た目は、添付の立ち絵（緑の背景は無視）に合わせています。
+
+| 絵 | 場面 | 添付 |
+|---|---|---|
+| ✅ `ch3_okochi_lobby` | 1F ロビー。受付のそばの柱に、くたびれたコートの刑事（大河内）が腕を組んでもたれ、ガムをかんでいる | bg/cam01_lobby、chars/okochi_normal |
+| ✅ `ch3_reiko_stairdoor` | 9F 非常階段の扉前。玲子が、扉を開けて階段室へ入り、一度だけ振り返る | bg/cam18_stair_door9、chars/reiko_normal |
+| ✅ `ch3_reiko_landing` | 9F 非常階段の踊り場。玲子が壁ぎわに立ち、手すりを持って、階段の下を怖がって見ている | bg/cam16_stair_landing、chars/reiko_normal |
+| ✅ `ch3_man_backhall` | 9F 裏口の通路。帽子を目深にかぶった男（顔は見えない）が、画面の端で携帯を耳に当てる | bg/cam14_salon_back、chars/kuzumi_normal（体つきだけ） |
+| ✅ `ch3_man_exit` | 9F 非常階段の扉前。帽子の男（顔は見えない）が、ひとりで扉から出て、壁ぎわを歩く | bg/cam18_stair_door9、chars/kuzumi_normal（体つきだけ） |
+| ✅ `ch3_makabe_salon` | 9F サロン入口前の廊下。白髪の会長（真壁）がゆっくり歩き、清掃の瀬名が、うつむいて端に立つ | bg/cam15_salon_entrance、chars/makabe_normal、chars/sena_normal |
+| ✅ `ch3_okochi_reiko_hall` | 9F エレベーターホール。降りてきた大河内と、サロンの戸口に立つ玲子が、小声で話す | bg/cam08_evhall9、chars/okochi_normal、chars/reiko_normal |
+| ✅ `ch3_okochi_backhall` | 9F 裏口の通路。大河内が、奥の非常用設備ボックスへ向かって歩く | bg/cam14_salon_back、chars/okochi_normal |
+| ✅ `ch3_reiko_exit` | 9F 裏口の通路。奥の扉から玲子が出てきて、大河内のほうを見る（上の絵から続けて作った） | （ch3_okochi_backhall を作ったチャットで続けて） |
+| ✅ `ch3_boxes_corridor` | 1F 東廊下。捜査員 2 人が、段ボール箱を抱えて奥へ歩く | bg/cam03_corridor |
+| ✅ `ch3_arrest_lobby` | 1F ロビー。刑事と捜査員に挟まれた作業着の男（八島）が、ガラス扉へ連れていかれる | bg/cam01_lobby、chars/okochi_normal |
+| ✅ `ch3_saijo_police` | 3F クリニック前の廊下。院長（西条）が、腕を組んだ刑事に、何度も頭を下げる | bg/cam11_clinic、chars/saijo_normal、chars/okochi_normal |
+| ✅ `ch5_kuzumi_run` | 非常階段。灰色のスーツの男（久住）が、書類の綴りを抱えて、階段を必死に駆ける | bg/cam10_stairs、chars/kuzumi_normal |
+| ✅ `ch5_reiko_stair` | 非常階段。玲子が、1F の扉の前の踊り場で、壁に背を向けて静かに待つ | bg/cam10_stairs、chars/reiko_normal |
+| ✅ `ch5_makabe_room` | 中央監視室。入口の内側に、真壁が、ひとりで穏やかに立つ | bg/cam00_room、chars/makabe_normal |
+| ✅ `ch5_makabe_paper` | 中央監視室。真壁が、机の中央で、古い紙を 1 枚、指で机の上にすべらせる（文字は読めない） | scenes/ch5_makabe_room |
+| ✅ `ch5_play_hall9` | 9F エレベーターホール。八島と玲子が、カメラに見せる、ぎこちない記録の受け渡しの芝居をする | bg/cam08_evhall9、chars/reiko_normal |
+| ✅ `ch5_play_lobby` | 1F ロビー。八島と玲子が、同じ受け渡しの芝居をする | bg/cam01_lobby、chars/reiko_normal |
+| ✅ `ch5_play_salon` | 9F サロン前。八島と玲子が、扉の前に並んで立つ（玲子が半歩前） | bg/cam27_salon_front、chars/reiko_normal |
+| ✅ `ch5_lobby_watch` | 1F ロビー。住人 3 人（灰色のスーツの男・暗いコートの女・カーディガンの年配の男）が、大型モニターを見上げて固まる | bg/cam01_lobby |
+
+- 「謎の男」（`ch3_man_backhall`・`ch3_man_exit`）は、第3章の時点で正体が割れないよう、帽子を目深にかぶせ、顔が見えない形で頼んだ。
+- 1 回で思いどおりになった絵が多い。`ch5_makabe_paper` は、アカウントの上限とエラーで、別のアカウントで作り直した。

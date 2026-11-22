@@ -5,6 +5,7 @@
 | 台本 | `game/scenario/chapter<N>.js` | 章ごとのシナリオ。書き方は [scenario_format.md](scenario_format.md) |
 | カメラの一覧 | `game/data/cameras.js` | 全章で共通のカメラ（ID・場所・背景・音が入るか） |
 | 章の一覧 | `game/data/chapters.js` | 章の番号・題名・台本の名前・始まりのラベル・隠すかどうか |
+| 人物ノート | `game/data/people.js` | 記録の画面の「人物ノート」の項目。人物ごとに、見出し（手帳のあだ名と、書き直されたあとの名前）と、台本の `@trait キー` で書き足される項目を決める。進行は `progress.traits`（章をまたいで残る）に入る |
 | セーブ | ブラウザの `localStorage` | 下の 3 つ |
 
 ## セーブ（localStorage）

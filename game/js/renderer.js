@@ -424,31 +424,15 @@
     c.restore();
   }
 
-  // 干渉済みで、もう動かせない時間: 映像が白くかすんで固まり、札が貼られる
-  function drawLocked(c, t, small) {
-    const k = 0.6 + Math.sin(t * 2) * 0.03;
+  // 干渉済みで、もう動かせない時間: 映像が白くかすんで固まる（札は出さない。白いことで、動かせないと伝わる）。
+  // 白は薄くして、向こう側の映像は見えるようにする
+  function drawLocked(c, t) {
+    const k = 0.3 + Math.sin(t * 2) * 0.02;
     c.fillStyle = `rgba(255, 246, 228, ${k})`;
     c.fillRect(0, 0, W, H);
-    c.strokeStyle = 'rgba(120, 90, 60, 0.14)';
+    c.strokeStyle = 'rgba(120, 90, 60, 0.1)';
     c.lineWidth = 1;
     for (let x = -H; x < W; x += 9) line(c, x, H, x + H, 0);
-    const bw = small ? 220 : 170;
-    const bh = small ? 56 : 40;
-    const x = (W - bw) / 2;
-    const y = (H - bh) / 2;
-    c.fillStyle = 'rgba(40, 28, 16, 0.78)';
-    c.fillRect(x, y, bw, bh);
-    c.strokeStyle = 'rgba(255, 236, 200, 0.7)';
-    c.strokeRect(x + 2.5, y + 2.5, bw - 5, bh - 5);
-    c.textAlign = 'center';
-    c.textBaseline = 'middle';
-    c.fillStyle = 'rgba(255, 236, 200, 0.95)';
-    c.font = small ? '16px sans-serif' : '13px sans-serif';
-    c.fillText('動かせない時間', W / 2, y + bh * 0.4);
-    c.fillStyle = 'rgba(255, 236, 200, 0.7)';
-    c.font = small ? '11px sans-serif' : '9px sans-serif';
-    c.fillText('一度、手を入れた過去', W / 2, y + bh * 0.75);
-    c.textAlign = 'left';
   }
 
   function center(c, text, tint, small) {

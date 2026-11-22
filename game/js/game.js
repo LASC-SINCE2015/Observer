@@ -7,7 +7,7 @@
    =================================================================== */
 
 (function () {
-  const GAME_VERSION = '0.3.2';
+  const GAME_VERSION = '0.3.3';
   const SAVE_KEY = 'observer.save.v2';          // 場面のセーブ。形式を変えたら v を上げる
   const PROGRESS_KEY = 'observer.progress.v2';  // 章をまたぐ記録
   const DATA_VERSION = 2;
@@ -70,7 +70,8 @@
   // chapterNotes: 章を通常解決で終えたときの手帳（章を選んで始めるとき、前の章までの分を手帳に入れる）
   function newProgress() {
     // noIdle: 「時間切れなし」（メニューで切り替える。オンのとき、台本の @idle は無視する）
-    return { chapters: {}, flags: {}, endings: {}, read: {}, unlocked: {}, shown: {}, sound: false, chapterNotes: {}, noIdle: false };
+    // traits: 人物ノートに書き足した項目（@trait キー）。章をまたいで残る
+    return { chapters: {}, flags: {}, endings: {}, read: {}, unlocked: {}, shown: {}, sound: false, chapterNotes: {}, noIdle: false, traits: {} };
   }
 
   let state = newWorld();
@@ -81,6 +82,7 @@
   const history = [];
   let skipping = false;
   let glitch = 0;
+  let amberUntil = 0;   // この時刻（ms）まで、モニターを琥珀色にする（@fx amber。一瞬の揺らぎ）
   const lamps = {};
   let labelSnaps = {};   // ラベルごとの、入ったときの状態（バッドエンドからのやり直しに使う）
 
@@ -123,6 +125,16 @@
     chapterList: $('chapter-list'),
   };
   const mainCtx = el.main.getContext('2d');
+  // 大画面の解像度。監視カメラの映像は 320x180（拡大してざらつかせる）、監視室の外の八島の目の映像は 3 倍
+  let hdScale = 1;
+  function setHd(on) {
+    const k = on ? 3 : 1;
+    if (k === hdScale) return;
+    hdScale = k;
+    el.main.width = R.W * k;
+    el.main.height = R.H * k;
+    el.main.classList.toggle('hd', on);
+  }
 
   function showScreen(name) {
     // ゲームの画面を離れたら、進行中の待ち（文字送り・間・時間切れ・スキップ）をすべて止める
@@ -571,6 +583,16 @@
     note(ins) { addNote(ins.arg, ins.ln); },
     // @strike キー …: @note #キー で書いた手帳の行に、取り消し線を引く（その行がなければ、何もしない）
     strike(ins) { words(ins.arg).forEach((k) => strikeNote(k.replace(/^#/, ''))); },
+    // @trait キー …: 人物ノート（記録の画面）に、その人の「ひとりのときの顔」などを書き足す。キーは data/people.js の項目。
+    // すでに書いてあるキーは、何もしない。新しく書き足したときだけ、短く知らせる
+    trait(ins) {
+      let added = false;
+      words(ins.arg).forEach((k) => {
+        if (!Observer.traitKeys || !Observer.traitKeys.has(k)) throw new Error(`@trait ${k} が data/people.js にありません`);
+        if (!progress.traits[k]) { progress.traits[k] = true; added = true; }
+      });
+      if (added) { saveProgress(); toast('人物ノートに、書き足した'); }
+    },
 
     /* ----- 場面・演出 ----- */
     outside(ins) {
@@ -587,6 +609,7 @@
       if (name === 'flash') { el.flash.classList.remove('on'); void el.flash.offsetWidth; el.flash.classList.add('on'); }
       else if (name === 'shake') { document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 520); }
       else if (name === 'glitch') glitch = 14;
+      else if (name === 'amber') { amberUntil = performance.now() + 1000; glitch = 6; }
       else if (name === 'splash') state.splash = true;
       else if (name === 'clean') state.splash = false;
       else if (name === 'black') state.black = 'black';
@@ -815,6 +838,7 @@
     }
     glitch = 8;
     Observer.audio.play('glitch');
+    toast(mode === 'past' ? '過去の映像に切り替えました（時刻のつまみで戻せます）' : '現在の映像に戻しました');
     renderStatic();
     checkExplore();
   }
@@ -938,7 +962,7 @@
     document.body.classList.toggle('mode-past', state.mode === 'past' && !state.outside);
     document.body.classList.toggle('outside', !!state.outside);
     document.body.classList.toggle('cinema', !!state.cinema);
-    el.rec.textContent = state.mode === 'past' ? '◀◀ PLAYBACK' : '● REC';
+    el.rec.textContent = state.mode === 'past' ? '◀◀ 過去の映像' : '● 現在の映像';
     el.btnLive.classList.toggle('active', state.mode === 'live');
     el.btnPast.classList.toggle('active', state.mode === 'past');
     el.btnItems.textContent = state.items.length ? `アイテム(${state.items.length})` : 'アイテム';
@@ -1076,11 +1100,17 @@ ${files[0]}`));
     lastFrame = now;
     const t = now / 1000;
     const view = mainView();
+    if (performance.now() < amberUntil && !state.outside) view.tint = R.TINTS.past;
     currentHotspots = view.hotspots || [];
     view.bigCaption = el.main.clientWidth < 560;
+    // 監視室の外の場面は、八島が自分の目で見ているので、カメラ映像（320x180 を拡大したざらついた絵）にせず、
+    // 3 倍の解像度で、ノイズも乱れもなく、はっきり描く
+    setHd(!!state.outside);
+    mainCtx.setTransform(hdScale, 0, 0, hdScale, 0, 0);
+    mainCtx.imageSmoothingEnabled = true;
+    mainCtx.imageSmoothingQuality = 'high';
     R.render(mainCtx, view, t, false);
-    // 監視室の外の場面は、カメラ越しではなく八島の目で見ているので、ノイズをかけない（切り替えの一瞬だけ乱す）
-    if (!state.outside || glitch > 0) R.postEffects(mainCtx, el.main, view.tint, glitch);
+    if (!state.outside) R.postEffects(mainCtx, el.main, view.tint, glitch);
     if (glitch > 0) glitch -= 1;
   }
 
@@ -1643,6 +1673,12 @@ ${files[0]}`));
       const trues = [1, 2, 3, 4, 5].filter((n) => chapterDone(n, 'true')).length;
       const badSeen = bads.filter((e) => progress.endings[e.title]).length;
       b.appendChild(div('rec-sum', `通常解決 ${normals} / 4　　真解決 ${trues} / 5　　BAD END ${badSeen} / ${bads.length}`));
+      const pb = document.createElement('button');
+      const found = (Observer.people || []).reduce((n, p) => n + p.traits.filter((t) => progress.traits[t.key]).length, 0);
+      const total = (Observer.people || []).reduce((n, p) => n + p.traits.length, 0);
+      pb.textContent = `人物ノート　${found} / ${total}`;
+      pb.addEventListener('click', openPeople);
+      b.appendChild(pb);
       Observer.chapters.forEach((c) => {
         if (c.hidden && !progress.unlocked[c.no]) return;
         const box = div('rec-ch');
@@ -1669,6 +1705,31 @@ ${files[0]}`));
           ? 'すべての結末を、見届けました。遊んでくれて、ありがとう。'
           : '全章の真解決を、見届けました。遊んでくれて、ありがとう。'));
       }
+    });
+  }
+
+  // 人物ノート: 八島が見た、人物ごとの「ひとりのときの顔」。見つけた項目だけが書かれ、見つけていない項目は「？？？」。
+  // 見出しは、手帳のあだ名。名前で書き直した（@trait の nameKey）あとは、名前になる。
+  function openPeople() {
+    openPanel('人物ノート', (b) => {
+      b.classList.add('people');
+      const got = (k) => !!progress.traits[k];
+      let shown = 0;
+      (Observer.people || []).forEach((p) => {
+        const n = p.traits.filter((t) => got(t.key)).length;
+        if (!n && !(p.nameKey && got(p.nameKey))) return;   // まだ何も見つけていない人は、出さない
+        shown += 1;
+        const box = div('ppl');
+        const named = p.nameKey && got(p.nameKey);
+        box.appendChild(div('ppl-name', named ? p.name : (p.alias || '（書きかけて、線で消してある）')));
+        box.appendChild(div('ppl-role', `${p.role}　${n} / ${p.traits.length}`));
+        p.traits.forEach((t) => {
+          const text = got(t.key) ? ((t.after && got(t.after.key)) ? t.after.text : t.text) : '？？？';
+          box.appendChild(div(`ppl-trait${got(t.key) ? '' : ' none'}`, text));
+        });
+        b.appendChild(box);
+      });
+      if (!shown) b.appendChild(div('empty', 'まだ何も書いていない。モニターの中の人を、よく見てみよう。'));
     });
   }
 
