@@ -1,6 +1,6 @@
 # 第3章で新しく要る絵のプロンプト
 
-第3章の台本（`game/scenario/chapter3.js`）と `game/data/cameras.js`・`game/data/characters.js` が指している、まだ無い絵の一覧です。`prompts_en.md` と同じ形（英語のプロンプトと日本語訳）で書いています。絵が無くても、台本は線の背景と人の影で最後まで遊べます。絵ができたら、`prompts_en.md` の表に移し、機器の座標（下の表）を絵に合わせて直します。
+第3章の台本（`game/scenario/chapter3.js`）と `game/data/cameras.js`・`game/data/characters.js` が指している絵の一覧です（すべて作成済みです）。`prompts_en.md` と同じ形（英語のプロンプトと日本語訳）で書いています。絵が無くても、台本は線の背景と人の影で最後まで遊べます。
 
 作り方・保存先・共通の決まり（天井の隅から見下ろす、文字・時計を入れない、など）は `prompts_en.md` の「絵をそろえるための決まり」「使い方」に従います。
 
@@ -25,7 +25,7 @@
 - `ch3_sena_crack`・`ch4_cart_kuzumi` は、腕時計の文字盤を空白にする指示を足した。
 - `ch3_saori_door` は、沙織のドレスを `dark emerald-green`、髪を `chestnut` と書き足した。
 - `ch3_backdoor_stand` は、`ch3_backdoor_call` との差がごく小さい（受話器を見る向きだけ）。
-- `saori_normal`・`saori_smile` は、深緑のドレスなのに、背景をグリーンバックで作ってしまった。背景を抜くと、ドレスが少し半透明（アルファ 220 前後）で青みがかる。ブルーバックで作り直すのが望ましい。
+- `saori_normal`・`saori_smile` は、深緑のドレスなのに、背景をグリーンバックで作ってしまい、背景を抜くとドレスが青みがかった。2026-11-22 に、ブルーバックで作り直した（`chars/saori_normal` を添付し、「同じ人物・同じ服・同じ表情で、背景だけをクロマキー用の青一色（#0000FF）にする」と頼んだ。`saori_smile` は同じチャットで「表情だけを変える」と頼んだ）。下のプロンプトの「green」は、作り直した版では「blue」になっている。
 
 
 
