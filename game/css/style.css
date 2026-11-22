@@ -38,6 +38,8 @@ body.screen-title #title-screen,
 body.screen-select #select-screen,
 body.screen-about #about-screen { display: flex; }
 body.screen-game #game-screen { display: flex; }
+/* ゲームの画面は、長押しで文字や絵が選ばれたり、保存のメニューが出たりしないようにする（ログ・手帳の文字は、パネルの中なので選べる） */
+#game-screen { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 
 button {
   font: inherit;
@@ -72,7 +74,7 @@ button.active {
   padding: 24px 16px;
 }
 .title-box { text-align: center; width: 100%; max-width: 420px; }
-.title-sub { color: var(--text-dim); font-size: 13px; letter-spacing: 0.2em; }
+.title-sub { color: var(--text-dim); font-size: 13px; letter-spacing: 0.2em; text-wrap: balance; word-break: auto-phrase; text-align: center; }  /* 狭い幅で「異常あ／り」と 1 字だけ残さない */
 .title-logo {
   margin: 14px 0 34px;
   font-family: "Consolas", monospace;
@@ -85,6 +87,11 @@ button.active {
 .title-menu { display: flex; flex-direction: column; gap: 10px; }
 .title-menu button { padding: 12px; font-size: 15px; }
 .title-note { margin-top: 18px; font-size: 12px; color: var(--text-dim); }
+.title-clear { margin-top: 14px; font-size: 12px; letter-spacing: 0.2em; color: var(--c-true); }
+.title-clear:empty { display: none; }
+.title-clear.ready { color: var(--c-ready); }
+.title-menu button.hint { color: var(--c-ready); border-color: rgba(255, 179, 71, 0.5); }
+.title-logo.cleared::after { content: " ●"; font-size: 12px; vertical-align: super; color: var(--alert); text-shadow: 0 0 10px rgba(255, 77, 77, 0.7); }
 .title-version { margin-top: 8px; font-size: 11px; color: var(--text-dim); }
 
 /* ---------- 章選択 ---------- */
@@ -99,6 +106,7 @@ button.active {
   justify-content: space-between;
   gap: 8px;
 }
+#chapter-list button > span:first-child { word-break: auto-phrase; }  /* 長い題名を、語の途中（「タイムパラド／ックス」）で折らない */
 #chapter-list .mark { font-size: 12px; white-space: nowrap; }
 #chapter-list .st-locked { color: var(--c-locked); }
 #chapter-list .st-new { color: var(--text); }
@@ -106,6 +114,8 @@ button.active {
 #chapter-list .st-ready { color: var(--c-ready); border-color: rgba(255, 179, 71, 0.5); }
 #chapter-list .st-true { color: var(--c-true); border-color: rgba(92, 255, 138, 0.5); }
 #chapter-list .st-appear { animation: appear 2.4s ease-out; }
+.select-hint { font-size: 12px; line-height: 1.7; color: var(--c-ready); margin: -2px 0 12px; word-break: auto-phrase; }
+.select-hint:empty { display: none; }
 .select-legend { font-size: 12px; color: var(--text-dim); margin-bottom: 18px; }
 .c-normal { color: var(--c-normal); } .c-ready { color: var(--c-ready); } .c-true { color: var(--c-true); }
 
@@ -278,7 +288,7 @@ body.mode-past:not(.outside) .timeline.enabled { display: block; }
   border: 1px solid #2b2f37; border-radius: 3px; background: #0d0f12; color: var(--text);
 }
 .tile .tnum { font-family: "Consolas", monospace; font-size: 11px; color: var(--text-dim); flex: none; }
-.tile .tlabel { flex: 1; min-width: 0; }
+.tile .tlabel { flex: 1; min-width: 0; word-break: auto-phrase; }  /* 「ホー／ル」のように 1 字だけ残して折らない */
 .tile.active { border-color: var(--tint); box-shadow: 0 0 6px var(--tint); color: var(--tint); }
 .tile.active .tnum { color: var(--tint); }
 .wall.locked .tile { opacity: 0.35; cursor: default; }
@@ -376,7 +386,7 @@ body.mode-past:not(.outside) .timeline.enabled { display: block; }
   background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 6px; padding: 14px;
 }
 .panel-title { font-size: 14px; letter-spacing: 0.15em; color: var(--tint); }
-.panel-body { overflow-y: auto; font-size: 14px; line-height: 1.7; display: flex; flex-direction: column; gap: 8px; }
+.panel-body { overflow-y: auto; scrollbar-gutter: stable; font-size: 14px; line-height: 1.7; display: flex; flex-direction: column; gap: 8px; }
 .panel-body .empty { color: var(--text-dim); }
 .panel-body .logline { font-family: "Consolas", monospace; font-size: 13px; border-bottom: 1px solid #1e2127; padding-bottom: 4px; }
 .panel-body .logline .kind { color: var(--text-dim); margin-right: 8px; }
@@ -386,6 +396,14 @@ body.mode-past:not(.outside) .timeline.enabled { display: block; }
 .panel-body .hist .hname { color: var(--tint); font-size: 12px; }
 .panel-body .menu-buttons { display: flex; flex-direction: column; gap: 8px; }
 .panel-body .menu-buttons button { padding: 12px; }
+.panel-body .rec-sum { color: var(--text-dim); font-size: 13px; }
+.panel-body .rec-ch { border: 1px solid #262a31; border-radius: 4px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
+.panel-body .rec-name { color: var(--tint); }
+.panel-body .rec-st { font-size: 13px; color: var(--text-dim); }
+.panel-body .rec-end { font-size: 13px; color: var(--alert); }
+.panel-body .rec-end.none { color: var(--text-dim); }
+.panel-body .rec-daily { font-family: "Consolas", monospace; font-size: 13px; color: var(--text-dim); }
+.panel-body .rec-thanks { color: var(--c-true); font-size: 13px; text-align: center; margin-top: 4px; text-wrap: balance; word-break: auto-phrase; }
 
 .card {
   position: fixed; inset: 0; z-index: 60; display: none;
@@ -394,8 +412,10 @@ body.mode-past:not(.outside) .timeline.enabled { display: block; }
   text-align: center; cursor: pointer;
 }
 .card.on { display: flex; animation: fadein 1.2s; }
-.card-sub { font-size: 14px; letter-spacing: 0.4em; color: var(--text-dim); }
-.card-title { font-size: 26px; letter-spacing: 0.25em; }
+.card-sub { font-size: 14px; letter-spacing: 0.4em; color: var(--text-dim); text-wrap: balance; word-break: auto-phrase; text-align: center; padding: 0 12px; }  /* 長い章名を「ドッ／クス」で折らない */
+.card-title { font-size: 26px; letter-spacing: 0.25em; text-wrap: balance; word-break: auto-phrase; text-align: center; }
+.card-note { font-size: 13px; letter-spacing: 0.15em; color: var(--text-dim); text-wrap: balance; word-break: auto-phrase; text-align: center; }
+.card-note:empty { display: none; }
 .card.bad .card-sub { color: var(--alert); }
 .card.true .card-sub { color: var(--c-true); }
 .card-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; min-width: 240px; }

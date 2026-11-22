@@ -7,7 +7,7 @@
    =================================================================== */
 
 (function () {
-  const GAME_VERSION = '0.3.0';
+  const GAME_VERSION = '0.3.1';
   const SAVE_KEY = 'observer.save.v2';          // 場面のセーブ。形式を変えたら v を上げる
   const PROGRESS_KEY = 'observer.progress.v2';  // 章をまたぐ記録
   const DATA_VERSION = 2;
@@ -77,7 +77,7 @@
   let progress = loadProgress();
   let checkpoint = null;
   // reading: 探索中に読んでいる @look・@event（カメラを切り替えたら打ち切る）
-  const run = { script: null, pc: 0, choice: null, waitWipe: false, reading: null };
+  const run = { script: null, pc: 0, choice: null, lastChoice: null, waitWipe: false, reading: null, pauseTimer: null };
   const history = [];
   let skipping = false;
   let glitch = 0;
@@ -118,13 +118,21 @@
     btnNote: $('btn-note'),
     textbox: $('textbox'), speaker: $('speaker'), message: $('message'), choices: $('choices'),
     panel: $('panel'), panelTitle: $('panel-title'), panelBody: $('panel-body'), panelClose: $('panel-close'),
-    card: $('card'), cardSub: $('card-sub'), cardTitle: $('card-title'), cardButtons: $('card-buttons'),
+    card: $('card'), cardSub: $('card-sub'), cardTitle: $('card-title'), cardNote: $('card-note'), cardButtons: $('card-buttons'),
     hotmenu: $('hotmenu'), flash: $('fx-flash'), toast: $('toast'), errors: $('errors'), debug: $('debug'),
     chapterList: $('chapter-list'),
   };
   const mainCtx = el.main.getContext('2d');
 
   function showScreen(name) {
+    // ゲームの画面を離れたら、進行中の待ち（文字送り・間・時間切れ・スキップ）をすべて止める
+    if (name !== 'game') {
+      resetRun();
+      // ゲームの画面の見た目（過去の色・映像だけの表示・揺れ）を、タイトルなどに持ち越さない
+      document.body.classList.remove('cinema', 'mode-past', 'outside', 'shake');
+    }
+    // ブラウザの戻るボタンは、タイトル以外では、ゲームを閉じずに「ひとつ戻る」に使う
+    if (name === 'title') releaseBack(); else trapBack();
     document.body.classList.remove('screen-title', 'screen-select', 'screen-game', 'screen-about');
     document.body.classList.add(`screen-${name}`);
     if (name === 'title') renderTitle();
@@ -135,7 +143,7 @@
   /* ===================================================================
      テキストウィンドウ
      =================================================================== */
-  const typer = { item: null, i: 0, timer: null, auto: null, onDone: null };
+  const typer = { item: null, i: 0, timer: null, auto: null, onDone: null, doneAt: 0 };
   // オート: 文を読み終えたころに、自動で次へ進む（選択肢・探索・パネルが出ているあいだは止まる）
   let autoPlay = false;
   let autoTimer = null;
@@ -176,9 +184,17 @@
   function finishLine() {
     if (typer.timer) clearInterval(typer.timer);
     typer.timer = null;
+    typer.doneAt = performance.now();
     if (typer.item) el.message.textContent = typer.item.text;
     el.textbox.classList.add('waiting');
     scheduleAuto();
+  }
+
+  // 人の操作（クリック・タップ・Enter）で次へ。連打（二重クリック）で、読んでいない文を飛ばさないよう、
+  // 文を出し切った直後の 0.16 秒は、次へ進める操作を受け付けない
+  function userAdvance() {
+    if (!typer.timer && performance.now() - typer.doneAt < 160) return;
+    advanceText();
   }
 
   function scheduleAuto() {
@@ -284,7 +300,12 @@
      =================================================================== */
   function go(label) {
     const idx = run.script.labels[label];
-    if (idx === undefined) { reportError(`ラベル ${label} が見つかりません`); return; }
+    if (idx === undefined) {
+      reportError(`ラベル ${label} が見つかりません`);
+      // 固まらないように、直前の選択肢があればそこへ戻し、なければ次の命令から続ける（プレイヤーには何も出さない）
+      if (run.lastChoice) { run.choice = run.lastChoice; renderChoices(); armIdle(); checkExplore(); } else step();
+      return;
+    }
     run.pc = idx;
     run.choice = null;
     clearIdle();   // 場面が変わったら、時間切れの設定は解除する
@@ -326,7 +347,10 @@
   }
 
   function step() {
+    // 台本の @goto が輪になっていても、タブごと固まらないように、一度に実行する命令の数に上限を置く
+    let guard = 0;
     for (;;) {
+      if (++guard > 20000) { reportError(`${run.script.name}: 命令が止まらないため、実行をやめました`); showHint('（進めなくなりました。メニューから、章を選び直してください）'); return; }
       const ins = run.script.code[run.pc++];
       if (!ins) { showHint('（台本の終わりです）'); return; }
       const op = OPS[ins.op];
@@ -376,6 +400,7 @@
     /* ----- 流れ ----- */
     choice(ins) {
       run.choice = ins;
+      run.lastChoice = ins;
       renderChoices();
       armIdle();
       checkExplore();
@@ -399,7 +424,14 @@
     unset(ins) { words(ins.arg).forEach((f) => { delete state.flags[f]; }); },
     gset(ins) { words(ins.arg).forEach((f) => { progress.flags[f] = true; }); saveProgress(); },
     gunset(ins) { words(ins.arg).forEach((f) => { delete progress.flags[f]; }); saveProgress(); },
-    pause(ins) { setTimeout(step, +ins.arg || 800); return WAIT; },
+    // 既読を飛ばしているあいだは、間を短くする（読み返しで間延びさせない）
+    // （待ちの途中で章を離れたら止める。run.pauseTimer は resetRun で消す）
+    pause(ins) {
+      const ms = +ins.arg || 800;
+      clearTimeout(run.pauseTimer);
+      run.pauseTimer = setTimeout(() => { run.pauseTimer = null; step(); }, skipping ? Math.min(ms, 120) : ms);
+      return WAIT;
+    },
 
     /* ----- 時刻・モニター ----- */
     time(ins) {
@@ -588,8 +620,8 @@
       return WAIT;
     },
     title(ins) {
-      const [sub, title] = splitBar(ins.arg);
-      showCard({ sub, title: title || '', kind: '', onClick: () => { hideCard(); step(); } });
+      const [sub, title, note] = splitBar(ins.arg);
+      showCard({ sub, title: title || '', note, kind: '', onClick: () => { hideCard(); step(); } });
       return WAIT;
     },
     ending(ins) {
@@ -602,6 +634,8 @@
       const sub = { bad: 'BAD END', normal: '通常解決', true: '真解決' }[kind] || 'END';
       const buttons = [];
       if (retry) buttons.push({ text: retryText || 'もう一度', fn: () => { hideCard(); retryFrom(retry); } });
+      // 真解決のあとは、集めた結末の記録へ（全章の真解決を終えた人への、見返す場所）
+      if (kind === 'true') buttons.push({ text: '記録を見る', fn: () => { hideCard(); showScreen('select'); openRecord(); } });
       buttons.push({ text: '章を選ぶ', fn: () => { hideCard(); showScreen('select'); } });
       showCard({ sub, title, kind, buttons });
       return WAIT;
@@ -623,8 +657,11 @@
       const [no, kind] = words(ins.arg);
       const c = progress.chapters[no] = progress.chapters[no] || {};
       c.normal = true;
-      if (kind === 'true') c.true = true;
-      else progress.chapterNotes[no] = clone(state.notebook.filter((n) => n.ch === +no));
+      if (kind === 'true') {
+        c.true = true;
+        // 最後の章の真解決では、全章ぶんの手帳を残す（記録の画面から読み返せる）
+        if (+no === 5) progress.chapterNotes[5] = clone(state.notebook);
+      } else progress.chapterNotes[no] = clone(state.notebook.filter((n) => n.ch === +no));
       saveProgress();
     },
     trueready(ins) {
@@ -679,10 +716,15 @@
     const last = history[history.length - 1];
     if (run.choice.arg || !opts.length || !last) showHint(run.choice.arg || 'モニターを見て回ろう。');
     else showHint(last.text, last.name);
+    const shown = run.choice;
+    const shownAt = performance.now();
     opts.forEach((o) => {
       const b = document.createElement('button');
       b.textContent = o.text;
       b.addEventListener('click', () => {
+        // 連打（二重クリック）で、続けて出た次の選択肢まで押してしまわないよう、
+        // 出た直後の 0.2 秒と、すでに別の場面へ進んだあとの押下は受け付けない
+        if (run.choice !== shown || performance.now() - shownAt < 200) return;
         run.choice = null;
         clearChoices();
         go(o.target);
@@ -1054,11 +1096,13 @@ ${files[0]}`));
     if (run.waitWipe || !exploring()) return;
     const p = monitorPoint(e);
     const hit = currentHotspots.find((h) => Math.hypot(h.x - p.x, h.y - p.y) < 22);
-    if (hit) openHotMenu(hit, e.clientX, e.clientY);
+    if (hit) openHotMenu(hit, e.clientX, e.clientY); else closeHotMenu();
   }
 
+  let hotMenuAt = 0;
   function openHotMenu(h, cx, cy) {
     const m = el.hotmenu;
+    hotMenuAt = performance.now();
     m.innerHTML = '';
     const title = document.createElement('div');
     title.className = 'hm-title';
@@ -1068,6 +1112,8 @@ ${files[0]}`));
       const b = document.createElement('button');
       b.textContent = a.text;
       b.addEventListener('click', () => {
+        // 機器を二度たたいた指が、出たばかりの動作の項目に当たらないようにする。場面が進んだあとの押下も受け付けない
+        if (!run.choice || performance.now() - hotMenuAt < 250) return;
         closeHotMenu();
         state.lastHotspot = h;
         run.choice = null;
@@ -1093,6 +1139,8 @@ ${files[0]}`));
   function wipeStart(e) { if (!run.waitWipe) return; wipe.down = true; wipe.x = e.clientX; wipe.y = e.clientY; }
   function wipeMove(e) {
     if (!run.waitWipe || !wipe.down) return;
+    // マウスのボタンを、画面の外などで離してしまったら、そこで終わりにする
+    if (e.pointerType === 'mouse' && e.buttons === 0) { wipe.down = false; return; }
     wipe.dist += Math.hypot(e.clientX - wipe.x, e.clientY - wipe.y);
     wipe.x = e.clientX; wipe.y = e.clientY;
     el.splash.style.opacity = String(Math.max(0, 1 - wipe.dist / (el.main.clientWidth * 1.5)));
@@ -1121,7 +1169,11 @@ ${files[0]}`));
     fill(el.panelBody);
     el.panel.classList.add('on');
   }
-  function closePanel() { el.panel.classList.remove('on'); }
+  function closePanel() {
+    el.panel.classList.remove('on');
+    // スキップ中にパネルを開いて、文が出たまま止まっていたら、閉じたところから再開する
+    if (skipping && typer.item && !typer.timer) { clearTimeout(typer.auto); typer.auto = setTimeout(advanceText, 45); }
+  }
   function div(cls, text) { const d = document.createElement('div'); if (cls) d.className = cls; if (text !== undefined) d.textContent = text; return d; }
 
   function openLog() {
@@ -1256,10 +1308,11 @@ ${files[0]}`));
   }
 
   let cardButtons = [];
-  function showCard({ sub, title, kind, buttons, onClick }) {
+  function showCard({ sub, title, note, kind, buttons, onClick }) {
     cardButtons = buttons || [];
     el.cardSub.textContent = sub || '';
     el.cardTitle.textContent = title || '';
+    el.cardNote.textContent = note || '';
     el.card.className = `card on ${kind || ''}`;
     el.cardButtons.innerHTML = '';
     (buttons || []).forEach((bt) => {
@@ -1281,35 +1334,126 @@ ${files[0]}`));
   }
 
   const errorList = [];
+  // 台本の誤り（未定義のラベル・名前など）は、遊ぶ人には見せず、ゲームを止めずに進める。
+  // 開発のための表示は、コンソールの警告と、URL に ?debug を付けたときの画面の表示だけ
   function reportError(msg) {
     errorList.push(msg);
+    console.warn(msg);
+    if (!DEBUG) return;
     el.errors.textContent = `台本のエラー（ここを押すと閉じます）\n${errorList.join('\n')}`;
     el.errors.classList.add('on');
-    console.error(msg);
+  }
+
+  // 進行中の待ち（文字送り・オート・スキップ・@pause・@idle・拭く操作・機器のメニュー）を、すべて止める。
+  // 章を最初から始めるとき・保存から再開するとき・ゲームの画面を離れるときに呼ぶ
+  // （残すと、離れたあとで古い台本が勝手に進んだり、新しい章に古い待ちが割り込んだりする）
+  function resetRun() {
+    stopTyping();
+    typer.item = null;
+    typer.onDone = null;
+    clearTimeout(run.pauseTimer);
+    run.pauseTimer = null;
+    clearTimeout(exploreTimer);
+    clearIdle();
+    run.choice = null;
+    run.lastChoice = null;
+    run.reading = null;
+    run.portraitsBefore = null;
+    run.waitWipe = false;
+    wipe.down = false;
+    wipe.dist = 0;
+    el.wipeHint.classList.remove('on');
+    el.monitor.classList.remove('wiping');
+    el.splash.style.opacity = '';
+    clearChoices();
+    closeHotMenu();
+    setSkip(false);
+  }
+
+  /* ---------- ブラウザの戻るボタン ----------
+     - タイトル以外にいるあいだは、履歴を 1 つ余分に積んでおき、戻るボタンを「ページを離れる」ではなく
+       「ひとつ戻る」に使う（カード→そのまま、パネル→閉じる、ゲーム→メニュー、章選択・このゲームについて→タイトル）。 */
+  let trapped = false;
+  let ignorePop = 0;
+  function trapBack() {
+    if (trapped) return;
+    try { window.history.pushState({ observer: 1 }, ''); trapped = true; } catch (e) { /* 履歴が使えなければ、何もしない */ }
+  }
+  function releaseBack() {
+    if (!trapped) return;
+    trapped = false;
+    ignorePop += 1;
+    try { window.history.back(); } catch (e) { ignorePop -= 1; }
+  }
+  function onPopState() {
+    if (ignorePop > 0) { ignorePop -= 1; return; }
+    if (!trapped) return;
+    trapped = false;
+    const cls = document.body.classList;
+    if (el.card.classList.contains('on')) { trapBack(); return; }
+    if (el.hotmenu.classList.contains('on')) { closeHotMenu(); trapBack(); return; }
+    if (el.panel.classList.contains('on')) { closePanel(); trapBack(); return; }
+    if (cls.contains('screen-game')) { openMenu(); trapBack(); return; }
+    showScreen('title');
   }
 
   /* ===================================================================
      セーブと章をまたぐ記録
      =================================================================== */
+  // 保存できない環境（プライベートウィンドウ・容量超過・保存の禁止）でも、遊びは続ける。成功したかどうかを返す
   function autosave() {
+    let ok = true;
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify({ version: DATA_VERSION, savedAt: new Date().toISOString(), state: checkpoint }));
-    } catch (e) { /* 保存できなくても続ける */ }
-    saveProgress();
+    } catch (e) { ok = false; }
+    return saveProgress() && ok;
   }
   function manualSave() {
     if (!checkpoint) return;
-    autosave();
-    toast('保存しました（この場面の始めから再開できます）');
+    toast(autosave()
+      ? '保存しました（この場面の始めから再開できます）'
+      : 'このブラウザでは保存できません（プライベートモードなど）。このまま遊べますが、閉じると進み具合は残りません');
   }
   function loadSave() {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return null;
       const d = JSON.parse(raw);
-      if (d.version !== DATA_VERSION || !d.state) return null;
+      if (!d || d.version !== DATA_VERSION || !d.state || typeof d.state !== 'object') return null;
       return d.state;
     } catch (e) { return null; }
+  }
+
+  // 保存した場面を、いまの形に直す。古い保存（項目が足りない・カメラが増えた）や、壊れた項目でも、
+  // 落ちないように、足りない・型の合わない項目は初期値で補う
+  function restoreState(saved) {
+    const base = newWorld();
+    const s = base;
+    Object.keys(base).forEach((k) => {
+      const v = saved[k];
+      const b = base[k];
+      if (v === undefined) return;
+      if (b !== null && (v === null || typeof v !== typeof b || Array.isArray(v) !== Array.isArray(b))) return;
+      s[k] = v;
+    });
+    const baseCams = newWorld().cams;
+    const cams = {};
+    Observer.cameraOrder.forEach((id) => {
+      const c = s.cams && typeof s.cams[id] === 'object' && s.cams[id] ? s.cams[id] : {};
+      cams[id] = Object.assign({}, baseCams[id], c);
+    });
+    s.cams = cams;
+    s.wall = s.wall.filter((id) => Observer.cameras[id]);
+    if (!Observer.cameras[s.cam]) s.cam = Observer.cameraOrder[0];
+    if (s.mode !== 'live' && s.mode !== 'past') s.mode = 'live';
+    s.hotspots = s.hotspots.filter((h) => h && Observer.cameras[h.cam]);
+    s.events = s.events.filter((e) => e && Observer.cameras[e.cam] && Array.isArray(e.body));
+    s.burned = s.burned.filter((b) => Array.isArray(b));
+    s.notebook = s.notebook.filter((n) => n && typeof n.text === 'string');
+    s.items = s.items.filter((i) => i && typeof i.id === 'string');
+    if (s.relay && !Observer.cameras[s.relay.cam]) s.relay = null;
+    if (s.outside && typeof s.outside !== 'object') s.outside = null;
+    return s;
   }
   function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* 何もしない */ } }
 
@@ -1318,13 +1462,22 @@ ${files[0]}`));
       const raw = localStorage.getItem(PROGRESS_KEY);
       if (raw) {
         const d = JSON.parse(raw);
-        if (d.version === DATA_VERSION) return Object.assign(newProgress(), d.progress);
+        if (d && d.version === DATA_VERSION && d.progress && typeof d.progress === 'object') {
+          // 古い記録に無い項目（noIdle・chapterNotes・endings など）は初期値で補い、型の合わない項目は捨てる
+          const p = newProgress();
+          Object.keys(p).forEach((k) => {
+            const v = d.progress[k];
+            if (v !== undefined && v !== null && typeof v === typeof p[k] && Array.isArray(v) === Array.isArray(p[k])) p[k] = v;
+          });
+          if (d.progress.auto !== undefined) p.auto = !!d.progress.auto;
+          return p;
+        }
       }
     } catch (e) { /* 読めなければ新しく始める */ }
     return newProgress();
   }
   function saveProgress() {
-    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify({ version: DATA_VERSION, progress })); } catch (e) { /* 何もしない */ }
+    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify({ version: DATA_VERSION, progress })); return true; } catch (e) { return false; }
   }
 
   /* ===================================================================
@@ -1340,11 +1493,11 @@ ${files[0]}`));
     }
     hideCard();
     closePanel();
-    setSkip(false);
     const notes = fromScript ? state.notebook
-      : Object.keys(progress.chapterNotes).filter((k) => +k < no).sort((a, b) => a - b).flatMap((k) => progress.chapterNotes[k]);
+      : Object.keys(progress.chapterNotes).filter((k) => +k < no).sort((a, b) => a - b).flatMap((k) => (Array.isArray(progress.chapterNotes[k]) ? progress.chapterNotes[k] : []));
+    resetRun();
     state = newWorld();
-    state.notebook = clone(notes).map((n) => Object.assign(n, { unread: false }));
+    state.notebook = clone(notes).filter((n) => n && typeof n.text === 'string').map((n) => Object.assign(n, { unread: false }));
     state.chapter = no;
     state.script = c.script;
     run.script = Observer.scripts[c.script];
@@ -1387,10 +1540,18 @@ ${files[0]}`));
     const saved = loadSave();
     if (!saved || !Observer.scripts[saved.script]) { toast('保存したデータがありません'); return; }
     const script = Observer.scripts[saved.script];
-    state = Object.assign(newWorld(), saved);
+    let restored;
+    try { restored = restoreState(saved); } catch (e) {
+      // 壊れた保存は捨てて、タイトルに留まる
+      console.warn(e);
+      clearSave();
+      renderTitle();
+      toast('保存したデータを読み込めませんでした');
+      return;
+    }
+    resetRun();
+    state = restored;
     run.script = script;
-    run.waitWipe = false;
-    run.reading = null;
     buildWall();
     preloadScript(script);
     showScreen('game');
@@ -1406,26 +1567,50 @@ ${files[0]}`));
   /* ===================================================================
      タイトルと章選択
      =================================================================== */
-  function anyCleared() { return Object.values(progress.chapters).some((c) => c.normal); }
+  function anyCleared() { return Object.values(progress.chapters).some((c) => c && c.normal); }
+  function finalCleared() { return !!(progress.chapters[5] && progress.chapters[5].true); }
+  // 第4章には単独の真解決がない。第5章の真解決が、第4章の真解決にあたる
+  function chapterDone(no, kind) {
+    const p = progress.chapters[no] || {};
+    if (kind === 'true') return !!(p.true || (no === 4 && finalCleared()));
+    return !!p.normal;
+  }
+  // 真解決ができる（リレーの一枚が届いている）のに、まだ遊んでいない章
+  function readyChapters() { return Observer.chapters.filter((c) => (progress.chapters[c.no] || {}).ready && !chapterDone(c.no, 'true')); }
+  function allTrue() { return [1, 2, 3, 5].every((n) => chapterDone(n, 'true')); }
 
   function renderTitle() {
     $('btn-continue').disabled = !loadSave();
     $('btn-select').disabled = !anyCleared() && !DEBUG;
+    $('btn-record').disabled = !anyCleared() && !DEBUG;
+    // 最後の真解決を終えたあとは、タイトルの一行と赤いランプが変わる
+    const fin = finalCleared();
+    $('title-sub').textContent = fin ? '深夜、地下2階。日報の一番上には、「異常あり」。' : '深夜、地下2階。監視モニターの前で。';
+    $('title-logo').classList.toggle('cleared', fin);
+    // 通常解決のまま残した章に、届いた一枚が使われていないとき、「章を選ぶ」を橙にして知らせる
+    const ready = readyChapters().length > 0;
+    $('btn-select').classList.toggle('hint', ready);
+    $('title-clear').textContent = allTrue() ? '― 見ているのは、あなただった ―' : (ready ? '未来から届いた一枚が、まだ、使われていない。' : '');
+    $('title-clear').classList.toggle('ready', ready && !allTrue());
     $('btn-sound-title').textContent = `音: ${Observer.audio.enabled ? 'あり' : 'なし'}`;
   }
 
   function chapterStatus(c) {
     const p = progress.chapters[c.no] || {};
-    if (p.true) return { cls: 'st-true', mark: '真解決 ✔' };
-    if (p.ready) return { cls: 'st-ready', mark: '真解決ができる' };
-    if (p.normal) return { cls: 'st-normal', mark: 'クリア' };
+    if (chapterDone(c.no, 'true')) return { cls: 'st-true', mark: '真解決 ✔' };
+    if (p.ready) return { cls: 'st-ready', mark: '通常解決 ✔　真解決ができる' };
+    if (p.normal) return { cls: 'st-normal', mark: '通常解決 ✔' };
     const prev = progress.chapters[c.no - 1];
-    if (c.no === 1 || (prev && prev.normal) || DEBUG) return { cls: 'st-new', mark: c.script ? '' : '準備中' };
+    if (c.no === 1 || (prev && prev.normal) || DEBUG) return { cls: 'st-new', mark: c.script ? (c.hidden ? '最後の夜' : '') : '準備中' };
     return { cls: 'st-locked', mark: '' };
   }
 
   function renderSelect() {
     el.chapterList.innerHTML = '';
+    // 次に遊ぶ章への案内（橙の章があるときだけ）
+    $('select-hint').textContent = readyChapters().length
+      ? '橙色の章に、未来から届いた一枚を持って戻れる。最初から遊び直すと、途中で一枚が届く。（読んだ文章は、既読スキップで飛ばせる）'
+      : '';
     Observer.chapters.forEach((c) => {
       if (c.hidden && !progress.unlocked[c.no]) return;
       const st = chapterStatus(c);
@@ -1437,12 +1622,75 @@ ${files[0]}`));
       b.disabled = locked;
       if (progress.shown[c.no] !== st.cls) {
         b.classList.add('st-appear');
+        if (c.hidden && progress.shown[c.no] === undefined) toast('章の一覧に、新しい章が現れた');
         progress.shown[c.no] = st.cls;
       }
-      b.addEventListener('click', () => startChapter(c.no));
+      b.addEventListener('click', () => {
+        if (loadSave() && !confirm('保存した場面は、この章を始めると消えます。始めますか？')) return;
+        startChapter(c.no);
+      });
       el.chapterList.appendChild(b);
     });
     saveProgress();
+  }
+
+  // 記録: 章ごとの結末（通常解決・真解決・バッドエンド）と、集めた数
+  function openRecord() {
+    openPanel('記録', (b) => {
+      const list = Observer.endings || [];
+      const bads = list.filter((e) => e.kind === 'bad');
+      const normals = [1, 2, 3, 4].filter((n) => chapterDone(n, 'normal')).length;
+      const trues = [1, 2, 3, 4, 5].filter((n) => chapterDone(n, 'true')).length;
+      const badSeen = bads.filter((e) => progress.endings[e.title]).length;
+      b.appendChild(div('rec-sum', `通常解決 ${normals} / 4　　真解決 ${trues} / 5　　BAD END ${badSeen} / ${bads.length}`));
+      Observer.chapters.forEach((c) => {
+        if (c.hidden && !progress.unlocked[c.no]) return;
+        const box = div('rec-ch');
+        box.appendChild(div('rec-name', `第${c.no}章　${c.title}`));
+        const st = [];
+        if (c.no !== 5) st.push(`通常解決 ${chapterDone(c.no, 'normal') ? '✔' : '―'}`);
+        st.push(`真解決 ${chapterDone(c.no, 'true') ? '✔' : '―'}`);
+        box.appendChild(div('rec-st', st.join('　')));
+        bads.filter((e) => e.ch === c.no).forEach((e) => {
+          const got = !!progress.endings[e.title];
+          box.appendChild(div(`rec-end bad${got ? '' : ' none'}`, `BAD END　${got ? e.title : '？？？'}`));
+        });
+        b.appendChild(box);
+      });
+      if (finalCleared()) {
+        b.appendChild(div('rec-daily', '最後の日報　12日目　異常あり'));
+        const nb = document.createElement('button');
+        nb.textContent = '八島の手帳を、読み返す';
+        nb.addEventListener('click', openFinalNote);
+        b.appendChild(nb);
+      }
+      if (allTrue()) {
+        b.appendChild(div('rec-thanks', badSeen === bads.length
+          ? 'すべての結末を、見届けました。遊んでくれて、ありがとう。'
+          : '全章の真解決を、見届けました。遊んでくれて、ありがとう。'));
+      }
+    });
+  }
+
+  // 最後の手帳（全章ぶん）を、読むだけで開く
+  function openFinalNote() {
+    const notes = progress.chapterNotes[5] || [];
+    openPanel('八島の手帳（最後の一冊）', (b) => {
+      b.classList.add('notebook');
+      b.appendChild(div('note-daily', '日報: 異常あり'));
+      let ch = null;
+      notes.slice().sort((a, b2) => a.ch - b2.ch || a.at - b2.at).forEach((n) => {
+        if (n.ch !== ch) {
+          ch = n.ch;
+          const c = Observer.chapters.find((x) => x.no === ch);
+          b.appendChild(div('note-ch', c ? `第${c.no}章　${c.title}` : ''));
+        }
+        const d = div(`note${n.struck ? ' struck' : ''}`);
+        d.appendChild(div('note-head', `${fmtTime(n.at)}　${n.where || ''}`));
+        d.appendChild(div('note-text', n.text));
+        b.appendChild(d);
+      });
+    });
   }
 
   function toggleSound() {
@@ -1510,7 +1758,29 @@ ${files[0]}`));
   /* ===================================================================
      起動
      =================================================================== */
+  /* ---------- 無い絵（404）の記憶 ----------
+     - まだ作っていない絵を毎回取りに行って、コンソールに 404 が並ぶのを防ぐ。404 と分かった絵のパスを、
+       このブラウザに 24 時間・同じバージョンのあいだだけ覚える（絵が増えたら、バージョンが上がるか、
+       24 時間たつと、自動でまた読みに行く。一覧を手で直す必要はない）。?debug のときは覚えない。 */
+  const MISSING_KEY = 'observer.missing.v1';
+  function setupMissingMemory() {
+    let rec = { v: GAME_VERSION, t: Date.now(), paths: [] };
+    if (!DEBUG) {
+      try {
+        const d = JSON.parse(localStorage.getItem(MISSING_KEY));
+        if (d && d.v === GAME_VERSION && Array.isArray(d.paths) && Date.now() - d.t < 86400000) rec = d;
+      } catch (e) { /* 覚えていなければ、新しく始める */ }
+    }
+    try { performance.setResourceTimingBufferSize(600); } catch (e) { /* 何もしない */ }
+    R.trackMissing(DEBUG ? [] : rec.paths, (p) => {
+      if (DEBUG || rec.paths.includes(p)) return;
+      rec.paths.push(p);
+      try { localStorage.setItem(MISSING_KEY, JSON.stringify(rec)); } catch (e) { /* 何もしない */ }
+    });
+  }
+
   function init() {
+    setupMissingMemory();
     $('title-version').textContent = `v${GAME_VERSION}`;
     el.stVersion.textContent = `v${GAME_VERSION}`;
 
@@ -1530,20 +1800,38 @@ ${files[0]}`));
     });
     $('btn-continue').addEventListener('click', resume);
     $('btn-select').addEventListener('click', () => showScreen('select'));
+    $('btn-record').addEventListener('click', openRecord);
+    $('btn-record-select').addEventListener('click', openRecord);
     $('btn-sound-title').addEventListener('click', toggleSound);
     $('btn-select-back').addEventListener('click', () => showScreen('title'));
     $('btn-about').addEventListener('click', () => showScreen('about'));
     $('btn-about-back').addEventListener('click', () => showScreen('title'));
     $('about-version').textContent = `v${GAME_VERSION}`;
 
-    el.textbox.addEventListener('click', advanceText);
+    el.textbox.addEventListener('click', userAdvance);
     // 何かが押されたら、時間切れ（@idle）の数え直し
     document.addEventListener('pointerdown', () => { if (idle.timer) armIdle(); });
     document.addEventListener('keydown', () => { if (idle.timer) armIdle(); });
     document.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); advanceText(); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!e.repeat) userAdvance(); }
     });
+    // タブが隠れたあいだは、オート・時間切れ・音を止め、戻ったら再開する（時間切れは数え直し。「時間切れなし」の設定はそのまま守る）
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        clearTimeout(autoTimer); autoTimer = null;
+        clearTimeout(idle.timer); idle.timer = null;
+        Observer.audio.suspend();
+      } else {
+        if (autoPlay && typer.item && !typer.timer) scheduleAuto();
+        armIdle();
+        Observer.audio.resume();
+      }
+    });
+    window.addEventListener('popstate', onPopState);
+    window.addEventListener('orientationchange', closeHotMenu);   // 画面を回すと、機器のメニューの位置がずれる
+    // 長押しの「画像を保存」・文字の選択のメニューを出さない（ゲームの画面だけ。ログ・手帳の文字は選べる）
+    $('game-screen').addEventListener('contextmenu', (e) => e.preventDefault());
     el.btnLive.addEventListener('click', () => switchMode('live'));
     el.btnPast.addEventListener('click', () => switchMode('past'));
     el.btnLog.addEventListener('click', openLog);
@@ -1564,6 +1852,7 @@ ${files[0]}`));
     el.monitor.addEventListener('pointerdown', wipeStart);
     window.addEventListener('pointermove', wipeMove);
     window.addEventListener('pointerup', wipeEnd);
+    window.addEventListener('pointercancel', wipeEnd);
 
     el.tlRange.addEventListener('input', () => setPast(+el.tlRange.value));
     el.timeline.querySelectorAll('[data-step]').forEach((b) => {

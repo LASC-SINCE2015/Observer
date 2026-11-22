@@ -14,6 +14,7 @@ Observer で「何を確認するか」と「確認した結果」を残すフ�
 | 種類 | 対象 | 実行方法 |
 |---|---|---|
 | 動作確認 | PC のブラウザ | `game/index.html` をブラウザで直接開き、[test_plan.md](test_plan.md) のチェックリストを確認する |
+| 自動の通し | 台本のエラー・行き詰まり | `node tools/playtest.js <章 1〜5> <normal|bad|true|mistakes>` を、5 章 x 4 ルートの 20 本すべて通す（[tools/README.md](../tools/README.md)）。台本を書き換えたら必ず行う |
 | テストプレイ | シナリオ・手がかり | 各章を通常解決・真解決の両方で最後まで遊ぶ |
 | 実機確認 | スマホのブラウザ・公開サイト | GitHub Pages の URL を開いて確認する |
 

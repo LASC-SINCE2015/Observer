@@ -34,14 +34,26 @@
     }
     let e = imageCache[path];
     if (!e) {
+      // 前に「ファイルが無い（404）」と分かった絵は、もう取りに行かない（コンソールの 404 を増やさない）
+      if (knownMissing.has(path)) { imageCache[path] = { img: null, ok: false, failed: true }; return null; }
       const img = new Image();
       e = imageCache[path] = { img, ok: false, failed: false };
       img.onload = () => { e.ok = true; };
-      img.onerror = () => { e.failed = true; };
+      img.onerror = () => { e.failed = true; if (was404(path) && onMissing) onMissing(path); };
       img.src = `assets/${path}`;
     }
     return e.ok ? e.img : null;
   }
+  // 絵が無いと分かった一覧は、呼び出し側（game.js）が覚えておく。通信の失敗と区別するため、404 のときだけ知らせる
+  const knownMissing = new Set();
+  let onMissing = null;
+  function was404(path) {
+    try {
+      const ent = performance.getEntriesByName(new URL(`assets/${path}`, document.baseURI).href).pop();
+      return !!ent && ent.responseStatus === 404;
+    } catch (err) { return false; }
+  }
+  function trackMissing(list, callback) { (list || []).forEach((p) => knownMissing.add(p)); onMissing = callback; }
   // 読み込み中（まだ読めていないが、失敗もしていない）か
   function loading(path) {
     if (path && path.indexOf(',') >= 0) return path.split(',').some((p, i, a) => loading(p) && a.slice(0, i).every((q) => failed(q)));
@@ -464,10 +476,16 @@
       c.beginPath(); c.arc(h.x, h.y, on ? 9 : 7, 0, Math.PI * 2); c.stroke();
       c.lineWidth = 1;
       c.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      c.font = '8px sans-serif';
+      // スマホの幅（モニターが 1 単位 ≒ 1px）でも読めるよう、10px にして、黒い縁をつける。右端からはみ出さない
+      c.font = '10px sans-serif';
       c.textBaseline = 'top';
-      const tx = Math.min(Math.max(h.x - 20, 2), W - 60);
-      c.fillText(h.name, tx, h.y + 11);
+      const tw = c.measureText(h.name).width;
+      const tx = Math.min(Math.max(h.x - 20, 2), W - tw - 3);
+      const ty = Math.min(h.y + 11, H - 12);
+      c.lineWidth = 2.5;
+      c.strokeStyle = 'rgba(0, 0, 0, 0.85)';
+      c.strokeText(h.name, tx, ty);
+      c.fillText(h.name, tx, ty);
     });
   }
 
@@ -509,5 +527,5 @@
     }
   }
 
-  Observer.renderer = { W, H, TINTS, BACKGROUNDS, ACTORS, parseActors, parseScene, image, preload: image, render, postEffects };
+  Observer.renderer = { W, H, TINTS, BACKGROUNDS, ACTORS, parseActors, parseScene, image, preload: image, trackMissing, render, postEffects };
 })();
