@@ -239,6 +239,7 @@ Observer.script('chapter2', `
 @hide 大河内
 大河内は、ガムの包み紙を小さく折ってポケットにしまい、出ていった。
 @note B2 中央監視室 | 刑事の手帳。日付と場所の一覧。どの行にも「点検」。……前の監視員のことを聞いたら、顔色が変わった。
+@trait okochi_notebook
 
 // ============================================================
 // 23 時のバックヤード（佐伯）
@@ -340,6 +341,7 @@ Observer.script('chapter2', `
 @event CAM-12 5/23:00-5/23:07 flag=saw_safe | img:scenes/ch2_director_safe.jpg man@60,120
   1 時間前、23 時。夕食から戻った西条が、感謝状の額の傾きを、指でまっすぐに直した。
   若いころの、救命の感謝状だ。
+  @trait saijo_plaque
   それから西条は、壁の金庫の前に立った。暗証番号を押す。
   ……角度が悪い。西条の背中と、粗い画面で、指の先が見えない。
   八島「くそっ、あと少しで見えるのに……！」
@@ -683,6 +685,7 @@ Observer.script('chapter2', `
 美咲「缶コーヒー、3 本目ですよね。胃、荒れますよ」
 八島「……数えてたのか」
 美咲「看護師なので」
+@trait misaki_count
 美咲は、カーディガンのポケットから、ラップに包んだおにぎりを一つ出して、机に置いた。
 美咲「夜食の残りです。今日は、チーズおかか」
 @show 美咲 smile
@@ -697,6 +700,7 @@ Observer.script('chapter2', `
   八島は、とっさに画面から目をそらしていた。
   カメラを見返してくる人は、このビルに、もう一人いたらしい。
   @note 3F 差し入れ。カメラに手を振った。……何なんだ。
+  @trait misaki_wave
 @look CAM-12 flag=saw_back
   院長室の枠に、映像が戻っている。西条は、まだ書き写しを続けている。
   八島「……接触が悪いのか」
@@ -1127,7 +1131,7 @@ Observer.script('chapter2', `
 *t0
 @time 6/03:41
 @feed CAM-12 img:scenes/ch2_director_misaki.jpg woman@200,130
-@feed CAM-05 man@160
+@feed CAM-05 img:scenes/ch2_saijo_elevator.jpg man@160
 @feed CAM-13 img:bg/cam13_parking.jpg
 @feed CAM-11
 @cam CAM-12 live
@@ -1161,7 +1165,7 @@ Observer.script('chapter2', `
 
 *t3
 @time 6/03:44
-@feed CAM-05 man@160
+@feed CAM-05 img:scenes/ch2_saijo_elevator.jpg man@160
 @cam CAM-05 live
 3 時 44 分。エレベーターの中。西条が「3」のボタンを押した。
 院長室では、美咲が最後の一枚を撮っている。
@@ -1172,7 +1176,7 @@ Observer.script('chapter2', `
 *t4
 @time 6/03:45
 @feed CAM-05
-@feed CAM-11 man@160,120,0.8
+@feed CAM-11 img:scenes/ch2_saijo_corridor.jpg man@160,120,0.8
 @cam CAM-11 live
 3 時 45 分。3F の廊下を、西条が歩いてくる。院長室の扉まで、あと数歩。
 八島は、あわてて合図の電話を鳴らした。
@@ -1253,8 +1257,10 @@ Observer.script('chapter2', `
 八島は、今度は自分から、小さく会釈した。
 歩きながら、手帳を開く。「カメラ奉行」の字を線で消して、横に書いた。
 @note 佐伯さん。
+@trait name_saeki
 「差し入れ」の行も、書き直した。
 @note 桐谷さん。
+@trait name_misaki
 @outside lobby 6日目 朝　1F ロビー | img:scenes/ch2_lobby_morning.jpg man@140 woman@175
 ロビーで、八島は、開示に来た森下とすれ違った。
 森下は、迎えに下りてきた美咲から「警察の人が来ています」と聞いて、立ち尽くしていた。

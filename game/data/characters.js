@@ -16,12 +16,15 @@ Observer.character('玲子', {
   normal: 'chars/reiko_normal.webp',
   smile: 'chars/reiko_smile.webp',
   sad: 'chars/reiko_sad.webp',
+  look: 'chars/reiko_look.webp',  // 第1章: エレベーターホールで、こちら（カメラ）を見る
+  nod: 'chars/reiko_nod.webp',    // 第1章: カメラに向かって、はにかんで会釈する
 });
 Observer.character('佐伯', {
   normal: 'chars/saeki_normal.webp',
   smile: 'chars/saeki_smile.webp',
   scorn: 'chars/saeki_scorn.webp',
   flushed: 'chars/saeki_flushed.webp',
+  bag: 'chars/saeki_bag.webp',   // 第1章: 閉店後、売り物のバッグを肩にかけて値札を見る
 });
 Observer.character('華子', {
   normal: 'chars/hanako_normal.webp',
