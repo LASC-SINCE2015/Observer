@@ -37,7 +37,7 @@
 - 実在の人物・作品・ブランドに似せない（名前を出さない）。
 - 露出は服の範囲まで。色気は、服・表情・しぐさ・光で出す。密会の場面の立ち絵（`saeki_flushed`・`jogasaki_aroused`・`jogasaki_after`）だけは、服を大きく乱し、下着が少しのぞく程度まで。裸・胸があらわな姿・性的な行為は描かない（公開するゲームのため。多くのサービスでも断られる）。
 
-英語のサイト向けのプロンプト（そのまま貼り付けられる形と、Stable Diffusion 系のサイト向けの書き方）は [prompts_en.md](prompts_en.md)。絵ごとの生成の状況（✅・⬜）と、プロンプトの日本語訳も、そこにあります。
+英語のサイト向けのプロンプト（そのまま貼り付けられる形と、Stable Diffusion 系のサイト向けの書き方）は [prompts_en.md](prompts_en.md)。絵ごとの生成の状況（✅・⬜）と、プロンプトの日本語訳も、そこにあります。第3〜5章で足した絵は、章ごとに [new_prompts_ch3.md](new_prompts_ch3.md)・[new_prompts_ch4.md](new_prompts_ch4.md)・[new_prompts_ch5.md](new_prompts_ch5.md) にまとめています（2026-11-22 時点で、作ってある絵は全部で 134 枚。未生成の絵はなし）。
 
 ### 絵柄をそろえるコツ
 
@@ -174,6 +174,7 @@
 | `scenes/ch1_konbini`・`ch1_sena_meet`、`chars/saijo_normal`・`saijo_scared`・`misaki_normal`・`misaki_smile`・`morishita_normal`、`bg/cam11_clinic`・`cam12_director`・`cam13_parking`、`scenes/ch2_*` | Google Gemini（無料）で生成（2026-11-15。今ある立ち絵と背景を参考画像として添付して作った） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
 | `scenes/ch1_shop_saeki_alone`・`ch1_jump_aftermath`・`ch2_lobby_makabe`・`ch2_clinic_morishita`・`ch2_director_kuzumi`・`ch2_news_footbridge`、`bg/cam03_corridor`・`chars/jogasaki_aroused`（描き直した版） | Google Gemini（無料）で生成（2026-11-21。今ある背景・場面・立ち絵を参考画像として添付して作った） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
 | `bg/cam14_salon_back`・`cam15_salon_entrance`・`cam16_stair_landing`・`cam17_b1_machine`・`cam18_stair_door9`・`cam20_machine_corridor`・`cam23_service_lift`・`cam24_unknown_line`・`cam26_viewing_room`・`cam27_salon_front`、`chars/saori_normal`・`saori_smile`・`makabe_normal`・`makabe_smile`、`scenes/ch3_*`（10 枚）・`ch4_machine_corridor`・`ch4_salon_3am`・`ch4_cart_kuzumi`・`ch4_viewing_room`・`ch5_machine_room_tape`・`ch5_viewing_empty`・`ch5_viewing_kuzumi`・`ch5_viewing_members`・`ch5_viewing_raid` | Google Gemini（無料）で生成（2026-11-21。今ある背景・場面・立ち絵を参考画像として添付して作った） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
+| `scenes/ch4_*`（第4章の場面の絵 14 枚: `ch4_staff_card`・`ch4_lobby_tv`・`ch4_mama_hall`・`ch4_flash_office`・`ch4_flash_makabe`・`ch4_whiteboard`・`ch4_terminal_folder`・`ch4_notebook_strike`・`ch4_service_lift`・`ch4_kuzumi_office`・`ch4_service_door`・`ch4_anteroom`・`ch4_room_view`・`ch4_self_9d`）・`ch5_mall_atrium`・`ch5_b3_stairs`・`ch5_b3_pit`・`ch5_reiko_stairs`・`ch5_sd_yashima`・`ch5_sd_makabe`・`ch5_flashback_office`、作り直した版: `bg/cam26_viewing_room`・`ch4_viewing_room`・`ch4_salon_3am`・`ch5_viewing_empty`・`ch5_viewing_kuzumi`・`ch5_viewing_members`・`ch5_viewing_raid`・`chars/saori_normal`・`saori_smile`（ブルーバック） | Google Gemini（無料）で生成（2026-11-22。今ある背景・場面・立ち絵を参考画像として添付して作った） | Google の生成 AI の利用規約による（生成物には見えない電子透かし SynthID が入る）。公開前に最新の規約を確かめる | 不要（任意） |
 
 ## 注意
 

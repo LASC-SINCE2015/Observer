@@ -9,7 +9,21 @@
 
 ## 生成の状況
 
-全 22 枚（背景 3・場面の絵 19、うち 1 枚は第3章と共有）。2026-11-21 に、背景 3 枚と場面の絵 5 枚（`ch4_machine_corridor`・`ch4_salon_3am`・`ch4_cart_kuzumi`・`ch4_viewing_room`・第3章と共有の `ch3_relay_heel`）を生成済み（✅）。残りの場面の絵 14 枚は ⬜（未生成。1 日の生成の上限で止まった）。台本・`cameras.js` が指す名前と、すべて一致している（R33 で確認）。
+全 22 枚（背景 3・場面の絵 19、うち 1 枚は第3章と共有）。すべて生成済み（✅）。2026-11-21 に背景 3 枚と場面の絵 5 枚、2026-11-22 に残りの場面の絵 14 枚を生成した。台本・`cameras.js` が指す名前と、すべて一致している（R33 で確認）。
+2026-11-22 に、残りの場面の絵 14 枚（`ch4_staff_card`・`ch4_lobby_tv`・`ch4_mama_hall`・`ch4_flash_office`・`ch4_flash_makabe`・`ch4_whiteboard`・`ch4_terminal_folder`・`ch4_notebook_strike`・`ch4_service_lift`・`ch4_kuzumi_office`・`ch4_service_door`・`ch4_anteroom`・`ch4_room_view`・`ch4_self_9d`）を生成した（すべて ✅。これで第4章の絵は全部そろった）。同じ日に、`ch4_viewing_room`（6 人・男女まぜ・席 7 つ）と `ch4_salon_3am`（額を沙織ママの似顔絵にそろえ、左上のカメラを消す）を作り直した（下のプロンプトは作り直した版）。
+
+2026-11-22 の生成で、プロンプトから変えた点:
+
+- `ch4_staff_card`: 1 度目は規制線に「POLICE LINE」風の文字が入ったため、同じチャットで「規制線を無地の黄色にする」と頼み直した版を使った。
+- `ch4_flash_office`: 添付は `bg/cam07_office_day`（部屋の雰囲気の見本）。同じ部屋を、第5章の `ch5_flashback_office` の元にした。
+- `ch4_flash_makabe`: 同じチャットで `ch4_flash_office` の続きの絵柄として作った。机の上の紙は、裏返しにならず表向きだが、何も書かれていない。真壁は 50 代前半より少し老けて描かれた。
+- `ch4_terminal_folder`: `bg/cam00_room` を添付（絵柄・色の見本）。
+- `ch4_service_lift`: 表示板が小さく、点いた区画は判別しにくい（板は暗く、文字・数字はない）。
+- `ch4_whiteboard`・`ch4_notebook_strike`: 手帳の字は、読めない筆記体風の線になっている（意味のある文字ではない）。
+- `ch4_self_9d`・`ch4_room_view`: 同じチャットで続けて作った（`bg/cam00_room` と `scenes/ch1_monitor_room` を添付）。`ch4_room_view` は、「空き缶と口に当てた手を消す」と書き足した。
+- `ch4_mama_hall`: 添付の `chars/saori_normal` は、ブルーバックに作り直した版。ホールは添付の絵より暗く、ママは扉の奥に立つ。
+- `ch4_kuzumi_office`: `bg/cam07_office` を添付。久住は後ろ姿でなく、斜め後ろから見た形になった。
+- `ch4_service_door`・`ch4_anteroom`: 添付は `scenes/ch1_street_phone`・`scenes/ch1_sena_mop`。
 
 第4章で新しく作るのは、この 22 枚だけです。9F のサロンの裏口通路（CAM-14）・入口前（CAM-15）・非常階段の踊り場（CAM-16）は、第3章と同じカメラなので、第3章の絵を使います（`new_prompts_ch3.md`）。
 
@@ -47,7 +61,7 @@ Generate an image. Edit the attached image. Keep exactly the same corridor, stee
 
 > **日本語訳**: 添付の絵を直す。廊下・鉄の扉・角度・構図・明かり・色・絵柄はそのまま（隅の天井の防犯カメラから見下ろす）。扉の前の廊下に黄色い規制線を張り、扉の両脇に制服の警官が 2 人、手を体の脇につけて立つ。真ん中の規制線のそばに、しわのあるベージュのコートの疲れた刑事が、こちらを向いて立つ。高い角度から見た小さな人影。扉は閉まっていて、中は映さない。文字・時計・時刻・ロゴは入れない。
 
-### ⬜ ch4_staff_card（社員証のアップ）
+### ✅ ch4_staff_card（社員証のアップ）
 
 添付: `chars/okochi_normal`（手とコートの見本）
 
@@ -57,7 +71,7 @@ Generate an image. Wide horizontal 16:9. Japanese anime style, cinematic close-u
 
 > **日本語訳**: 横長 16:9。日本のアニメ調、映画のようなアップ。冷たい蛍光灯の光。手前で、手袋をした手が小さな透明の証拠袋を持ち、中に古くすり切れたストラップ付きの社員証。30 代の男の小さな顔写真（困ったような申し訳なさそうな笑み）、名前と役職のところは文字のない灰色の帯。背景は、地下の廊下のコンクリートの壁と、ぼやけた黄色い規制線。袋はわずかに震えている。体・血は映さない。読める文字・時計・ロゴは入れない。
 
-### ⬜ ch4_lobby_tv（11 日目、ロビーのテレビに会長のインタビュー）
+### ✅ ch4_lobby_tv（11 日目、ロビーのテレビに会長のインタビュー）
 
 添付: `bg/cam01_lobby`
 
@@ -67,7 +81,7 @@ Generate an image. Edit the attached image. Keep exactly the same lobby, camera 
 
 > **日本語訳**: 添付の絵を直す。ロビー・角度・構図・明かり・色・絵柄はそのまま。ロビーに人はいない。壁のテレビの画面だけを変える: ニュースのインタビュー。白髪をきれいになでつけた紺のスーツの高齢の男が、穏やかに微笑み、画面の端から何本ものマイクが向けられている。テレビは青白く光る。字幕・文字・時計・ロゴは入れない。
 
-### ⬜ ch4_mama_hall（9F のサロン入口に、知らないママ。CAM-08 の今の映像）
+### ✅ ch4_mama_hall（9F のサロン入口に、知らないママ。CAM-08 の今の映像）
 
 添付: `bg/cam08_evhall9`、`chars/saori_normal`（第3章で作る沙織ママ。第3章の `ch3_saori_door` と同じ人にする）
 
@@ -77,7 +91,7 @@ Generate an image. Edit the first attached image. Keep exactly the same 9th-floo
 
 > **日本語訳**: 1 枚目の絵を直す。9 階のホール・サロンの木の扉・観葉植物・角度・構図・明かり・色・絵柄はそのまま。サロンの入口に女を 1 人足す: 2 枚目の女性（34 歳のママ。ゆるいウェーブの長い髪、上品な深緑のイブニングドレス。背景は無視）が、フレームの外の誰かに、優雅に小さく会釈している。扉の脇の額には、同じ女性の肖像。高い角度から見た小さな人影。文字・時計・ロゴは入れない。
 
-### ⬜ ch4_flash_office（8 年前、汐見ベイコートの現場事務所）
+### ✅ ch4_flash_office（8 年前、汐見ベイコートの現場事務所）
 
 添付: `bg/cam07_office`（部屋の雰囲気の見本）
 
@@ -87,7 +101,7 @@ Generate an image. Wide horizontal 16:9. Japanese anime style, slightly desatura
 
 > **日本語訳**: 横長 16:9。日本のアニメ調。少し色を落とした、やわらかいセピアの回想の色。昼間の建設現場の仮設事務所: 設計図が積まれた鉄の机、棚のヘルメット、罫線だけの白板、ほこりっぽい窓の光。真ん中で、作業ジャケットの若い男（主人公、27 歳）が、作業服の若い女が震える手で差し出す厚い紙の束を、少し遅れて受け取ろうと手をのばす。読める文字・時計・ロゴは入れない。
 
-### ⬜ ch4_flash_makabe（8 年前、常務室。紙は映さない）
+### ✅ ch4_flash_makabe（8 年前、常務室。紙は映さない）
 
 ```
 Generate an image. Wide horizontal 16:9. Japanese anime style, slightly desaturated, soft sepia flashback tone. A senior executive's quiet office, seen from the eye level of someone standing in front of a large polished desk. Behind the desk sits a man in his early fifties with white-streaked combed hair and an expensive dark suit, smiling calmly. In the foreground, only his hand is visible at the edge of the desk, one finger pressing and sliding a single sheet of paper across the desktop toward the viewer; the paper is shown only from the back or its edge, face down, so nothing on it is visible. No readable text, no clock, no logo.
@@ -95,7 +109,7 @@ Generate an image. Wide horizontal 16:9. Japanese anime style, slightly desatura
 
 > **日本語訳**: 横長 16:9。日本のアニメ調。少し色を落とした、やわらかいセピアの回想の色。重役の静かな部屋。大きな磨かれた机の前に立つ人の目の高さから見る。机の向こうに、白髪まじりの髪をなでつけ、高価な濃い色のスーツを着た 50 代前半の男が、穏やかに微笑んで座っている。手前には、机のふちに彼の手だけが見え、指一本で 1 枚の紙を、こちらへ向けて机の上をすべらせている。紙は裏側か縁だけで、何が書いてあるかは見えない。読める文字・時計・ロゴは入れない。
 
-### ⬜ ch4_whiteboard（監視室のホワイトボード）
+### ✅ ch4_whiteboard（監視室のホワイトボード）
 
 添付: `bg/cam00_room`
 
@@ -105,7 +119,7 @@ Generate an image. Edit the attached image. Keep the same basement monitoring ro
 
 > **日本語訳**: 添付の絵を直す。地下の監視室・明かり・色・絵柄は同じにして、視点を、モニターの脇のコンクリートの壁にかかったホワイトボードの中景に変える。ホワイトボードには、定規で引いたような罫線の表（3 行・4 列のます）が、すべて空欄で書かれている。ペン置きに黒いマーカー、隅に半分消した跡。モニターの冷たい光がかすかに当たる。人はいない。読める文字・数字・時計・ロゴは入れない。
 
-### ⬜ ch4_terminal_folder（空のフォルダ）
+### ✅ ch4_terminal_folder（空のフォルダ）
 
 ```
 Generate an image. Wide horizontal 16:9. Japanese anime style, cinematic close-up of a computer monitor in a dim basement room. On the screen, a plain file manager window shows one empty folder, with an empty list area and a tiny gray counter in the corner (only blank gray shapes, no readable text or numbers). The cold blue-white glow lights a man's tired reflection faintly in the dark screen edge. Cables and a half-drunk can of coffee beside the keyboard. No readable text, no numbers, no clock, no logo.
@@ -113,7 +127,7 @@ Generate an image. Wide horizontal 16:9. Japanese anime style, cinematic close-u
 
 > **日本語訳**: 横長 16:9。日本のアニメ調。薄暗い地下室のコンピュータのモニターの、映画のようなアップ。画面には、飾りのないファイル管理の窓に、空のフォルダが 1 つ。一覧は空で、隅に小さな灰色のカウンター（無地の灰色の形だけで、読める文字・数字はない）。冷たい青白い光が、暗い画面のふちに、疲れた男の顔をかすかに映す。キーボードの脇に、ケーブルと飲みかけの缶コーヒー。読める文字・数字・時計・ロゴは入れない。
 
-### ⬜ ch4_notebook_strike（手帳の一行に線を引く）
+### ✅ ch4_notebook_strike（手帳の一行に線を引く）
 
 ```
 Generate an image. Wide horizontal 16:9. Japanese anime style, cinematic close-up, warm desk lamp light in a dim room. A man's hand holding a plastic ruler flat on an open notebook page, drawing a straight pencil line through a single line of neat handwriting (the handwriting is shown only as tidy rows of small marks, not readable). The page has several other neat lines above and below. The handwriting is very straight, as if drawn with a ruler. No readable text, no clock, no logo.
@@ -126,12 +140,12 @@ Generate an image. Wide horizontal 16:9. Japanese anime style, cinematic close-u
 添付: `bg/cam15_salon_entrance`（第3章の絵）、`chars/reiko_sad`
 
 ```
-Generate an image. Edit the attached image. Keep exactly the same passage, wooden doors, camera angle, composition, lighting, colors and art style, viewed from a ceiling-mounted security camera in the corner, high angle. The salon double door stands open. Add two people walking away along the passage toward the right: a man in a dark gray work uniform seen from above with his face turned away, holding a ring of keys in one hand and supporting with his other arm a woman in an elegant dark dress whose steps are unsteady and head is lowered (matching the attached character reference). Small figures as seen from a high angle. No violence is shown. No text, no clock, no logo.
+Generate an image. Edit the first attached image. Keep exactly the same passage, wooden doors, camera angle, composition, lighting, colors and art style, viewed from a high angle. Do NOT draw any security camera or camera dome anywhere, especially nothing in the upper left corner (that corner is plain ceiling). The salon double door stands open. The small framed portrait hanging on the wall beside the door is a tiny simple portrait of a woman with long wavy hair, drawn small and soft so that her face cannot be made out. Add two people walking away along the passage toward the right: a man in a dark gray work uniform seen from above with his face turned away, holding a ring of keys in one hand and supporting with his other arm a woman in an elegant dark dress whose steps are unsteady and head is lowered (the woman matches the second attached image, a character reference; ignore its background). Small figures as seen from a high angle. No violence is shown. No text, no letters, no clock, no logo, no watermark. Horizontal 16:9.
 ```
 
-> **日本語訳**: 添付の絵を直す。通路・木の扉・角度・構図・明かり・色・絵柄はそのまま（隅の天井の防犯カメラから見下ろす）。サロンの両開きの扉は開いている。通路を右へ歩いていく 2 人を足す: 濃い灰色の作業服の男は、上から見た形で顔をそむけ、片手に鍵束を持ち、もう片方の腕で、足もとのおぼつかない、うつむいた上品な濃い色のドレスの女（添付の人物と同じ）を支えている。高い角度から見た小さな人影。暴力は映さない。文字・時計・ロゴは入れない。
+> **日本語訳**: 1 枚目の絵を直す（2026-11-22 の作り直し）。通路・木の扉・角度・構図・明かり・色・絵柄はそのまま。防犯カメラ・ドーム型のカメラはどこにも描かない（特に左上の隅は何もない天井）。サロンの両開きの扉は開いている。扉の脇の壁の小さな額は、ゆるいウェーブの長い髪の女の、小さくやわらかい肖像にする（顔は判別できない。沙織ママの似顔絵にそろえる）。通路を右へ歩いていく 2 人を足す: 濃い灰色の作業服の男は、上から見た形で顔をそむけ、片手に鍵束を持ち、もう片方の腕で、足もとのおぼつかない、うつむいた上品な濃い色のドレスの女（2 枚目の人物と同じ。背景は無視）を支えている。高い角度から見た小さな人影。暴力は映さない。文字・時計・ロゴは入れない。
 
-### ⬜ ch4_service_lift（9 日目 3:07、業務用エレベーターの表示）
+### ✅ ch4_service_lift（9 日目 3:07、業務用エレベーターの表示）
 
 添付: `bg/cam23_service_lift`
 
@@ -151,7 +165,7 @@ Generate an image. Edit the attached image. Keep exactly the same corridor, stee
 
 > **日本語訳**: 添付の絵を直す。廊下・鉄の扉・角度・構図・明かり・色・絵柄はそのまま。男を 1 人足す: 髪をきちんと分けた中年の男（灰色の作業服。添付の人物と同じ）が、平らな台車を押して廊下を鉄の扉へ向かい、まっすぐ前を見ている。台車の上は、たたんだ灰色の防水シートが平らに低く載っているだけで、下に形はない。腕時計に目を落としている。高い角度から見た小さな人影。体・血は映さない。文字・時計・時刻・ロゴは入れない。
 
-### ⬜ ch4_kuzumi_office（管理会社の事務所）
+### ✅ ch4_kuzumi_office（管理会社の事務所）
 
 ```
 Generate an image. Wide horizontal 16:9. Japanese anime style, cinematic, a quiet building-management office late at night. A tidy desk with stacks of papers whose edges are perfectly aligned, a bank of small monitors, and a man in a gray work jacket seen from behind, sitting very straight and watching one monitor that shows a dim basement monitoring room. On the desk, neat rows of binders and a wristwatch laid flat. Cold light from the monitors. No readable text, no clock, no timestamp, no logo.
@@ -159,7 +173,7 @@ Generate an image. Wide horizontal 16:9. Japanese anime style, cinematic, a quie
 
 > **日本語訳**: 横長 16:9。日本のアニメ調。映画のような絵づくり。深夜の、静かなビル管理会社の事務所。縁がぴったりそろった書類の山のある、きれいな机。小さなモニターの列。灰色の作業ジャケットの男が、背筋をまっすぐにして座り、薄暗い地下の監視室を映した 1 台のモニターを後ろから見ている。机の上に、きちんと並んだバインダーと、平らに置かれた腕時計。モニターの冷たい光。読める文字・時計・時刻・ロゴは入れない。
 
-### ⬜ ch4_service_door（11 日目の夜、ビルの通用口の外）
+### ✅ ch4_service_door（11 日目の夜、ビルの通用口の外）
 
 添付: `scenes/ch1_street_phone`（ビルの外観・歩道の見本）
 
@@ -169,7 +183,7 @@ Generate an image. Wide horizontal 16:9. Japanese anime style background art wit
 
 > **日本語訳**: 横長 16:9。日本のアニメ調の、人物入りの背景画。映画のような絵づくり。夜のガラスの高層ビルの通用口。飾りのない鉄の扉と、上の小さな明かり、低いコンクリートの段差。数枚の葉が風で歩道を転がり、頭上のガラスの壁に街の明かりが映る。30 代半ばの男が、しわのある警備の制服で、扉に背をつけて段差に座り、背を丸め、足もとに鞄を置いてうつむいている。ビルと絵柄は添付の絵と同じ。文字・時計・ロゴは入れない。
 
-### ⬜ ch4_anteroom（監視室の前室）
+### ✅ ch4_anteroom（監視室の前室）
 
 添付: `scenes/ch1_sena_mop`（清掃員の見本）
 
@@ -179,7 +193,7 @@ Generate an image. Wide horizontal 16:9. Japanese anime style background art wit
 
 > **日本語訳**: 横長 16:9。日本のアニメ調の、人物入りの背景画。映画のような絵づくり。地下の監視室の前の、窓のない小さな前室。むき出しのコンクリートの壁、ちらつく蛍光灯、壁の開いた灰色の配電盤（点検口のふたが垂れている）、壁ぎわに停めた清掃用のワゴン（たたんだシーツとモップの束）。グレーの清掃の制服で、首にタオルを掛け、髪を後ろで結んだ女が、配電盤のそばで、開いた点検口に片手をかけて立つ。絵柄は添付の絵と同じ。文字・時計・ロゴは入れない。
 
-### ⬜ ch4_room_view（今の監視室を、故障中だったカメラから）
+### ✅ ch4_room_view（今の監視室を、故障中だったカメラから）
 
 添付: `bg/cam00_room`、`scenes/ch1_monitor_room`
 
@@ -189,7 +203,7 @@ Generate an image. Edit the attached image. Keep exactly the same basement monit
 
 > **日本語訳**: 添付の絵を直す。地下の監視室・角度・構図・明かり・色・絵柄はそのまま（隅の天井の防犯カメラから見下ろす）。上の後ろから見た人を 2 人足す: しわのある警備の制服の男が、光るモニターの壁に向かって長い机に背を丸めて座り、その少し後ろの右に、グレーの清掃の制服で髪を結んだ女が、モニターのほうへ身を寄せて立つ。高い角度から見た小さな人影。文字・時計・時刻・ロゴは入れない。
 
-### ⬜ ch4_self_9d（9 日目 1:00、3 日前の自分）
+### ✅ ch4_self_9d（9 日目 1:00、3 日前の自分）
 
 添付: `bg/cam00_room`、`scenes/ch1_monitor_room`
 
@@ -201,13 +215,13 @@ Generate an image. Edit the attached image. Keep exactly the same basement monit
 
 ### ✅ ch4_viewing_room（観覧室の一瞬の映像。第5章の CAM-26 と同じ部屋）
 
-添付: `bg/cam26_viewing_room`（第5章の新しい背景。先に作る。椅子の数・上座・モニターの壁を、そのまま使う）
+添付: `bg/cam26_viewing_room`（2026-11-22 に席を 7 つにそろえて作り直した版）
 
 ```
-Generate an image. Edit the attached image. Keep exactly the same viewing room, camera angle, composition, lighting, colors and art style (a hidden camera high in a corner, a whole wall of glowing monitors, seven leather armchairs in a shallow arc, a larger head seat on a low dais). Make it look like a small glitchy video feed: faint scan lines and noise over the image. Add the backs and shoulders of four or five people in formal clothes seated in the armchairs, seen from behind. One of them is holding up a glass of red wine toward the camera as if making a toast. No faces visible. No text, no clock, no timestamp, no logo.
+Generate an image. Edit the attached image. Keep exactly the same viewing room, camera angle, composition, lighting, colors and art style, and the same seven armchairs plus the head seat on the dais. Make it look like a small glitchy video feed: faint scan lines and noise over the image. Add the backs and shoulders of six people in formal clothes (a mix of men and women, aged 40s to 70s) seated in six of the seven armchairs, seen from behind, the head seat empty. One of them is holding up a glass of red wine toward the camera as if making a toast. No faces visible. No text, no letters, no clock, no timestamp, no logo, no watermark. The security camera itself is not visible. Horizontal 16:9.
 ```
 
-> **日本語訳**: 添付の絵を直す。観覧室・角度・構図・明かり・色・絵柄はそのまま（隅の高い所の隠しカメラ、壁一面の光るモニター、浅い弧の革張りの椅子 7 つ、一段高い台の上の上座）。小さな、乱れた映像に見えるよう、かすかな走査線とノイズを重ねる。礼服の 4〜5 人が、椅子に座った背中と肩を、後ろから見せている。そのうちの 1 人が、カメラに向かって赤ワインのグラスを掲げている（乾杯のように）。顔は見えない。文字・時計・時刻・ロゴは入れない。
+> **日本語訳**: 添付の絵を直す。観覧室・角度・構図・明かり・色・絵柄、7 つの椅子と上座はそのまま。小さな、乱れた映像に見えるよう、かすかな走査線とノイズを重ねる。礼服の男女（40〜70 代）6 人が、7 つのうち 6 つの椅子に座った背中と肩を、後ろから見せている。上座は空。そのうちの 1 人が、カメラに向かって赤ワインのグラスを掲げている（乾杯のように）。顔は見えない。文字・時計・時刻・ロゴは入れない。防犯カメラ自体は映さない。
 
 ### ✅ ch3_relay_heel（第3章と共有。9 日目 2:28、9F 非常階段の踊り場）
 

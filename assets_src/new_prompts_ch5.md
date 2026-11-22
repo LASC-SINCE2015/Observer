@@ -2,7 +2,7 @@
 
 `prompts_en.md` と同じ形式（英語のプロンプトと日本語訳）。第5章の台本（`game/scenario/chapter5.js`）が参照している絵のうち、まだないものです。絵がなくても、台本は線画の代わりで最後まで遊べます。絵ができたら、`prompts_en.md` に移して ⬜ → ✅ にします。
 
-全 16 枚（立ち絵 2・カメラの背景 2・場面の絵 12）。2026-11-21 に、立ち絵 2・背景 2・場面の絵 5（`ch5_machine_room_tape`・`ch5_viewing_empty`・`ch5_viewing_kuzumi`・`ch5_viewing_members`・`ch5_viewing_raid`）を生成済み（✅）。残りの場面の絵 7 枚は ⬜（未生成。1 日の生成の上限で止まった）。
+全 16 枚（立ち絵 2・カメラの背景 2・場面の絵 12）。すべて生成済み（✅）。2026-11-21 に立ち絵 2・背景 2・場面の絵 5、2026-11-22 に残りの場面の絵 7 枚（`ch5_b3_stairs`・`ch5_b3_pit`・`ch5_reiko_stairs`・`ch5_sd_yashima`・`ch5_sd_makabe`・`ch5_flashback_office`・`ch5_mall_atrium`）を生成した。2026-11-22 には、台本の「七人の男女・七つの席」に合わせ、`bg/cam26_viewing_room` を席 7 つにそろえて作り直し、会員が写る `ch5_viewing_empty`・`ch5_viewing_kuzumi`・`ch5_viewing_members`・`ch5_viewing_raid` を男女まぜの会員で作り直した（下のプロンプトは作り直した版）。
 
 生成のときに、プロンプトから変えた点:
 
@@ -10,6 +10,15 @@
 - `ch5_viewing_*` は、同じチャットで `bg/cam26_viewing_room` の添付を引き継いで続けて作った。
 - `ch5_machine_room_tape` は、`ch4_machine_corridor` を同じチャットで直して作った。規制テープは、扉に斜めに 1 本でなく、X の形で貼られた。
 - `makabe_normal` は、`chars/okochi_normal` を添付し、「別の男。背景と服は無視」と書き足した。台本・`cameras.js`・`characters.js` が指す名前と、すべて一致している（R33 で確認）。
+2026-11-22 の生成で、プロンプトから変えた点:
+
+- `ch5_mall_atrium`: 添付なしの指定だったが、色調をそろえるため `bg/cam01_lobby` を添付し、「同じ絵柄・色で、昼の明るい設定」と書き足した。
+- `ch5_b3_pit`: `bg/cam13_parking` を添付し、「同じ絵柄・色」と書き足した。炎のそばの男は 1 人、懐中電灯の光は左から（人影は小さく、数はあいまい）。
+- `ch5_sd_makabe`: 7 席にそろえるため、「会員 6 人（男女まぜ・40〜70 代）が 7 つの椅子に座る」と書き足した。構図は添付の cam26 と少し変わり、モニターの壁が左に来た。
+- `ch5_sd_yashima`: `scenes/ch4_self_9d` を添付し、「添付の場面を映した大きなモニター」と書いた。画面の端の吹き出しの列は、小さく読めない記号になっている。
+- `ch5_reiko_stairs`: `bg/cam10_stairs` と `chars/reiko_normal`（人物。背景は無視）を添付し、「黒い長い髪・長い白いコート」と書いた。
+- `ch5_b3_stairs`: 同じチャットで `ch5_reiko_stairs` の次に作った（同じ階段の絵柄で、暗がりへ降りる）。
+- `ch5_flashback_office`: 同じチャットで `ch4_flash_office` の続きとして作り（同じ部屋・同じ家具）、「夕方の光・卓上ライト・26 歳の男と白髪の男。女は消す」と頼んだ。
 
 共通の決まり:
 
@@ -48,13 +57,13 @@ Same character, same face, hair and suit as the attached image. Japanese anime s
 
 ### ✅ bg/cam26_viewing_room（CAM-26　9F 観覧室（隠しカメラ））
 
-添付: `bg/cam08_evhall9`（9F の雰囲気の手本）
+添付: `bg/cam26_viewing_room`（初版。これを直して 7 席にそろえた）
 
 ```
-Generate an image. Japanese anime style background art, 16:9, no people. A hidden windowless private viewing room, seen from a camera concealed high in a corner, high angle, slight wide-angle lens distortion. One whole wall is covered by a grid of dozens of dim security monitors showing corridors and rooms. Facing the wall, seven leather armchairs in a shallow arc, with small side tables holding half-finished wine glasses and bottles; in the centre back, one larger single armchair on a low dais (the head seat). Dark wine-red and black tones, warm lamp light mixed with the cold blue light of the monitors. Elegant but oppressive. No text, no letters, no clock, no timestamp, no logo. The security camera itself is not visible.
+Generate an image. Edit the attached image. Keep exactly the same room, camera angle, composition, lighting, colors and art style (hidden camera high in a corner, a whole wall of glowing monitors, wine-red and black tones). Only fix the seating: there must be exactly SEVEN leather armchairs for members in a shallow arc facing the monitor wall (count them: seven, not eight), each with a small side table holding a wine glass or bottle, plus one larger single head seat on a low dais in the centre back (separate from the seven). No people. No text, no letters, no clock, no timestamp, no logo, no watermark. The security camera itself is not visible. Horizontal 16:9.
 ```
 
-> **日本語訳**: 横長 16:9、日本のアニメ調の背景美術、人はいない。窓のない、隠された会員のための観覧室。隅の高い所に隠されたカメラから見下ろす構図（少し広角のゆがみ）。壁一面に、廊下や部屋を映す、薄暗い防犯モニターが何十台も格子状に並ぶ。壁に向かって、革張りの肘掛け椅子が 7 つ、浅い弧を描いて並び、そばの小さな机に、飲みかけのワイングラスとボトル。奥の中央には、一段高い台の上に、ひと回り大きなひとり掛けの椅子（上座）。暗いワイン色と黒の色調。暖かいランプの光に、モニターの冷たい青い光が混ざる。上品だが、息苦しい。文字・時計・時刻・ロゴは入れない。防犯カメラ自体は映さない。
+> **日本語訳**: 添付の絵を直す（2026-11-22 の作り直し）。部屋・角度・構図・明かり・色・絵柄（隅の高い所の隠しカメラ、壁一面の光るモニター、ワイン色と黒の色調）はそのまま。席の数だけ直す: 会員用の革張りの椅子は、モニターの壁に向かう浅い弧に、ちょうど 7 つ（数える: 8 でなく 7）。それぞれ小さな机にワイングラスかボトル。奥の中央の一段高い台に、ひと回り大きなひとり掛けの上座（7 つとは別）。人はいない。文字・時計・ロゴは入れない。防犯カメラ自体は映さない。
 
 ### ✅ bg/cam27_salon_front（CAM-27　9F サロン正面（観覧会の回線））
 
@@ -81,7 +90,7 @@ Generate an image. Edit the attached image. Keep exactly the same basement corri
 
 > **日本語訳**: 添付の絵と同じような、夜のオフィスビルの地下の廊下（コンクリートの壁、薄暗い蛍光灯）。中景に、黄色と黒の規制テープが斜めに貼られた鉄の扉。その前を、奥の点検口へ向かって通り過ぎる小さな人影が 3 人: しわのある長いコートの男（扉のほうへ顔を向けない）、作業着のやせた男、モップを持った清掃の制服の女。顔は細かく描かない。文字・時計・ロゴは入れない。
 
-### ⬜ scenes/ch5_b3_stairs（地下 3 階へ降りる階段）
+### ✅ scenes/ch5_b3_stairs（地下 3 階へ降りる階段）
 
 添付: `bg/cam10_stairs`
 
@@ -91,7 +100,7 @@ Generate an image. Edit the attached image idea: a narrow concrete stairwell goi
 
 > **日本語訳**: 添付の絵と同じような、暗がりへ降りていく、せまいコンクリートの階段。湿った壁。はるか下に、むき出しの電球が 1 つ。3 人の小さな人影が一列で降りていく（後ろ上から見た構図）。冷たく息苦しい。文字・ロゴは入れない。
 
-### ⬜ scenes/ch5_b3_pit（地下 3 階のピット）
+### ✅ scenes/ch5_b3_pit（地下 3 階のピット）
 
 添付: `bg/cam13_parking`
 
@@ -101,7 +110,7 @@ Generate an image. A vast bare concrete underground floor like an unfinished par
 
 > **日本語訳**: 未完成の駐車場の階のような、広くて何もないコンクリートの地下の階。同じ四角い柱が、暗がりの奥へ、完全に等間隔で並ぶ。窓も、標識も、カメラもない。奥に、錆びたスチールの棚と、同じ形の金属の綴りの列。中景で、灰色のスーツの男が、火の上がった小さなブリキの缶のそばにしゃがみ、綴りを胸に抱え込んでいる。左から、懐中電灯を持った小さな人影が数人近づく。暗く冷たい。光は、炎と懐中電灯だけ。文字・ロゴは入れない。
 
-### ⬜ scenes/ch5_reiko_stairs（地上の非常階段の踊り場）
+### ✅ scenes/ch5_reiko_stairs（地上の非常階段の踊り場）
 
 添付: `bg/cam10_stairs`
 
@@ -111,7 +120,7 @@ Generate an image. Edit the attached image idea: a landing of an outdoor-side em
 
 > **日本語訳**: 添付の絵と同じような、オフィスビルの非常階段の踊り場。夜明け前の青い光が、扉のすき間から差し込む。灰色のコンクリートと手すり。30 代半ばの、黒い長い髪の女が、長い白いコートで、階段の上のほうの壁を背に、ひとりで立つ。両手をポケットに入れ、落ち着いているが、顔に薄い陰がある。引きの構図。文字・ロゴは入れない。
 
-### ⬜ scenes/ch5_sd_yashima（観覧室の記録「記録_YASHIMA_RIKU」）
+### ✅ scenes/ch5_sd_yashima（観覧室の記録「記録_YASHIMA_RIKU」）
 
 添付: `scenes/ch4_self_9d`（第4章の、監視室で背を丸める八島の絵。これを、大きなモニターに映った画面として使う）
 
@@ -121,7 +130,7 @@ Generate an image. A big monitor in a dark room showing a security-camera view o
 
 > **日本語訳**: 暗い部屋の大きなモニター。地下の監視室で、作業着の男が背を丸めて制御卓の前に座っている後ろ姿を、防犯カメラの視点で映している。画面のふちに、短い吹き出しのような書き込みが流れていく（読めないぼやけた記号）。手前に、革張りの椅子から画面を見て笑う 2 人のシルエット。ひとりはワイングラスを持つ。隠しカメラの映像のような粒子の粗さ、青いモニターの光。読める文字・時計・ロゴは入れない。
 
-### ⬜ scenes/ch5_sd_makabe（観覧室の記録　上座の男）
+### ✅ scenes/ch5_sd_makabe（観覧室の記録　上座の男）
 
 添付: `bg/cam26_viewing_room`
 
@@ -133,45 +142,45 @@ Generate an image. Edit the attached image idea: the hidden viewing room from a 
 
 ### ✅ scenes/ch5_viewing_empty（CAM-26 の今の映像。誰もいない観覧室）
 
-添付: `bg/cam26_viewing_room`
+添付: `bg/cam26_viewing_room`（2026-11-22 に席を 7 つにそろえて作り直した版）
 
 ```
-Generate an image. Edit the attached image: the same viewing room, high hidden-camera angle, now with no people: seven empty leather armchairs, half-drunk wine glasses on the side tables, the wall of monitors dim; the head seat on the dais has a wine glass left on its armrest. One of the side tables has an extra glass. No text, no clock, no logo.
+Generate an image. Edit the attached image. Keep exactly the same viewing room, camera angle, composition, lighting, colors and art style, and the same seven armchairs plus the head seat on the dais. Now there are no people at all: all seven armchairs are empty, half-drunk wine glasses stand on the side tables, the wall of monitors is dim; the head seat on the dais has one wine glass left on its armrest. One of the side tables has an extra glass. No text, no letters, no clock, no logo, no watermark. The security camera itself is not visible. Horizontal 16:9.
 ```
 
-> **日本語訳**: 添付の絵と同じ観覧室（高い所に隠したカメラの構図）。今は誰もいない: 空の革張りの椅子が 7 つ、小さな机の上に飲みかけのワイングラス、壁のモニターは暗い。上座の肘掛けにワイングラスが置かれている。机の一つに、グラスが 1 つ余っている。文字・時計・ロゴは入れない。
+> **日本語訳**: 添付の絵を直す。観覧室・角度・構図・明かり・色・絵柄、7 つの椅子と一段高い台の上座はそのまま。誰もいない: 空の革張りの椅子が 7 つ、小さな机の上に飲みかけのワイングラス、壁のモニターは暗い。上座の肘掛けにワイングラスが 1 つ置かれている。机の一つに、グラスが 1 つ余っている。文字・時計・ロゴは入れない。防犯カメラ自体は映さない。
 
 ### ✅ scenes/ch5_viewing_kuzumi（観覧室。会員たちに囲まれる久住）
 
-添付: `bg/cam26_viewing_room`
+添付: `bg/cam26_viewing_room`（作り直した版）
 
 ```
-Generate an image. Edit the attached image: the same viewing room from a high hidden camera. Three or four members sit in armchairs holding wine glasses and look at a middle-aged man in a grey suit who stands in the centre of the room with his hands folded in front and his head slightly bowed, tidy and obedient. Small figures as seen from a high angle. No text, no clock, no logo.
+Generate an image. Edit the attached image. Keep exactly the same viewing room, camera angle, composition, lighting, colors and art style, and the same seven armchairs plus the head seat on the dais. Four members sit in the armchairs holding wine glasses (a mix: two men and two women, aged 40s to 70s, well dressed), and look at a middle-aged man in a grey suit who stands in the centre of the room with his hands folded in front and his head slightly bowed, tidy and obedient. The other armchairs are empty. Small figures as seen from a high angle by a hidden camera. No readable text, no clock, no logo, no watermark. The security camera itself is not visible. Horizontal 16:9.
 ```
 
-> **日本語訳**: 添付の絵と同じ観覧室（高い所に隠したカメラの構図）。3、4 人の会員が、ワイングラスを持って椅子に座り、部屋の中央に立つ灰色のスーツの中年の男を見ている。男は手を前で組み、少し頭を下げて、きちんと従順に立つ。高い角度から見た小さな人影。文字・時計・ロゴは入れない。
+> **日本語訳**: 添付の絵を直す。観覧室・角度・構図・明かり・色・絵柄、7 つの椅子と上座はそのまま。男女 2 人ずつ（40〜70 代、身なりがよい）の会員 4 人が、ワイングラスを持って椅子に座り、部屋の中央に立つ灰色のスーツの中年の男を見ている。男は手を前で組み、少し頭を下げて、きちんと従順に立つ。ほかの椅子は空。高い角度の隠しカメラから見た小さな人影。読める文字・時計・ロゴは入れない。防犯カメラ自体は映さない。
 
 ### ✅ scenes/ch5_viewing_members（観覧室。モニターを見て笑う会員たち）
 
-添付: `bg/cam26_viewing_room`
+添付: `bg/cam26_viewing_room`（作り直した版）
 
 ```
-Generate an image. Edit the attached image: the same viewing room from a high hidden camera. Five of seven members sit in armchairs, well-dressed men and women, wine glasses in hand, looking up at the wall of monitors; two of them are leaning toward each other laughing, one is pointing at a monitor. Small figures as seen from a high angle. No text, no clock, no logo.
+Generate an image. Edit the attached image. Keep exactly the same viewing room, camera angle, composition, lighting, colors and art style, and the same seven armchairs plus the head seat on the dais. Add members seated in the armchairs: five of the seven armchairs are occupied, by well-dressed men and women in a mix (three men and two women, aged 40s to 70s, one woman with grey hair in an elegant dress), wine glasses in hand, looking up at the wall of monitors; two of them are leaning toward each other laughing, one is pointing at a monitor. The head seat on the dais stays empty. Small figures as seen from a high angle by a hidden camera. No readable text, no clock, no logo, no watermark. The security camera itself is not visible. Horizontal 16:9.
 ```
 
-> **日本語訳**: 添付の絵と同じ観覧室（高い所に隠したカメラの構図）。身なりのいい男女の会員が、7 人のうち 5 人、ワイングラスを手に椅子に座り、壁のモニターを見上げている。2 人は顔を寄せて笑い、ひとりはモニターの一つを指さしている。高い角度から見た小さな人影。文字・時計・ロゴは入れない。
+> **日本語訳**: 添付の絵を直す。観覧室・角度・構図・明かり・色・絵柄、7 つの椅子と上座はそのまま。椅子に会員を足す: 7 つのうち 5 つが埋まり、身なりのいい男女（男 3・女 2、40〜70 代、うち 1 人は白髪の上品なドレスの女）が、ワイングラスを手に壁のモニターを見上げている。2 人は顔を寄せて笑い、ひとりはモニターの一つを指さしている。上座は空のまま。高い角度の隠しカメラから見た小さな人影。読める文字・時計・ロゴは入れない。防犯カメラ自体は映さない。
 
 ### ✅ scenes/ch5_viewing_raid（観覧室への突入）
 
-添付: `bg/cam26_viewing_room`
+添付: `bg/cam26_viewing_room`（作り直した版）
 
 ```
-Generate an image. Edit the attached image: the same viewing room from a high hidden camera. Uniformed police officers rush in through the double doors on both sides; well-dressed members freeze or stand up with wine glasses dropped and spilled on the floor, hands raised, one trying to hide behind an armchair. The wall of monitors is bright, each monitor showing a close-up of a startled face. Small figures as seen from a high angle. No readable text, no clock, no logo.
+Generate an image. Edit the attached image. Keep exactly the same viewing room, camera angle, composition, lighting, colors and art style, and the same seven armchairs plus the head seat on the dais. Uniformed police officers rush in through double doors on both sides; the seven well-dressed members (a mix of men and women, aged 40s to 70s) freeze or stand up with their hands raised, one trying to hide behind an armchair, and a couple of empty wine glasses lie tipped over on the floor (the glasses are empty and clear: no liquid, no red stains on the floor). The wall of monitors is bright, each monitor showing a close-up of a startled face. Small figures as seen from a high angle by a hidden camera. No readable text, no clock, no logo, no watermark. The security camera itself is not visible. Horizontal 16:9.
 ```
 
-> **日本語訳**: 添付の絵と同じ観覧室（高い所に隠したカメラの構図）。制服の警官たちが、両側の扉から突入する。身なりのいい会員たちが、凍りつくか立ち上がり、ワイングラスは床に落ちて中身がこぼれ、手を上げ、ひとりは椅子の陰に隠れようとしている。壁のモニターは明るく、その一つひとつに、驚いた顔のアップが映る。高い角度から見た小さな人影。読める文字・時計・ロゴは入れない。
+> **日本語訳**: 添付の絵を直す。観覧室・角度・構図・明かり・色・絵柄、7 つの椅子と上座はそのまま。制服の警官たちが両側の扉から突入する。身なりのいい男女の会員 7 人（40〜70 代）が、凍りつくか立ち上がって手を上げ、ひとりは椅子の陰に隠れようとしている。床に空のワイングラスが数個倒れている（グラスは空で透明。液体も赤い染みもない。血に見えないため）。壁のモニターは明るく、その一つひとつに、驚いた顔のアップが映る。高い角度の隠しカメラから見た小さな人影。読める文字・時計・ロゴは入れない。防犯カメラ自体は映さない。
 
-### ⬜ scenes/ch5_flashback_office（9 年前、開業前の現場事務所）
+### ✅ scenes/ch5_flashback_office（9 年前、開業前の現場事務所）
 
 添付: `scenes/ch4_flash_office`（第4章の 8 年前の同じ現場事務所。1 年前の同じ部屋にする）、`bg/cam07_office`
 
@@ -181,7 +190,7 @@ Generate an image. Keep the same construction-site temporary office as the attac
 
 > **日本語訳**: 9 年前、ショッピングモールの開業前の、建設現場の仮設の事務所。スチールの机、壁に留めた図面、棚の上のヘルメット、窓から差す夕方の光、卓上のライト。手前で、作業着の 26 歳の若い男が、ペンを持って机に座り、目の前に数字の表の出力がある。奥に、品のいいスーツの白髪の男が、後ろで手を組んで立ち、紙には触れない。暖かいセピア色の記憶の雰囲気、やわらかい周辺減光。読める文字・時計・ロゴは入れない。
 
-### ⬜ scenes/ch5_mall_atrium（「異常なし」のエンディング。汐見ベイコートの吹き抜け）
+### ✅ scenes/ch5_mall_atrium（「異常なし」のエンディング。汐見ベイコートの吹き抜け）
 
 添付: なし（`bg/cam01_lobby` の色調をそろえる）
 
