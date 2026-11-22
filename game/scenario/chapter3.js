@@ -65,7 +65,7 @@ Observer.script('chapter3', `
 @inside
 @cameras CAM-00 CAM-01 CAM-08 CAM-09 CAM-11
 @time 8/21:00
-@feed CAM-01 man@100,150
+@feed CAM-01 img:scenes/ch3_okochi_lobby.jpg man@100,150
 @feed CAM-11
 @look CAM-01 flag=saw_lobby3
   1F ロビー。受付のそばの柱に、くたびれたコートの男が寄りかかっている。大河内だ。ガムをかんでいる。
@@ -240,6 +240,7 @@ Observer.script('chapter3', `
 @log 日報 | 9日目　9F 裏口通路にて口論。当事者に確認、問題なし
 日報には、そう書いた。当事者が、そう言う以上、監視員にできることは、ない。
 @note 9F 一ノ瀬さん。内線で「大丈夫よ、八島さん」。名前を、覚えていてくれた。……缶コーヒーのことまで、なんで。
+@trait reiko_name
 @feed CAM-14
 @cam CAM-14 live
 @if g:relay_ch3 -> *relay_in
@@ -371,10 +372,10 @@ B1、機械室の前。床に、水が、うっすらと広がっている。
   八島「監視室……？　俺は、かけてない」
   八島「その時間、俺は B1 だ。監視室には、誰もいなかった」
   @note 9F 裏口通路。2:20、サロンの内線が鳴った。「監視室です」。……俺じゃない。その時間、監視室は空だった。
-@event CAM-18 9/02:22-9/02:22 | woman@150
+@event CAM-18 9/02:22-9/02:22 | img:scenes/ch3_reiko_stairdoor.jpg woman@150
   2 時 22 分。9F、非常階段の扉の前。
   玲子が、扉を開けて、階段室へ入っていく。うしろを、一度だけ振り返った。
-@event CAM-16 9/02:23-9/02:27 | woman@150
+@event CAM-16 9/02:23-9/02:27 | img:scenes/ch3_reiko_landing.jpg woman@150
   9F の非常階段の踊り場。玲子が、肩で息をしながら、あたりを見回している。
   玲子「……誰か、いるの？」
   誰もいない。……そう見える。
@@ -388,7 +389,7 @@ B1、機械室の前。床に、水が、うっすらと広がっている。
   踊り場の扉は、開いたまま。床に、片方だけ、ハイヒールが転がっている。
   男は、一度も、画面の中に入ってこなかった。
   八島「……玲子さん」
-@event CAM-14 9/02:32-9/02:33 flag=saw_report | man@205
+@event CAM-14 9/02:32-9/02:33 flag=saw_report | img:scenes/ch3_man_backhall.jpg man@205
   2 時 32 分。裏口の通路に、男が戻ってきた。顔は、またフレームの外だ。
   男は、携帯を耳に当てた。マイクが、低い声を拾う。
   男「……眠らせました。下へ運びます。カードは、あとで回収します」
@@ -399,12 +400,12 @@ B1、機械室の前。床に、水が、うっすらと広がっている。
   ……前の会社。八島は、画面から目を離さなかった。聞こえなかったことにした。
   八島「……前の会社なんて、どこにでもある」
   @note 9F 裏口通路。男の電話。「あの方」。「眠らせました。下へ運びます」。「カードは後で回収」。……監視員の話をしていた。
-@event CAM-18 9/02:36-9/02:37 flag=saw_exit | man@150
+@event CAM-18 9/02:36-9/02:37 flag=saw_exit | img:scenes/ch3_man_exit.jpg man@150
   2 時 36 分。非常階段の扉が、開いた。
   男が、ひとりで出てきた。帽子を目深にかぶり、うつむいたまま。顔は、映らない。
   玲子の姿は、ない。
   男は、通路の死角を拾うように、壁ぎわを歩いて、画面の端へ消えた。
-@event CAM-15 9/03:04-9/03:06 flag=saw_makabe | oldman@190 cleaner@70,150
+@event CAM-15 9/03:04-9/03:06 flag=saw_makabe | img:scenes/ch3_makabe_salon.jpg oldman@190 cleaner@70,150
   3 時すぎ。9F、サロンの入口の前の廊下。
   白髪の男が、エレベーターホールのほうから、歩いてくる。
   八島は、画面から、目をそらした。……画面だけが、そのまま続いている。
@@ -1011,15 +1012,15 @@ B1、機械室の前。床に、水が、うっすらと広がっている。
 @open CAM-01 CAM-03 CAM-11 CAM-13
 @noevents all
 @nohotspots
-@event CAM-01 7/08:10-7/08:14 flag=saw_c1 | man@150 guard@195
+@event CAM-01 7/08:10-7/08:14 flag=saw_c1 | img:scenes/ch3_arrest_lobby.jpg man@150 guard@195
   7 日目、朝 8 時すぎ。1F ロビーのガラス扉の向こう。
   大河内と二人の男に挟まれて、八島が、車に乗せられていく。
   八島「……これは、もう起きたことだ。見せて、何になる」
-@event CAM-03 7/08:30-7/08:34 flag=saw_c2 | man@110,150 box@180,156
+@event CAM-03 7/08:30-7/08:34 flag=saw_c2 | img:scenes/ch3_boxes_corridor.jpg man@110,150 box@180,156
   7 日目、朝。1F 東廊下。捜査員が、監視室から、段ボール箱を運び出していく。
   八島のロッカーの中身も、そこに入っている。
   八島「……3 日前の俺が、これを見たところで」
-@event CAM-11 7/10:00-7/10:04 flag=saw_c3 | man@150,120,0.8 guard@210,120,0.8
+@event CAM-11 7/10:00-7/10:04 flag=saw_c3 | img:scenes/ch3_saijo_police.jpg man@150,120,0.8 guard@210,120,0.8
   7 日目、昼前。3F クリニック前の廊下。白衣の男が、刑事に、何度も頭を下げている。
   西条だ。金庫の札の話は、一言も出ていない。
 @event CAM-01 7/11:50-7/11:52 flag=saw_news | img:scenes/ch2_relay_news.jpg man@200
@@ -1281,7 +1282,7 @@ B1、機械室の前。床に、水が、うっすらと広がっている。
 *t_arrive
 @time 9/02:41
 @cam CAM-08 live
-@feed CAM-08 man@130,150 woman@200,150
+@feed CAM-08 img:scenes/ch3_okochi_reiko_hall.jpg man@130,150 woman@200,150
 2 時 41 分。9F のエレベーターホールに、くたびれたコートが降り立った。
 サロンの扉が開いた。玲子が、立っている。
 二人が、何かを話している。ホールのカメラは、音を拾わない。玲子の唇が、動いた。
@@ -1322,7 +1323,7 @@ B1、機械室の前。床に、水が、うっすらと広がっている。
 大河内「……分かった」
 @time 9/02:50
 @cam CAM-14 live
-@feed CAM-14 man@170,150
+@feed CAM-14 img:scenes/ch3_okochi_backhall.jpg man@170,150
 八島は、裏口の通路の枠を、画面いっぱいに出した。
 通路を、大河内が歩いてくる。突き当たりの、非常用設備ボックス。
 スピーカーが、扉の軋む音を拾った。
@@ -1332,7 +1333,7 @@ B1、機械室の前。床に、水が、うっすらと広がっている。
 @show 大河内
 大河内「このビルの人間より先に、警察が押さえた。……それだけだ」
 @hide 大河内
-@feed CAM-14 man@170,150 woman@215,150
+@feed CAM-14 img:scenes/ch3_reiko_exit.jpg man@170,150 woman@215,150
 裏口の扉が開いて、玲子が、出てきた。
 @show 玲子 sad left
 玲子「……保護してください。理由は、全部話します」

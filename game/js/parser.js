@@ -22,7 +22,7 @@ Observer.camera = function (id, def) {
 const BLOCK_OPS = new Set(['look', 'event']);
 
 // @look・@event の本文の中で使える演出の命令
-const BODY_OPS = new Set(['show', 'hide', 'sound', 'fx', 'strike']);
+const BODY_OPS = new Set(['show', 'hide', 'sound', 'fx', 'strike', 'trait']);
 
 // ジャンプ先（*ラベル）を引数に持つ命令。読み込み時に、ラベルがあるか確かめる
 const JUMP_PATTERN = /\*[^\s|]+/g;
