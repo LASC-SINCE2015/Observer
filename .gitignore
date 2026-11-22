@@ -17,7 +17,12 @@ desktop.ini
 # 一時ファイル
 *.tmp
 *.bak
+*.log
 
-# 絵の元ファイル（大きいのでリポジトリに入れない。tools/optimize_images.ps1 で小さくしたものを game/assets/ に入れる）
+# AI ツールのローカル設定（個人の設定・許可の記録が入ることがある）
+.claude/
+
+# 絵の元ファイル（大きいのでリポジトリに入れない。tools/optimize_images.ps1 で小さくしたものを game/assets/ に入れる）。
+# images/ に、生成した絵・退避した古い版（images/backup/）が入る。chars/ は、立ち絵の試作の置き場
 assets_src/images/
 assets_src/chars/

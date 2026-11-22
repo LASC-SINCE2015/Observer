@@ -5,22 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07080a">
 <title>Observer</title>
-<link rel="stylesheet" href="css/style.css?v=0.3.0">
+<link rel="stylesheet" href="css/style.css?v=0.3.1">
 </head>
 <body class="screen-title">
 
 <!-- ===== タイトル ===== -->
 <section class="screen" id="title-screen">
   <div class="title-box">
-    <div class="title-sub">深夜、地下2階。監視モニターの前で。</div>
-    <h1 class="title-logo">OBSERVER</h1>
+    <div class="title-sub" id="title-sub">深夜、地下2階。監視モニターの前で。</div>
+    <h1 class="title-logo" id="title-logo">OBSERVER</h1>
     <div class="title-menu">
       <button id="btn-new">はじめから</button>
       <button id="btn-continue">つづきから</button>
       <button id="btn-select">章を選ぶ</button>
+      <button id="btn-record">記録</button>
       <button id="btn-about">このゲームについて</button>
       <button id="btn-sound-title">音: なし</button>
     </div>
+    <div class="title-clear" id="title-clear"></div>
     <div class="title-note">効果音があります。「音: なし」を押すと鳴るようになります。</div>
     <div class="title-version" id="title-version"></div>
   </div>
@@ -31,9 +33,11 @@
   <div class="select-box">
     <h2>章を選ぶ</h2>
     <div id="chapter-list"></div>
+    <div class="select-hint" id="select-hint"></div>
     <div class="select-legend">
-      <span class="c-normal">■</span> クリア　<span class="c-ready">■</span> 真解決ができる　<span class="c-true">■</span> 真解決
+      <span class="c-normal">■</span> 通常解決　<span class="c-ready">■</span> 真解決ができる　<span class="c-true">■</span> 真解決
     </div>
+    <button id="btn-record-select">記録</button>
     <button id="btn-select-back">タイトルへ</button>
   </div>
 </section>
@@ -62,7 +66,7 @@
     <p class="about-help">つらい気持ちを抱えているときは、ひとりで抱え込まずに、身近な人や相談窓口を頼ってください。厚生労働省の「まもろうよ こころ」で、電話や SNS の相談窓口を探せます。<br><a href="https://www.mhlw.go.jp/mamorouyokokoro/" target="_blank" rel="noopener">https://www.mhlw.go.jp/mamorouyokokoro/</a></p>
 
     <h3>バージョン</h3>
-    <p><span id="about-version"></span>（遊べるのは第2章まで）</p>
+    <p><span id="about-version"></span>（第1〜5章を遊べます）</p>
 
     <button id="btn-about-back">タイトルへ</button>
   </div>
@@ -155,6 +159,7 @@
 <div class="card" id="card">
   <div class="card-sub" id="card-sub"></div>
   <div class="card-title" id="card-title"></div>
+  <div class="card-note" id="card-note"></div>
   <div class="card-buttons" id="card-buttons"></div>
 </div>
 
@@ -165,17 +170,17 @@
 <div class="debug" id="debug"></div>
 
 <!-- 読み込む順番: 台本の読み込み → データ → 台本 → 描画・音 → ゲームの進行 -->
-<script src="js/parser.js?v=0.3.0"></script>
-<script src="data/cameras.js?v=0.3.0"></script>
-<script src="data/chapters.js?v=0.3.0"></script>
-<script src="data/characters.js?v=0.3.0"></script>
-<script src="scenario/chapter1.js?v=0.3.0"></script>
-<script src="scenario/chapter2.js?v=0.3.0"></script>
-<script src="scenario/chapter3.js?v=0.3.0"></script>
-<script src="scenario/chapter4.js?v=0.3.0"></script>
-<script src="scenario/chapter5.js?v=0.3.0"></script>
-<script src="js/renderer.js?v=0.3.0"></script>
-<script src="js/audio.js?v=0.3.0"></script>
-<script src="js/game.js?v=0.3.0"></script>
+<script src="js/parser.js?v=0.3.1"></script>
+<script src="data/cameras.js?v=0.3.1"></script>
+<script src="data/chapters.js?v=0.3.1"></script>
+<script src="data/characters.js?v=0.3.1"></script>
+<script src="scenario/chapter1.js?v=0.3.1"></script>
+<script src="scenario/chapter2.js?v=0.3.1"></script>
+<script src="scenario/chapter3.js?v=0.3.1"></script>
+<script src="scenario/chapter4.js?v=0.3.1"></script>
+<script src="scenario/chapter5.js?v=0.3.1"></script>
+<script src="js/renderer.js?v=0.3.1"></script>
+<script src="js/audio.js?v=0.3.1"></script>
+<script src="js/game.js?v=0.3.1"></script>
 </body>
 </html>

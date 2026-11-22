@@ -8,6 +8,7 @@
 (function () {
   let ctx = null;
   let enabled = false;
+  let pending = false;
 
   function ac() {
     if (!ctx) {
@@ -15,9 +16,13 @@
       if (!AC) return null;
       ctx = new AC();
     }
-    if (ctx.state === 'suspended') ctx.resume();
+    if (ctx.state !== 'running' && !document.hidden) ctx.resume().catch(() => { /* 操作の前は、解禁されない */ });
     return ctx;
   }
+
+  // ブラウザは、ページが操作される前の音を許さない。最初の操作（タップ・キー）で、音を解禁する
+  const unlock = () => { if (enabled) ac(); };
+  ['pointerdown', 'keydown', 'touchend'].forEach((ev) => document.addEventListener(ev, unlock, { passive: true }));
 
   // 一定の高さの音を鳴らす
   function tone(type, freq, start, dur, gain) {
@@ -73,6 +78,8 @@
     thud() { tone('sine', 55, 0, 0.5, 0.5); noise(0, 0.3, 0.4, 400); },
     // サイレン
     siren() { for (let i = 0; i < 4; i++) { tone('sine', 700, i * 0.8, 0.4, 0.05); tone('sine', 560, i * 0.8 + 0.4, 0.4, 0.05); } },
+    // 扉をたたく音（1 回ぶん。続けて鳴らして、ノックにする）
+    knock() { tone('sine', 150, 0, 0.09, 0.35); noise(0, 0.06, 0.3, 600); },
     // 缶を開ける音
     can() { noise(0, 0.15, 0.2, 7000); },
   };
@@ -81,12 +88,26 @@
     get enabled() { return enabled; },
     setEnabled(on) {
       enabled = on;
-      if (on) ac();
+      // 保存した設定を起動時に戻すときは、まだ操作がないので、音を作らない（最初の操作で作る）
+      const acted = typeof navigator === 'undefined' || !navigator.userActivation || navigator.userActivation.hasBeenActive;
+      if (on && acted) ac();
     },
     play(name) {
-      if (!enabled || !SOUNDS[name]) return;
-      try { SOUNDS[name](); } catch (e) { /* 音が出せない環境では何もしない */ }
+      // タブが隠れているあいだと、音が出せない（解禁前・中断中）あいだは、音を溜めずに捨てる
+      if (!enabled || !SOUNDS[name] || document.hidden) return;
+      try {
+        const a = ac();
+        if (!a) return;
+        if (a.state === 'running') { SOUNDS[name](); return; }
+        // 解禁の直後など: 動き出したら、直近の 1 つだけ鳴らす
+        if (pending) return;
+        pending = true;
+        a.resume().then(() => { pending = false; if (a.state === 'running') SOUNDS[name](); }).catch(() => { pending = false; });
+      } catch (e) { /* 音が出せない環境では何もしない */ }
     },
+    // タブが隠れたら止め、戻ったら動かす
+    suspend() { try { if (ctx && ctx.state === 'running') ctx.suspend(); } catch (e) { /* 何もしない */ } },
+    resume() { if (enabled && ctx) ac(); },
     names: Object.keys(SOUNDS),
   };
 })();

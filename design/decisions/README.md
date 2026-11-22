@@ -13,7 +13,10 @@
 | No | 内容 | 状態 |
 |---|---|---|
 | [0001](0001_single_html_no_library.md) | 外部ライブラリを使わず、1 ファイルの HTML で作る | 一部置き換え済み（0004） |
-| [0002](0002_save_in_localstorage.md) | セーブはブラウザの localStorage に保存する | 採用 |
+| [0002](0002_save_in_localstorage.md) | セーブはブラウザの localStorage に保存する | 置き換え済み（0006） |
 | [0003](0003_publish_game_folder_with_actions.md) | GitHub Actions で game/ フォルダだけを公開する | 採用 |
 | [0004](0004_split_scenario_data_by_chapter.md) | シナリオのデータを章ごとの JS ファイルに分ける | 一部置き換え済み（0005） |
 | [0005](0005_scenario_as_text_script.md) | シナリオを台本形式（テキスト）で書き、仕組みも役割ごとのファイルに分ける | 採用 |
+| [0006](0006_autosave_and_split_save.md) | 場面のセーブは自動保存にし、章をまたぐ記録と分ける | 採用 |
+| [0007](0007_idle_timeout_with_opt_out.md) | 「何もしないまま時間が過ぎる」場面は時間切れ（@idle）で作り、オフにもできるようにする | 採用 |
+| [0008](0008_remember_missing_images.md) | まだ作っていない絵（404）は、24 時間だけ覚えて、取りに行かない | 採用 |
